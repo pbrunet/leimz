@@ -3,8 +3,7 @@ package com.server.core.functions;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import java.util.ArrayList;
-
+import com.server.core.Client;
 import com.server.core.ServerSingleton;
 
 /**
@@ -18,9 +17,8 @@ public class LoadFunction implements Functionable
 
     //fonction repondant aux requetes du client
     @Override
-    public ArrayList<String> doSomething(String[] args,int client_id)
+    public void doSomething(String[] args, Client client)
     {
-    	ArrayList<String> answer = new ArrayList<String>();
 		ResultSet rs = null;
     	if(args[1].equals("rc"))
     	{
@@ -30,7 +28,7 @@ public class LoadFunction implements Functionable
     					"FROM caracteristiques,caracteristiques_race,personnage " +
     					"WHERE caracteristiques.id=caracteristiques_race.id_caracteristique " +
     					"AND caracteristiques_race.id_race=personnage.race " +
-    					"AND personnage.joueur=" + client_id;
+    					"AND personnage.joueur=" + client.getCompte().getClient_id();
 				rs = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery(sql);
 				String rc = "";
 				while(rs.next())
@@ -38,10 +36,9 @@ public class LoadFunction implements Functionable
 					rc += rs.getString("caracteristiques.name") + ";";
 					rc += rs.getInt("caracteristiques_race.value") + ";";
 				}
-				answer.add(rc);
+				client.sendToClient(rc);
 			} catch (SQLException e) {
-				answer.add("REQUEST_FAIL");
-				e.printStackTrace();
+    			throw new RuntimeException("Race caracteristic");
 			}
     	}
     	else if(args[1].equals("cc"))
@@ -52,7 +49,7 @@ public class LoadFunction implements Functionable
     					"FROM caracteristiques,caracteristiques_classe,personnage " +
     					"WHERE caracteristiques.id=caracteristiques_classe.id_caracteristique " +
     					"AND caracteristiques_classe.id_classe=personnage.classe " +
-    					"AND personnage.joueur=" + client_id;
+    					"AND personnage.joueur=" + client.getCompte().getClient_id();
 				rs = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery(sql);
 				String rc = "";
 				while(rs.next())
@@ -60,10 +57,9 @@ public class LoadFunction implements Functionable
 					rc += rs.getString("caracteristiques.name") + ";";
 					rc += rs.getInt("caracteristiques_classe.value") + ";";
 				}
-				answer.add(rc);
+				client.sendToClient(rc);
 			} catch (SQLException e) {
-				answer.add("REQUEST_FAIL");
-				e.printStackTrace();
+    			throw new RuntimeException("Class caracteristic");
 			}
     	}
     	else if(args[1].equals("jc"))
@@ -73,7 +69,7 @@ public class LoadFunction implements Functionable
     			String sql = "SELECT caracteristiques.name, caracteristiques_joueur.value " +
     					"FROM caracteristiques,caracteristiques_joueur " +
     					"WHERE caracteristiques.id=caracteristiques_joueur.id_caracteristique " +
-    					"AND caracteristiques_joueur.id_joueur=" + client_id;
+    					"AND caracteristiques_joueur.id_joueur=" + client.getCompte().getClient_id();
 				rs = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery(sql);
 				String rc = "";
 				while(rs.next())
@@ -81,10 +77,9 @@ public class LoadFunction implements Functionable
 					rc += rs.getString("caracteristiques.name") + ";";
 					rc += rs.getInt("caracteristiques_joueur.value") + ";";
 				}
-				answer.add(rc);
+				client.sendToClient(rc);
 			} catch (SQLException e) {
-				answer.add("REQUEST_FAIL");
-				e.printStackTrace();
+    			throw new RuntimeException("Player Caracteristic");
 			}
     	}
     	else if(args[1].equals("jcv"))
@@ -94,7 +89,7 @@ public class LoadFunction implements Functionable
     			String sql = "SELECT caracteristiques.name, caracteristiques_joueur.current_value " +
     					"FROM caracteristiques,caracteristiques_joueur " +
     					"WHERE caracteristiques.id=caracteristiques_joueur.id_caracteristique " +
-    					"AND caracteristiques_joueur.id_joueur=" + client_id;
+    					"AND caracteristiques_joueur.id_joueur=" + client.getCompte().getClient_id();
 				rs = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery(sql);
 				String rc = "";
 				while(rs.next())
@@ -102,10 +97,9 @@ public class LoadFunction implements Functionable
 					rc += rs.getString("caracteristiques.name") + ";";
 					rc += rs.getInt("caracteristiques_joueur.current_value") + ";";
 				}
-				answer.add(rc);
+				client.sendToClient(rc);
 			} catch (SQLException e) {
-				answer.add("REQUEST_FAIL");
-				e.printStackTrace();
+    			throw new RuntimeException("Player Caracteristic values");
 			}
     	}
     	else if(args[1].equals("rs"))
@@ -116,7 +110,7 @@ public class LoadFunction implements Functionable
         			" FROM sorts_race,personnage,race_sort " +
         			"WHERE sorts_race.id=race_sort.id_sort " +
         			"AND race_sort.id_race=personnage.race " +
-					"AND personnage.joueur=" + client_id;
+					"AND personnage.joueur=" + client.getCompte().getClient_id();
     			rs = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery(sql);
     			String rc = "";
     			while(rs.next())
@@ -126,10 +120,9 @@ public class LoadFunction implements Functionable
     				rc += rs.getInt("sorts_race.value_max") + ";";
     				rc += rs.getString("sorts_race.description") + ";";
     			}
-    			answer.add(rc);
+    			client.sendToClient(rc);
     		} catch (SQLException e) {
-    			answer.add("REQUEST_FAIL");
-    			e.printStackTrace();
+    			throw new RuntimeException("race sort");
     		}
         }
     	else if(args[1].equals("cs"))
@@ -140,7 +133,7 @@ public class LoadFunction implements Functionable
         			" FROM sorts_classe,personnage,classe_sort " +
         			"WHERE sorts_classe.id=classe_sort.id_sort " +
         			"AND classe_sort.id_classe=personnage.classe " +
-					"AND personnage.joueur=" + client_id;
+					"AND personnage.joueur=" + client.getCompte().getClient_id();
     			rs = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery(sql);
     			String rc = "";
     			while(rs.next())
@@ -150,10 +143,9 @@ public class LoadFunction implements Functionable
     				rc += rs.getInt("sorts_classe.value_max") + ";";
     				rc += rs.getString("sorts_classe.Description") + ";";
     			}
-    			answer.add(rc);
+    			client.sendToClient(rc);
     		} catch (SQLException e) {
-    			answer.add("REQUEST_FAIL");
-    			e.printStackTrace();
+    			throw new RuntimeException("Class sort");
     		}
         }
     	else if(args[1].equals("in"))
@@ -163,7 +155,7 @@ public class LoadFunction implements Functionable
         			" FROM item,inventaire,personnage " +
         			"WHERE item.id=inventaire.id_objet " +
         			"AND inventaire.id_joueur=personnage.joueur " +
-					"AND personnage.joueur=" + client_id;
+					"AND personnage.joueur=" + client.getCompte().getClient_id();
     			rs = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery(sql);
     			String rc = "";
     			while(rs.next())
@@ -176,10 +168,9 @@ public class LoadFunction implements Functionable
     				rc += rs.getString("item.effets") + ";";
     			}
     			System.out.println("/" + rc + "/");
-    			answer.add(rc);
+    			client.sendToClient(rc);
     		} catch (SQLException e) {
-    			answer.add("REQUEST_FAIL");
-    			e.printStackTrace();
+    			throw new RuntimeException("Bag");
     		}
     	}
     	else if(args[1].equals("pnj"))
@@ -227,10 +218,9 @@ public class LoadFunction implements Functionable
     				rc += rs.getInt("pnj.pos_y") + ";";
     			}
     			System.out.println("message pnj : "+rc);
-    			answer.add(rc);
+    			client.sendToClient(rc);
     		} catch (SQLException e) {
-    			answer.add("REQUEST_FAIL");
-    			e.printStackTrace();
+    			throw new RuntimeException("PNJ Informations");
     		}
     	}
     	
@@ -254,7 +244,6 @@ public class LoadFunction implements Functionable
     			}
     			if(rc.equals(""))
     			{
-
             		sql = "SELECT tiles_map_content.nom, tiles_map_content.image, tiles_map_content.collidable, tiles_map_content.base_x, tiles_map_content.base_y " +
             			"FROM tiles_map_content " +
             			"WHERE tiles_map_content.nom=" + args[2];
@@ -270,12 +259,10 @@ public class LoadFunction implements Functionable
         				rc += "1";
         			}
     			}
-    			answer.add(rc);
+    			client.sendToClient(rc);
     		} catch (SQLException e) {
-    			answer.add("REQUEST_FAIL");
-    			e.printStackTrace();
+    			throw new RuntimeException("Type tiles");
     		}
         }
-		return answer;
     }
 }

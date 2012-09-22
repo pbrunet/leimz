@@ -1,16 +1,15 @@
 package com.server.core.functions;
 
+import com.server.core.Client;
 import com.server.core.ServerSingleton;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
 
 /**
  * Write a description of class ConnectFunction here.
  * 
  * @author chelendil 
- * @version (a version number or a date)
  */
 public class ConnectFunction implements Functionable
 {
@@ -19,15 +18,11 @@ public class ConnectFunction implements Functionable
 	}
 
 	@Override
-	public ArrayList<String> doSomething(String[] args,int client_id)
+	public void doSomething(String[] args,Client c)
 	{
-		ArrayList<String> answer = new ArrayList<String>();
 		
 		if(args.length <2)
-		{
-			answer.add("CONNECT_FAIL");
-			return answer;
-		}
+			throw new RuntimeException("Connection");
 		
 		String ndc = args[1];
 		String mdp = args[2];
@@ -47,10 +42,7 @@ public class ConnectFunction implements Functionable
 			}
 			
 			if(id == 0)
-			{
-				answer.add("CONNECT_FAIL");
-				return answer;
-			}
+				throw new RuntimeException("Searching player");
 
 			ResultSet rsp = null;
 			try {
@@ -66,15 +58,12 @@ public class ConnectFunction implements Functionable
 				race = rsp.getString("race.name");
 				classe = rsp.getString("classe.name");
 			}
-			answer.add((new Integer(id)).toString());
-			answer.add("CONNECT_SUCCEED");
-			answer.add(nom+";"+race+";"+classe);
+			c.getCompte().setClient_id(id);
+			c.sendToClient("CONNECT_SUCCEED");
+			c.sendToClient(nom+";"+race+";"+classe);
 
 		} catch (SQLException e) {
-			answer.add(0, "CONNECT_FAIL");
-			e.printStackTrace();
+			throw new RuntimeException("Connection");
 		}
-		System.out.println(answer);
-		return answer;
 	}
 }

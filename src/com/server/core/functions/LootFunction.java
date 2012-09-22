@@ -1,6 +1,6 @@
 package com.server.core.functions;
 
-import java.util.ArrayList;
+import com.server.core.Client;
 
 
 /**
@@ -19,8 +19,7 @@ public class LootFunction implements Functionable
     }
 
     @Override
-    public ArrayList<String> doSomething(String[] args,int id)
+    public void doSomething(String[] args,Client client)
     {
-		return new ArrayList<String>();
     }
 }

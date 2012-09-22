@@ -1,7 +1,6 @@
 package com.server.core.functions;
 
-import java.util.ArrayList;
-
+import com.server.core.Client;
 import com.server.core.functions.Functionable;
 
 /**
@@ -18,9 +17,7 @@ public class AttackFunction implements Functionable
         
     }
 
-    @Override
-    public ArrayList<String> doSomething(String[] args,int id)
-    {
-		return new ArrayList<String>();
-    }
+	@Override
+	public void doSomething(String[] args, Client c) {
+	}
 }

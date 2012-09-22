@@ -1,6 +1,6 @@
 package com.server.core.functions;
 
-import java.util.ArrayList;
+import com.server.core.Client;
 
 /**
  * Write a description of class SayFunction here.
@@ -16,10 +16,8 @@ public class SayFunction implements Functionable
     }
     
     @Override
-    public ArrayList<String> doSomething(String[] args,int id)
+    public void doSomething(String[] args,Client client)
     {
-       ArrayList<String> mess = new ArrayList<String>();
-       mess.add(args[0]+";"+args[1]+";"+args[2]);
-		return mess;
+       client.sendToClient(args[0]+";"+args[1]+";"+args[2]);
     }
 }

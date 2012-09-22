@@ -1,6 +1,6 @@
 package com.server.core.functions;
 
-import java.util.ArrayList;
+import com.server.core.Client;
 
 /**
  * Write a description of interface Function here.
@@ -10,7 +10,5 @@ import java.util.ArrayList;
  */
 public interface Functionable
 {
-
-   public ArrayList<String> doSomething(String[] args, int id_joueur);
-   
+   public void doSomething(String[] args, Client c);
 }

@@ -2,7 +2,6 @@ package com.server.core;
 
 import java.io.IOException;
 
-import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
@@ -53,20 +52,13 @@ public class Calculator implements Runnable
 			System.out.println("Reception du message :" + mess);
 			String[] temp = mess.split(";");
 			Functionable f = dictfunctions.get(temp[0]);
-			ArrayList<String> tmp = f.doSomething(temp,source.getCompte().getClient_id());
-			for(int i=0;i<tmp.size();i++)
-			{
-				String s = tmp.get(i);
-				if(temp[0].equals("c") && s.matches("^[0-9]+$"))
-				{
-					source.getCompte().setClient_id(Integer.parseInt(s));
-				}
-				else
-				{
-					source.sendToClient(s) ;
-					if(mess.equals("CONNECT_FAIL"))
-						ServerSingleton.getInstance().deconnexion(source);
-				}
+			try{
+				f.doSomething(temp,source);
+			}
+			catch(RuntimeException e){
+				source.sendToClient("REQUEST_FAIL");
+				System.out.println("W : " + e.getMessage() + " request failed");
+				ServerSingleton.getInstance().deconnexion(source);
 			}
 		}
 	}

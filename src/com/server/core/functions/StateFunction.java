@@ -2,8 +2,8 @@ package com.server.core.functions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
 
+import com.server.core.Client;
 import com.server.core.ServerSingleton;
 
 
@@ -22,9 +22,8 @@ public class StateFunction implements Functionable
 	}
 
 	@Override
-	public ArrayList<String> doSomething(String[] args, int id_joueur)
+	public void doSomething(String[] args, Client client)
 	{
-		ArrayList<String> list = new ArrayList<String>();
 		if(args[1].equals("pos"))
 		{
 			try {
@@ -38,7 +37,7 @@ public class StateFunction implements Functionable
 			String toSend = "s;";
 			ResultSet rss = null;
 			try {
-				rss = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery("SELECT * from personnage where joueur="+id_joueur);
+				rss = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery("SELECT * from personnage where joueur=" + client.getCompte().getClient_id());
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
@@ -53,8 +52,7 @@ public class StateFunction implements Functionable
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			list.add(toSend);
+			client.sendToClient(toSend);
 		}
-		return list;
 	}
 }

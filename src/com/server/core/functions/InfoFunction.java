@@ -3,9 +3,8 @@ package com.server.core.functions;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-import java.util.ArrayList;
+import com.server.core.Client;
 import com.server.core.ServerSingleton;
-
 
 /**
  * Write a description of class InvitFunction here.
@@ -21,9 +20,8 @@ public class InfoFunction implements Functionable
 	}
 
 	@Override
-	public ArrayList<String> doSomething(String[] args,int id)
+	public void doSomething(String[] args,Client client)
 	{
-		ArrayList<String> answer = new ArrayList<String>();
 
 		ResultSet rsp = null;
 		try {
@@ -80,10 +78,8 @@ public class InfoFunction implements Functionable
 			e.printStackTrace();
 		}
 		System.out.println("troisieme etape ok");
-		answer.add("i;"+args[1]+";"+race+";"+classe);
+		client.sendToClient("i;"+args[1]+";"+race+";"+classe);
 
 		System.out.println("infos envoyees !");
-
-		return answer;
 	}
 }
