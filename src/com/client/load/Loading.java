@@ -55,7 +55,7 @@ public class Loading extends BasicGameState
 		label.loadGlyphs();
 
 		fond = new Image("data/Images/Loading/fond_v2.png");
-		barre = new Image("data/Images/Loading/Barre remplie.png");
+		barre = new Image("data/Images/Loading/Barre_remplie.png");
 
 		go = true;
 			}
