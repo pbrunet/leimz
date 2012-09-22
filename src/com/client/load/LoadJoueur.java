@@ -47,13 +47,10 @@ public class LoadJoueur implements Runnable
 		if(running)
 		{
 			System.out.println("Loading player ...");
-
-			NetworkManager network = NetworkManager.instance;
-			network.waitForNewMessage();
+			NetworkManager.instance.waitForNewMessage();
 
 			//On recupere la chaine avec les infos sur le perso
-			String str_perso = network.getMessage_recu_serveur();
-			String[] args_perso = str_perso.split(";");
+			String[] args_perso = NetworkManager.instance.getMessage_recu_serveur().split(";");
 			if(args_perso.length<3)
 				throw new RuntimeException("Incorrect login message from server");
 
@@ -63,94 +60,25 @@ public class LoadJoueur implements Runnable
 
 			//-------------------GESTION DE LA RACE-----------------------
 
-			//Caracteristiques de race
-			network.sendToServer("lo;rc"); //load, race caracteristiques
-			network.waitForNewMessage();
-			String[] race_caract = network.getMessage_recu_serveur().split(";");
-			if(race_caract.length<2)
-				throw new RuntimeException("Incorrect race caracteristic loading message from server");
-
-			HashMap<Caracteristique,Integer> caracs_race = new HashMap<Caracteristique,Integer>();
-			for(int i = 0; i < race_caract.length; i+=2)
-				caracs_race.put(Caracteristique.valueOf(race_caract[i].toUpperCase()), Integer.parseInt(race_caract[i+1]));
-
-			//Sorts de race
-			network.sendToServer("lo;rs"); //load, race sort
-			network.waitForNewMessage();
-			String[] race_sort = network.getMessage_recu_serveur().split(";");
-			if(race_sort.length<4)
-				throw new RuntimeException("Incorrect race sort loading message from server");
-
-			ArrayList<Sort> sorts_race = new ArrayList<Sort>();
-			for(int i = 0; i < race_sort.length; i+=4)
-				sorts_race.add(new Sort(race_sort[i],race_sort[i+3],Integer.parseInt(race_sort[i+1]),Integer.parseInt(race_sort[i+2]),null));
-
-			Race race = new Race(nom_race, sorts_race, caracs_race);
+			Race race = new Race(nom_race, getSorts("lo;rs"), getCaracteristic("lo;rc"));
 
 			//-------------------GESTION DE LA CLASSE-----------------------
 
-			//Caracteristiques de classe
-			HashMap<Caracteristique,Integer> caracs_classe = new HashMap<Caracteristique,Integer>();
-
-			network.sendToServer("lo;cc"); //load, classe caracteristiques
-			network.waitForNewMessage();
-			String[] classe_caract = network.getMessage_recu_serveur().split(";");
-			if(classe_caract.length<2)
-				throw new RuntimeException("Incorrect classe caracteristic loading message from server");
-
-			for(int i = 0; i < classe_caract.length; i+=2)
-				caracs_classe.put(Caracteristique.valueOf(classe_caract[i].toUpperCase()), Integer.parseInt(classe_caract[i+1]));
-
-			//Sorts de classe
-			ArrayList<Sort> sorts_classe = new ArrayList<Sort>();
-
-			network.sendToServer("lo;cs"); //load joueur, classe sorts
-			network.waitForNewMessage();
-			String[] classe_sort = network.getMessage_recu_serveur().split(";");
-			if(classe_sort.length<4)
-				throw new RuntimeException("Incorrect classe sorts loading message from server");
-
-			for(int i = 0; i < classe_sort.length; i+=4)
-				sorts_classe.add(new Sort(classe_sort[i],classe_sort[i+3],Integer.parseInt(classe_sort[i+1]),Integer.parseInt(classe_sort[i+2]),null));
-
-			Classe classe = new Classe(nom_classe, sorts_classe, caracs_classe);
-
+			Classe classe = new Classe(nom_classe, getSorts("lo;cs"), getCaracteristic("lo;cc"));
 
 			//---------------GESTION DU PERSONNAGE------------------
+			
+			perso = new Personnage(nom_perso, race, classe,getCaracteristic("lo;jcv"),getCaracteristic("lo;jc"));
 
-			//Caracteristiques du joueur
-			HashMap<Caracteristique,Integer> caracs_joueur = new HashMap<Caracteristique,Integer>();
-
-			network.sendToServer("lo;jc"); //load, joueur caracteristiques
-			network.waitForNewMessage();
-			String[] joueur_caract = network.getMessage_recu_serveur().split(";");
-			if(joueur_caract.length<2)
-				throw new RuntimeException("Incorrect joueur caracteristic loading message from server");
-
-			for(int i = 0; i < joueur_caract.length; i+=2)
-				caracs_joueur.put(Caracteristique.valueOf(joueur_caract[i].toUpperCase()), Integer.parseInt(joueur_caract[i+1]));
-
-			//Valeurs des caracteristiques du joueur
-			HashMap<Caracteristique,Integer> caracsval_joueur = new HashMap<Caracteristique,Integer>();
-
-			network.sendToServer("lo;jcv"); //load, joueur caracteristiques values
-			network.waitForNewMessage();
-			String[] joueur_caractval = network.getMessage_recu_serveur().split(";");
-			if(joueur_caractval.length<2)
-				throw new RuntimeException("Incorrect joueur caracteristic value loading message from server");
-
-			for(int i = 0; i < joueur_caractval.length; i+=2)
-				caracsval_joueur.put(Caracteristique.valueOf(joueur_caractval[i].toUpperCase()), Integer.parseInt(joueur_caractval[i+1]));
-
-			//GESTION DE L'INVENTAIRE
+			//----------------GESTION DE L'INVENTAIRE---------------------
 
 			LoadingList.setDeferredLoading(true);
 
 			Inventaire inventaire = new Inventaire();
 
-			network.sendToServer("lo;in"); //load joueur, joueur caracteristiques
-			network.waitForNewMessage();
-			String[] str_i = network.getMessage_recu_serveur().split(";");
+			NetworkManager.instance.sendToServer("lo;in"); //load joueur, joueur caracteristiques
+			NetworkManager.instance.waitForNewMessage();
+			String[] str_i = NetworkManager.instance.getMessage_recu_serveur().split(";");
 
 			//Do nothing if inventaire is empty
 			if(str_i.length>6)
@@ -168,7 +96,6 @@ public class LoadJoueur implements Runnable
 			}
 			LoadingList.setDeferredLoading(false);
 
-			perso = new Personnage(nom_perso, race, classe,caracsval_joueur,caracs_joueur);
 			perso.setInventaire(inventaire);
 
 			purcent+=6;
@@ -213,5 +140,36 @@ public class LoadJoueur implements Runnable
 
 	public void setPerso(Personnage perso) {
 		this.perso = perso;
+	}
+
+	@SuppressWarnings("unchecked")
+	private HashMap<Caracteristique,Integer>getCaracteristic(String message)
+	{
+		NetworkManager.instance.sendToServer(message);
+		NetworkManager.instance.waitForNewMessage();
+		String[] caract = NetworkManager.instance.getMessage_recu_serveur().split(";");
+		if(caract.length<2)
+			throw new RuntimeException("Incorrect caracteristic loading message from server");
+
+		HashMap<Caracteristique,Integer> caracs = new HashMap<Caracteristique,Integer>();
+		for(int i = 0; i < caract.length; i+=2)
+			caracs.put(Caracteristique.valueOf(caract[i].toUpperCase()), Integer.parseInt(caract[i+1]));
+		return (HashMap<Caracteristique, Integer>) caracs.clone();
+	}
+
+	@SuppressWarnings("unchecked")
+	private ArrayList<Sort>getSorts(String message)
+	{
+		ArrayList<Sort> sorts = new ArrayList<Sort>();
+		NetworkManager.instance.sendToServer(message);
+		NetworkManager.instance.waitForNewMessage();
+		String[] sort = NetworkManager.instance.getMessage_recu_serveur().split(";");
+		if(sort.length<4)
+			throw new RuntimeException("Incorrect sorts loading message from server");
+
+		for(int i = 0; i < sort.length; i+=4)
+			sorts.add(new Sort(sort[i],sort[i+3],Integer.parseInt(sort[i+1]),Integer.parseInt(sort[i+2]),null));
+
+		return (ArrayList<Sort>) sorts.clone();
 	}
 }
