@@ -21,7 +21,7 @@ public class Item
 		this.icon = icon;
 		this.apercu = desc;
 		this.effets = effets;
-		this.setPoids(poids);
+		this.poids = poids;
 	}
 	
 	public String getNom() {
