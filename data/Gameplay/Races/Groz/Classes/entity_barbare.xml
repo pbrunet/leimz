@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<entity>
+
+
+		<imgs_repos>
+			<img nom="bas">data/Images/Persos/perso_bas2.png</img>
+			<img nom="droite">data/Images/Persos/perso_bas_droite2.png</img>
+			<img nom="haut">data/Images/Persos/perso_droite2.png</img>
+			<img nom="gauche">data/Images/Persos/perso_haut_droite2.png</img>
+			<img nom="bas_gauche">data/Images/Persos/perso_haut2.png</img>
+			<img nom="bas_droite">data/Images/Persos/perso_haut_gauche2.png</img>
+			<img nom="haut_droite">data/Images/Persos/perso_gauche2.png</img>
+			<img nom="haut_gauche">data/Images/Persos/perso_bas_gauche2.png</img>
+		</imgs_repos>
+
+		<shapes>
+			<pieds>0,65,45,12</pieds>
+		</shapes>
+		
+
+
+</entity>

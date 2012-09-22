@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<objet>
+	<nom>Anneau Dfer</nom>
+	<description>Un anneau simple mais élégant, qui vous permettra de porter des coups sanglants !</description>
+	<type>Anneau</type>
+	<icone>data/Images/Objets/anneau_dfer.png</icone>
+	<apercu>data/Images/Objets/anneau_dfer.png</apercu>
+	<effet>
+		<type>Dommages_cac</type>
+		<valeur>2</valeur>
+	</effet>
+</objet>

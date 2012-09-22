@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<objet>
+	<nom>Anneau Maly</nom>
+	<description>Cet anneau fut forgé il y a très longtemps dans les montagnes cléodors. On remarque une fissure sur son côté, encore mystérieuse .....</description>
+	<type>Anneau</type>
+	<icone>data/Images/Objets/anneau_maly.png</icone>
+	<apercu>data/Images/Objets/anneau_maly.png</apercu>
+	<effet>
+		<type>Vie</type>
+		<valeur>50</valeur>
+	</effet>
+</objet>

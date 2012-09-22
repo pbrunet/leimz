@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+
+<objet>
+	<nom>Chapeau D'Vache</nom>
+	<description>Ce chapeau, d'une grande valeur, n'est pas très utile. Il sert surtout à se rendre plus beau.</description>
+	<type>Chapeau</type>
+	<icone>data/GUI/Images/ailles.png</icone>
+	<apercu>data/GUI/Images/ailles.png</apercu>
+	<effet>
+	</effet>
+</objet>
