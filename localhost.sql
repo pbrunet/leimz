@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le : Ven 21 Septembre 2012 à 23:56
+-- Généré le : Dim 23 Septembre 2012 à 13:24
 -- Version du serveur: 5.5.16
 -- Version de PHP: 5.3.8
 
@@ -110,6 +110,27 @@ INSERT INTO `caracteristiques_joueur` (`id_joueur`, `id_caracteristique`, `value
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `caracteristiques_objet`
+--
+
+CREATE TABLE IF NOT EXISTS `caracteristiques_objet` (
+  `id_objet` int(11) NOT NULL,
+  `id_caracteristique` int(11) NOT NULL,
+  `value` int(11) NOT NULL,
+  PRIMARY KEY (`id_objet`,`id_caracteristique`),
+  KEY `id_caracteristique` (`id_caracteristique`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Contenu de la table `caracteristiques_objet`
+--
+
+INSERT INTO `caracteristiques_objet` (`id_objet`, `id_caracteristique`, `value`) VALUES
+(1, 5, 2);
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `caracteristiques_race`
 --
 
@@ -192,7 +213,8 @@ CREATE TABLE IF NOT EXISTS `inventaire` (
 --
 
 INSERT INTO `inventaire` (`id_joueur`, `id_objet`, `quantity`) VALUES
-(2, 1, 1);
+(2, 1, 1),
+(1, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -207,7 +229,6 @@ CREATE TABLE IF NOT EXISTS `item` (
   `type` varchar(100) DEFAULT NULL,
   `icone` varchar(100) DEFAULT NULL,
   `apercu` varchar(100) DEFAULT NULL,
-  `effets` text,
   PRIMARY KEY (`id`),
   KEY `id` (`id`)
 ) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
@@ -216,8 +237,8 @@ CREATE TABLE IF NOT EXISTS `item` (
 -- Contenu de la table `item`
 --
 
-INSERT INTO `item` (`id`, `nom`, `description`, `type`, `icone`, `apercu`, `effets`) VALUES
-(1, 'Anneau Dfer', 'Un anneau simple mais elegant, qui vous permettra de porter des coups sanglants !', 'anneau', 'data/Images/Objets/anneau_dfer.png', 'data/Images/Objets/anneau_dfer.png', 'dommages_cac;2');
+INSERT INTO `item` (`id`, `nom`, `description`, `type`, `icone`, `apercu`) VALUES
+(1, 'Anneau Dfer', 'Un anneau simple mais elegant, qui vous permettra de porter des coups sanglants !', 'anneau', 'data/Images/Objets/anneau_dfer.png', 'data/Images/Objets/anneau_dfer.png');
 
 -- --------------------------------------------------------
 
@@ -3037,6 +3058,13 @@ ALTER TABLE `caracteristiques_classe`
 ALTER TABLE `caracteristiques_joueur`
   ADD CONSTRAINT `Caracteristiques_joueur_ibfk_1` FOREIGN KEY (`id_joueur`) REFERENCES `joueur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `Caracteristiques_joueur_ibfk_2` FOREIGN KEY (`id_caracteristique`) REFERENCES `caracteristiques` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `caracteristiques_objet`
+--
+ALTER TABLE `caracteristiques_objet`
+  ADD CONSTRAINT `caracteristiques_objet_ibfk_2` FOREIGN KEY (`id_caracteristique`) REFERENCES `caracteristiques` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `caracteristiques_objet_ibfk_1` FOREIGN KEY (`id_objet`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `caracteristiques_race`

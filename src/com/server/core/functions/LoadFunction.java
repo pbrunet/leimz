@@ -213,28 +213,39 @@ public class LoadFunction implements Functionable
 	{
 		ResultSet rs;
 		try {
-			String sql = "SELECT item.nom, item.description, item.type, item.icone, item.apercu, item.effets" +
-					" FROM item,inventaire,personnage " +
+			String sql = "SELECT item.id, item.nom, item.description, item.type, item.icone, item.apercu " +
+					"FROM item,inventaire " +
 					"WHERE item.id=inventaire.id_objet " +
-					"AND inventaire.id_joueur=personnage.joueur " +
-					"AND personnage.joueur=" + client.getCompte().getClient_id();
+					"AND inventaire.id_joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = "";
 			while(rs.next())
 			{
+				ResultSet rs2 = null;
 				rc += rs.getString("item.nom") + ";";
 				rc += rs.getString("item.description") + ";";
 				rc += rs.getString("item.type") + ";";
 				rc += rs.getString("item.icone") + ";";
 				rc += rs.getString("item.apercu") + ";";
-				rc += rs.getString("item.effets") + ";";
+				sql = "SELECT caracteristiques_objet.value,caracteristiques.name " +
+						"FROM caracteristiques_objet, caracteristiques " +
+						"WHERE caracteristiques_objet.id_caracteristique=caracteristiques.id " +
+						"AND caracteristiques_objet.id_objet=" + rs.getString("item.id");
+				Statement stmt2 = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+				rs2 = stmt2.executeQuery(sql);
+				while(rs2.next())
+				{
+					rc += rs2.getString("caracteristiques.name") + ";";
+					rc += rs2.getString("caracteristiques_objet.value") + ";";
+				}
+				rs2.close();
+				stmt2.close();
 			}
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new RuntimeException("Bag");
 		}
 	}
