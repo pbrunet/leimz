@@ -2,6 +2,7 @@ package com.server.core.functions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import com.server.core.Client;
 import com.server.core.ServerSingleton;
@@ -27,21 +28,15 @@ public class StateFunction implements Functionable
 		if(args[1].equals("pos"))
 		{
 			try {
-				ServerSingleton.getInstance().getDbConnexion().getStmt().executeUpdate("" +
-						"UPDATE personnage SET pos='"+args[2]+";"+args[3]+"'");
-			} catch (SQLException e1) {
-				e1.printStackTrace();
-			}
+				Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+				stmt.executeUpdate("UPDATE personnage " +
+						"SET pos='"+args[2]+";"+args[3]+"'");
 
+				String toSend = "s;";
+				ResultSet rss = stmt.executeQuery("SELECT personnage.name, personnage.pos " +
+						"FROM personnage " +
+						"WHERE joueur=" + client.getCompte().getClient_id());
 
-			String toSend = "s;";
-			ResultSet rss = null;
-			try {
-				rss = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery("SELECT * from personnage where joueur=" + client.getCompte().getClient_id());
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			try {
 				while(rss.next())
 				{
 					toSend += (rss.getString("name")+";");
@@ -49,10 +44,12 @@ public class StateFunction implements Functionable
 					toSend += (s[0]+";");
 					toSend += (s[1]+";");
 				}
+				client.sendToClient(toSend);
+				rss.close();
+				stmt.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}
-			client.sendToClient(toSend);
 		}
 	}
 }

@@ -4,6 +4,7 @@ import com.server.core.Client;
 import com.server.core.ServerSingleton;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 
 /**
@@ -20,36 +21,35 @@ public class ConnectFunction implements Functionable
 	@Override
 	public void doSomething(String[] args,Client c)
 	{
-		
+
 		if(args.length <2)
 			throw new RuntimeException("Connection");
-		
+
 		String ndc = args[1];
 		String mdp = args[2];
 
 		ResultSet rsj = null;
 		try {
-			rsj = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery("SELECT id FROM joueur WHERE nom_de_compte='"+ndc+"' AND mot_de_passe='"+mdp+"'");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-		try {
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			rsj = stmt.executeQuery("SELECT id FROM joueur " +
+					"WHERE nom_de_compte='"+ndc+"' " +
+					"AND mot_de_passe='"+mdp+"'");
 
 			int id = 0;
 			while(rsj.next())
 			{
 				id = rsj.getInt("id");
 			}
-			
+
 			if(id == 0)
 				throw new RuntimeException("Searching player");
-
-			ResultSet rsp = null;
-			try {
-				rsp = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery("SELECT personnage.name,race.name,classe.name FROM personnage, race, classe WHERE personnage.joueur="+id+" AND race.id=personnage.race AND classe.id=personnage.classe");
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
+			
+			rsj.close();
+			ResultSet rsp = stmt.executeQuery("SELECT personnage.name,race.name,classe.name " +
+					"FROM personnage, race, classe " +
+					"WHERE personnage.joueur="+id+" " +
+					"AND race.id=personnage.race " +
+					"AND classe.id=personnage.classe");
 
 			String race = null, classe = null, nom = null;
 			while(rsp.next())
@@ -61,7 +61,8 @@ public class ConnectFunction implements Functionable
 			c.getCompte().setClient_id(id);
 			c.sendToClient("CONNECT_SUCCEED");
 			c.sendToClient(nom+";"+race+";"+classe);
-
+			rsp.close();
+			stmt.close();
 		} catch (SQLException e) {
 			throw new RuntimeException("Connection");
 		}

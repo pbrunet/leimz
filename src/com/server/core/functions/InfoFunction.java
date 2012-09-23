@@ -2,6 +2,7 @@ package com.server.core.functions;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import com.server.core.Client;
 import com.server.core.ServerSingleton;
@@ -25,61 +26,46 @@ public class InfoFunction implements Functionable
 
 		ResultSet rsp = null;
 		try {
-			rsp = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery("select * from Personnage where name='"+args[1]+"'");
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			rsp = stmt.executeQuery("SELECT personnage.classe, personnage.race " +
+					"FROM personnage " +
+					"WHERE name='"+args[1]+"'");
 
-		System.out.println("premiere etape ok");
-		int id_race = 0, id_classe = 0;
-		try {
+			int id_race = 0, id_classe = 0;
 			while(rsp.next())
 			{
 				id_race = rsp.getInt("race");
 				id_classe = rsp.getInt("classe");
 			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
+			rsp.close();
+			ResultSet rspr = stmt.executeQuery("SELECT race.name " +
+					"FROM race " +
+					"WHERE id="+id_race);
 
-		System.out.println("deuxieme etape ok");
+			String race = null;
 
-		ResultSet rspr = null;
-		try {
-			rspr = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery("select * from Race where id="+id_race);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
-
-		String race = null;
-		try {
 			while(rspr.next())
 			{
 				race = rspr.getString("name");
 			}
-		} catch (SQLException e1) {
-			e1.printStackTrace();
-		}
 
-		ResultSet rspc = null;
-		try {
-			rspc = ServerSingleton.getInstance().getDbConnexion().getStmt().executeQuery("select * from Classe where id="+id_classe);
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+			rspr.close();
+			ResultSet rspc = stmt.executeQuery("SELECT classe.name " +
+					"FROM classe " +
+					"WHERE id="+id_classe);
 
-		String classe = null;
-		try {
+			String classe = null;
 			while(rspc.next())
 			{
 				classe = rspc.getString("name");
 			}
+			
+			rspc.close();
+			client.sendToClient("i;"+args[1]+";"+race+";"+classe);
+
+			stmt.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		System.out.println("troisieme etape ok");
-		client.sendToClient("i;"+args[1]+";"+race+";"+classe);
-
-		System.out.println("infos envoyees !");
 	}
 }
