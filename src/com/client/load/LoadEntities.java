@@ -50,78 +50,18 @@ public class LoadEntities implements Runnable
 			network.sendToServer("lo;pnj"); //load pnjs
 			network.waitForNewMessage();
 			String s = network.getMessage_recu_serveur();
-			System.out.println(s);
-			String[] args_pnj = s.split(";");
-			
+			String[] args_pnj = s.split("new;");
 			PNJsManager pnjs_manager = new PNJsManager();
-			int i=0;
-			while(i < args_pnj.length-1)
+			for( int i=1;i<args_pnj.length;i++)
 			{
-				ArrayList<PNJ_discours> pnj_discours = new ArrayList<PNJ_discours>();
-				int n=-1;
-				do
-				{
-					n+=2;
-					String[] t = args_pnj[i+n+1].split("-");
-					ArrayList<Integer> tree = new ArrayList<Integer>();
-					for(int k = 0; k < t.length; k++)
-					{
-						if(t[k].contains("|s|"))
-						{
-							tree.add(Integer.parseInt(t[k].substring(0,1)));
-						}
-						else
-						{
-							//tree.add(Integer.parseInt(t[k]));
-						}
-					}
-					pnj_discours.add(new PNJ_discours(args_pnj[i+n], tree, null));
-					System.out.println(args_pnj[i+n+1]);
-				}
-				while(!args_pnj[i+n+1].contains("|s|"));
-				
-				ArrayList<ArrayList<String>> reponses = new ArrayList<ArrayList<String>>();
-				reponses.add(new ArrayList<String>());
-				int id_pnj = 1, index = 0;
-				do
-				{
-					n+=2;
-					if(Integer.parseInt(args_pnj[i+n]) != id_pnj)
-					{
-						pnj_discours.get(id_pnj-1).setReponses(reponses.get(index));
-						reponses.add(new ArrayList<String>());
-						index++;
-					}
-					id_pnj = Integer.parseInt(args_pnj[i+n]);			
-					
-					if(Integer.parseInt(args_pnj[i+n]) != id_pnj)
-					{
-						pnj_discours.get(id_pnj-1).setReponses(reponses.get(index));
-						reponses.add(new ArrayList<String>());
-						index++;
-					}
-					id_pnj = Integer.parseInt(args_pnj[i+n]);
-					if(args_pnj[i+n+1].contains("|s|"))
-					{
-						reponses.get(index).add(args_pnj[i+n+1].substring(0, args_pnj[i+n+1].length()-3));
-						pnj_discours.get(id_pnj-1).setReponses(reponses.get(index));
-					}
-					else
-					{
-						reponses.get(index).add(args_pnj[i+n+1]);
-					}
-					
-					System.out.println(args_pnj[i+n+1]);
-				}
-				while(!args_pnj[i+n+1].contains("|s|"));
-				
+				String[] pnj = args_pnj[i].split(";");
+				PNJ_discours pnj_discours = new PNJ_discours(pnj[3], null, new ArrayList<PNJ_discours>(),0);
+				pnj_discours.fillTree(4, pnj);
 				pnjs_manager.add(new PNJ(
-						args_pnj[0], 
+						pnj[2], 
 						pnj_discours,
 						Orientation.BAS, 
-						MapManager.instance.getEntire_map().getGrille().get(Integer.parseInt(args_pnj[args_pnj.length-2])).get(Integer.parseInt(args_pnj[args_pnj.length-1]))));
-				i+=(2+n+20);
-			
+						MapManager.instance.getEntire_map().getGrille().get(Integer.parseInt(pnj[0])).get(Integer.parseInt(pnj[1]))));
 			}
 			entities_manager.setPnjs_manager(pnjs_manager);
 			

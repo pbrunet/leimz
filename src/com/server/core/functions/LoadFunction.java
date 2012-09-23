@@ -254,55 +254,48 @@ public class LoadFunction implements Functionable
 	{
 		ResultSet rs;
 		try {
-			String sql = "SELECT pnj.nom " +
-					"FROM pnj";
+			String sql = "SELECT pnj.pos_x, pnj.pos_y, pnj.nom, pnj_discours.discours, pnj_discours.id " +
+					"FROM pnj, pnj_discours " +
+					"WHERE pnj.id=pnj_discours.id_pnj " +
+					"AND pnj_discours.after_answer IS NULL";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = "";
 			while(rs.next())
 			{
-				rc += rs.getString("pnj.nom") + ";";
-			}
-
-			String sql_d = "SELECT pnj_discours.discours, pnj_discours.after_answer " +
-					"FROM pnj_discours,pnj " +
-					"WHERE pnj_discours.id_pnj = pnj.id";
-			rs = stmt.executeQuery(sql_d);
-			while(rs.next())
-			{
-				rc += rs.getString("pnj_discours.discours") + ";";
-				rc += rs.getString("pnj_discours.after_answer") + ";";
-			}
-			rc = rc.substring(0, rc.length()-1);
-			rc+="|s|;";
-
-			String sql_r = "SELECT pnj_reponses.reponse, pnj_reponses.id_discours " +
-					"FROM pnj_reponses,pnj " +
-					"";//"WHERE pnj_reponses.id=" + "1";
-			rs = stmt.executeQuery(sql_r);
-			while(rs.next())
-			{
-				rc += rs.getString("pnj_reponses.id_discours") + ";";
-				rc += rs.getString("pnj_reponses.reponse") + ";";
-			}
-			rc = rc.substring(0, rc.length()-1);
-			rc+="|s|;";
-
-			String sql_pos = "SELECT pnj.pos_x, pnj.pos_y " +
-					"FROM pnj";
-			rs = stmt.executeQuery(sql_pos);
-			while(rs.next())
-			{
+				rc += "new;";
 				rc += rs.getInt("pnj.pos_x") + ";";
 				rc += rs.getInt("pnj.pos_y") + ";";
+				rc += rs.getString("pnj.nom") + ";";
+				rc += rs.getString("pnj_discours.discours") + ";";
+				rc += getPnjAnswer(rs.getInt("pnj_discours.id"),0);
 			}
-			System.out.println("message pnj : "+rc);
+
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
 			throw new RuntimeException("PNJ Informations");
 		}
+	}
+
+	private String getPnjAnswer(int id_discour, int depth) throws SQLException {
+		String rc = "";
+		ResultSet rs;
+		String sql = "SELECT pnj_discours.discours, pnj_discours.id " +
+				"FROM pnj_discours " +
+				"WHERE pnj_discours.after_answer=" + id_discour;
+		Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+		rs = stmt.executeQuery(sql);
+		depth++;
+		while(rs.next())
+		{
+			rc += depth + ";";
+			rc += rs.getString("pnj_discours.discours") + ";";
+			rc += getPnjAnswer(rs.getInt("pnj_discours.id"),depth);
+		}
+
+		return rc;
 	}
 
 	public void askTypeTiles(Client client, String name)

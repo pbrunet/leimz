@@ -1,6 +1,9 @@
 package com.client.utils.gui;
 
+import java.util.ArrayList;
+
 import com.game_entities.PNJ;
+import com.gameplay.PNJ_discours;
 
 import de.matthiasmann.twl.Alignment;
 import de.matthiasmann.twl.Button;
@@ -32,7 +35,9 @@ public class PnjDialogFrame extends ResizableFrame
 		final HTMLTextAreaModel textAreaModel = new HTMLTextAreaModel();
 		TextArea area = new TextArea(textAreaModel);
 		area.setTheme("/textarea");
-		String s = pnj.getPnjDiscours().get(0).getDiscours();
+		PNJ_discours discour = pnj.getPnjDiscours();
+		String s = discour.getDiscours();
+		final ArrayList<Integer> path = new ArrayList<Integer>();
 		String d = s.replaceAll("#n", "<br/>");
 		System.out.println(d);
 		String sb = "<div style=\"word-wrap: break-word; font-family: default; \"><p>"+d+"</p></div>";
@@ -40,7 +45,7 @@ public class PnjDialogFrame extends ResizableFrame
 		textAreaModel.setHtml(sb);
 
 		SimpleChangableListModel<String> lm = new SimpleChangableListModel<String>(
-				pnj.getPnjDiscours().get(0).getReponses());
+				discour.getReponsesString());
 		final ListBox<String> lb = new ListBox<String>(lm);
 		lb.setTheme("/listbox");
 		lb.addCallback(new CallbackWithReason<ListBox.CallbackReason>() {
@@ -50,31 +55,26 @@ public class PnjDialogFrame extends ResizableFrame
 			{
 				if(cbreason == CallbackReason.MOUSE_CLICK) 
 				{
-					int s = lb.getSelected()+1;
-					for(int k = 0; k < pnj.getPnjDiscours().size(); k++)
+					PNJ_discours curr = pnj.getPnjDiscours();
+					path.add(lb.getSelected());
+					for(int i =0;i<path.size();i++)
 					{
-						System.out.println(s+" -- "+pnj.getPnjDiscours().get(k).getReponses().get(0));
-						if(pnj.getPnjDiscours().get(k).getTree_reponses().get(pnj.getPnjDiscours().get(k).getTree_reponses().size()-1) == s)
+						if(curr.getReponses().get(path.get(i)).getReponses() == null || curr.getReponses().get(path.get(i)).getReponses().size()==0)
 						{
-							String d = pnj.getPnjDiscours().get(k).getDiscours().replaceAll("#n", "<br/>");
-							String sb = "<div style=\"word-wrap: break-word; font-family: default; \"><p>"+d+"</p></div>";
-							textAreaModel.setHtml(sb);
-
-							if(pnj.getPnjDiscours().get(k).getReponses() == null || pnj.getPnjDiscours().get(k).getReponses().size()==0)
-							{
-								setVisible(false);
-								return;
-							}
-							else
-							{
-								SimpleChangableListModel<String> sclm = new SimpleChangableListModel<String>(
-										pnj.getPnjDiscours().get(k).getReponses());
-								lb.setModel(sclm);
-								return;
-							}
+							setVisible(false);
+							path.clear();
+							return;
 						}
+						curr = curr.getReponses().get(path.get(i)).getReponses().get(0);
 					}
-					setVisible(false);
+					String d = curr.getDiscours().replaceAll("#n", "<br/>");
+					String sb = "<div style=\"word-wrap: break-word; font-family: default; \"><p>"+d+"</p></div>";
+					textAreaModel.setHtml(sb);
+					
+					SimpleChangableListModel<String> sclm = new SimpleChangableListModel<String>(
+							curr.getReponsesString());
+					lb.setModel(sclm);
+					return;
 				}
 			}
 

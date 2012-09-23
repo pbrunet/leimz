@@ -23,9 +23,9 @@ public class PNJ extends Entity
 	private Document doc = null;
 	
 	private ArrayList<Quete> quetes;
-	private ArrayList<PNJ_discours> discours;
+	private PNJ_discours discours;
 	
-	public PNJ(String nom, ArrayList<PNJ_discours> discours, Orientation orientation, Tile tile)
+	public PNJ(String nom, PNJ_discours discours, Orientation orientation, Tile tile)
 	{
 		super(orientation, tile);
 	
@@ -41,7 +41,7 @@ public class PNJ extends Entity
 	    racine = doc.getRootElement();
 	}
 	
-	public PNJ(String nom, ArrayList<PNJ_discours> discours, ArrayList<Quete> quetes, Orientation orientation, Tile tile)
+	public PNJ(String nom, PNJ_discours discours, ArrayList<Quete> quetes, Orientation orientation, Tile tile)
 	{
 		super(orientation, tile);
 		
@@ -137,11 +137,11 @@ public class PNJ extends Entity
 		this.quetes = quetes;
 	}
 
-	public ArrayList<PNJ_discours> getPnjDiscours() {
+	public PNJ_discours getPnjDiscours() {
 		return discours;
 	}
 
-	public void setPnjDiscours(ArrayList<PNJ_discours> discours) {
+	public void setPnjDiscours(PNJ_discours discours) {
 		this.discours = discours;
 	}
 }
