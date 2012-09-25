@@ -32,8 +32,7 @@ public class Loading extends BasicGameState
 	private UnicodeFont label;
 	private float purcent = 0;
 
-	private boolean loadC = false, loadM =  false;
-	private boolean go;
+	private boolean loadM =  false;
 
 	@Override
 	public int getID() 
@@ -57,7 +56,8 @@ public class Loading extends BasicGameState
 		fond = new Image("data/Images/Loading/fond_v2.png");
 		barre = new Image("data/Images/Loading/Barre_remplie.png");
 
-		go = true;
+		loadJoueur();
+		loadMaps();
 			}
 
 
@@ -75,40 +75,22 @@ public class Loading extends BasicGameState
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int arg2)
 			throws SlickException 
-	{
-		if(go)
-		{
-			loadJoueur();
-			go=false;
-		}
-
-		if(!load_joueur.isRunning() && !loadC)
-		{
-			loadMaps();
-			loadC=true;
-		}
-		
-		if(load_map != null)
-		{
-			if(!load_map.isRunning() && !loadM)
 			{
-				MapManager r = new MapManager(load_map.getMap());
-				((Principal) sbg.getState(Base.PRINCIPAL)).setMap_manager(r);
-				
-				loadEntities();
-				loadM=true;
-			}
+
+		if(load_map != null && !load_map.isRunning() && !loadM)
+		{
+			((Principal) sbg.getState(Base.PRINCIPAL)).setMap_manager(new MapManager(load_map.getMap()));
+
+			loadEntities();
+			loadM=true;
 		}
-		
 
-		if(load_joueur != null && load_joueur.isRunning())
-			purcent = load_joueur.getPurcent();
-
-		if(load_map != null && load_map.isRunning())
-			purcent = load_map.getPurcent();
-		
 		if(load_entities != null && load_entities.isRunning())
 			purcent = load_entities.getPurcent();
+		else
+			purcent = 0;
+
+		purcent += load_joueur.getPurcent() + load_map.getPurcent();
 
 		if(purcent == 100)
 		{
@@ -117,12 +99,12 @@ public class Loading extends BasicGameState
 			EntitiesManager e_m = load_entities.getEntities_manager();
 			PlayersManager players_manager = new PlayersManager(j);
 			e_m.setPlayers_manager(players_manager);
-			
+
 			((Principal) sbg.getState(Base.PRINCIPAL)).setEntities_manager(e_m);
-			
+
 			sbg.enterState(Base.PRINCIPAL);
 		}
-	}
+			}
 
 	@Override
 	public void init(GameContainer arg0, StateBasedGame arg1)
@@ -137,11 +119,11 @@ public class Loading extends BasicGameState
 
 	private void loadMaps()
 	{
-		load_map = new LoadMap(load_joueur.getPurcent());
+		load_map = new LoadMap(0);
 	}
-	
+
 	private void loadEntities()
 	{
-		load_entities = new LoadEntities(load_map.getPurcent());
+		load_entities = new LoadEntities(0);
 	}
 }

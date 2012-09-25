@@ -38,8 +38,6 @@ public class LoadEntities implements Runnable
 		if(running)
 		{
 			entities_manager = new EntitiesManager();
-			
-			System.out.println("Loading entities ...");
 
 			NetworkManager network = NetworkManager.instance;
 
