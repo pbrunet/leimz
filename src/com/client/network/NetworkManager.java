@@ -46,9 +46,6 @@ public class NetworkManager
 
 	private Thread checkListenersSending, handleServerMessages;
 
-	@SuppressWarnings("unused")
-	private long heart_beat;
-
 	private static long timeout = 5000;
 
 	public boolean modifManager = false;
@@ -74,26 +71,11 @@ public class NetworkManager
 
 	public void waitForNewMessage()
 	{
-		long init_time = System.currentTimeMillis();
 		long start = System.currentTimeMillis();
-		boolean abort = false;
-
-		System.out.println("waiting for message");
-
-				while(receiveFromServer() == null){
-					if((System.currentTimeMillis() - start) > timeout)
-					{
-						abort = true;
-						break;
-					}
-				}
-
-				if(abort)
-					System.out.println("no message received ...");
-				else
-					System.out.println("message received");
-
-				heart_beat = System.currentTimeMillis() - init_time;
+		while(receiveFromServer() == null){
+			if((System.currentTimeMillis() - start) > timeout)
+				break;
+		}
 	}
 
 	public String receiveFromServer()
@@ -141,14 +123,11 @@ public class NetworkManager
 					{
 						if(listeners.get(i).wantSending())
 						{
-							//System.out.println("envoi de la position");
 							sendToServer(listeners.get(i).messageToSend());
 							listeners.get(i).setSentOk();
 						}
 					}
 				}
-
-
 			}
 		});
 		checkListenersSending.start();
@@ -168,12 +147,8 @@ public class NetworkManager
 
 						if(temp[0].equals("s"))
 						{
-							//System.out.println("message recu : "+message);
 							if(!visible_entities_manager.getPlayers_manager().getMain_player().getPerso().getNom().equals(temp[1]))
 							{
-
-								//System.out.println("position du mainjoueur : "+visible_entities_manager.getPlayers_manager().getMain_player().getPos_real().x+";"+ visible_entities_manager.getPlayers_manager().getMain_player().getPos_real().y);
-
 								modifManager = true;
 								boolean contains = false;
 								int index = 0;
@@ -189,7 +164,6 @@ public class NetworkManager
 								if(contains == false)
 								{
 									sendToServer("i;"+temp[1]);
-									//visible_entities_manager.getPlayers_manager().addNewPlayer(new Joueur(new Personnage(temp[1], race, classe), mapManager.getEntire_map().getGrille().get(Integer.parseInt(temp[2])).get(Integer.parseInt(temp[3])), Orientation.BAS))
 								}
 								else
 								{
@@ -218,8 +192,7 @@ public class NetworkManager
 	{
 		if(!message_recu_serveur.isEmpty())
 		{
-			String message = message_recu_serveur.get(0);
-			message_recu_serveur.remove(0);
+			 String message = message_recu_serveur.remove(0);
 			return message;
 		}
 		return "";

@@ -46,7 +46,6 @@ public class LoadJoueur implements Runnable
 	{
 		if(running)
 		{
-			System.out.println("Loading player ...");
 			NetworkManager.instance.waitForNewMessage();
 
 			//On recupere la chaine avec les infos sur le perso
