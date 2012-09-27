@@ -10,6 +10,7 @@ import org.jdom.input.SAXBuilder;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.loading.LoadingList;
 
+import com.client.network.NetworkManager;
 import com.map.Grille;
 import com.map.Map;
 import com.map.Tile;
@@ -87,62 +88,40 @@ public class LoadMap implements Runnable
 
 			grille = new Grille();
 
-			Element[] calques_e = new Element[racine_maps.getChildren("calque").size()];
+			NetworkManager.instance.sendToServer("lo;map"); //load map
+			NetworkManager.instance.waitForNewMessage();
+			String[] args_map = NetworkManager.instance.getMessage_recu_serveur().split(";");
 
-			for(int i = 0; i < racine_maps.getChildren("calque").size(); i++)
-				calques_e[i] = (Element) racine_maps.getChildren("calque").get(i);
+			int max_x=Integer.parseInt(args_map[0]);
+			int max_y=Integer.parseInt(args_map[1]);
+
+			Element[] calques_e = new Element[2];
+
+			calques_e[1] = (Element) racine_maps.getChildren("calque").get(1);
 
 			purcent++;
-			
-			for(int i = 0; i < (Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(calques_e[0].getChildren("tile").size()-1)).getChild("id_x").getText())+1); i++)
+
+			for(int i = 0; i < max_x+1 ; i++)
 			{
 				grille.add(new ArrayList<Tile>());
-				for(int j = 0; j < (Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(calques_e[0].getChildren("tile").size()-1)).getChild("id_y").getText())+1); j++)
+				for(int j = 0; j < max_y+1; j++)
 					grille.get(i).add(new Tile(new Vector2f(i , j), null));
 			}
 
-			
 			LoadingList.setDeferredLoading(true);
-			int z = 1;
-			for(int u = 0; u < calques_e[0].getChildren("tile").size(); u++)
+			for(int u = 0; u < args_map.length/4; u++)
 			{
-				if(u == (calques_e[0].getChildren("tile").size()/70)*z)
-				{
+				if(u%(args_map.length/278)==0)
 					purcent++;
-					z++;
-				}
+				
+				int id_x=Integer.parseInt(args_map[4*u+2]);
+				int id_y=Integer.parseInt(args_map[4*u+3]);
 
-				if( grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-					.get( Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText())).getPos().x
-					== Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText())
-					&&
-					grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-					.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText())).getPos().y
-					== Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText())
-				  )
-				{
-					for(int k = 0; k < racine_types.getChild("calque1").getChildren("type").size(); k ++)
-					{
-						if(((Element) calques_e[0].getChildren("tile").get(u)).getChild("type").getText()
-								.equals(((Element)racine_types.getChild("calque1").getChildren("type").get(k)).getChild("nom").getText()))
-						{
-							try {
-								grille.get(	Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-								.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-								.getTypes().add(Type_tile.getTypesTile(((Element)racine_types.getChild("calque1").getChildren("type").get(k)).getChild("nom").getText()));
-							} catch (NumberFormatException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-
-					grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-						.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-						.setMonsterHolder( Boolean.parseBoolean(((Element) calques_e[0].getChildren("tile").get(u)).getChild("monsterHolder").getText()));
-				}
+				grille.get(id_x).get(id_y).getTypes().add(Type_tile.getTypesTile(args_map[4*u+4]));
+				grille.get(id_x).get(id_y).setMonsterHolder( Boolean.parseBoolean(args_map[4*u+5]));
 			}
 
-			
+
 
 			for(int u = 0; u < calques_e[1].getChildren().size(); u++)
 			{
@@ -155,8 +134,8 @@ public class LoadMap implements Runnable
 						{
 							try {
 								grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-									.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-									.getTypes().add(Type_tile.getTypesTile(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText()));
+								.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
+								.getTypes().add(Type_tile.getTypesTile(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText()));
 							} catch (NumberFormatException e) {
 								e.printStackTrace();
 							}
@@ -175,15 +154,15 @@ public class LoadMap implements Runnable
 								if(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getAttributes().size() > 0)
 								{
 									grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-											.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-											.getTypes().add(Type_tile.getTypesTile(
-																((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText()));
+									.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
+									.getTypes().add(Type_tile.getTypesTile(
+											((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText()));
 								}
 								else
 								{
 									grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-											.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-											.getTypes().add(Type_tile.getTypesTile(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText()));
+									.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
+									.getTypes().add(Type_tile.getTypesTile(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText()));
 								}
 							} catch (NumberFormatException e) {
 								e.printStackTrace();
@@ -208,7 +187,7 @@ public class LoadMap implements Runnable
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-
+			purcent=81;
 			running = false;
 		}
 	}

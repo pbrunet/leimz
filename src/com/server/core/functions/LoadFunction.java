@@ -49,6 +49,9 @@ public class LoadFunction implements Functionable
 		case "tt":
 			askTypeTiles(client,args[2]);
 			break;
+		case "map":
+			askMap(client);
+			break;
 		default:
 			throw new RuntimeException("Unimplemented");
 		}
@@ -340,6 +343,38 @@ public class LoadFunction implements Functionable
 			stmt.close();
 		} catch (SQLException e) {
 			throw new RuntimeException("Type tiles");
+		}
+	}
+
+	public void askMap(Client client)
+	{
+		ResultSet rs;
+		//Chargement des informations de la map
+		try {
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			String sql = "SELECT MAX(map.x), MAX(map.y)" +
+					"FROM map ";
+			rs = stmt.executeQuery(sql);
+			String rc = "";
+			rs.next();
+			rc += rs.getInt(1) + ";";
+			rc += rs.getInt(2) + ";";
+			sql = "SELECT map.x, map.y, map.monsterHolder, tiles_map.nom " +
+					"FROM tiles_map,map " +
+					"WHERE tiles_map.id=map.type";
+			rs = stmt.executeQuery(sql);
+			while(rs.next())
+			{
+				rc += rs.getInt("map.x") + ";";
+				rc += rs.getInt("map.y") + ";";
+				rc += rs.getString("tiles_map.nom") + ";";
+				rc += rs.getBoolean("map.monsterHolder") + ";";
+			}
+			client.sendToClient(rc);
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			throw new RuntimeException("Map");
 		}
 	}
 }
