@@ -165,6 +165,11 @@ public class Tile
 	public ArrayList<Type_tile> getTypes() {
 		return types;
 	}
+	
+	public void addTypes(Type_tile t)
+	{
+		types.add(t);
+	}
 
 	public void setTypes(ArrayList<Type_tile> types) {
 		this.types = types;

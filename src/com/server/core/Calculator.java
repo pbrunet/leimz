@@ -6,7 +6,6 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 
-import com.map.server.managers.MapManager;
 import com.server.core.functions.ConnectFunction;
 import com.server.core.functions.Functionable;
 import com.server.core.functions.InfoFunction;
@@ -20,7 +19,7 @@ public class Calculator implements Runnable
 	private List<ClientList> cl;
 	private Thread t;
 
-	public Calculator(MapManager mapManager, List<ClientList> cl)
+	public Calculator(List<ClientList> cl)
 	{
 		this.cl = cl;
 

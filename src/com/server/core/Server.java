@@ -1,17 +1,15 @@
 package com.server.core;
 
-import com.map.Grille;
-import com.map.Map;
-import com.map.Tile;
-import com.map.Type_tile;
-import com.map.server.managers.MapManager;
 import com.server.db.DBConnection;
 import com.server.misc.Logging;
+
 import java.io.*;
+
 import java.net.ServerSocket;
 import java.net.Socket;
+
 import java.sql.SQLException;
-import java.util.ArrayList;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -19,12 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.Vector2f;
-import org.newdawn.slick.loading.LoadingList;
-
 
 /**
  * Classe du serveur! La connexion d'un client se passe ici
@@ -63,158 +55,6 @@ public class Server
 		waitPlayers();
 	}
 
-	private Map loadMap()
-	{
-		org.jdom.Document doc_map = null, doc_types = null;
-		Element racine_maps, racine_types;
-		Grille grille;
-		SAXBuilder sxb = new SAXBuilder();
-		try
-		{
-			//On cree un nouveau document JDOM avec en argument le fichier XML
-			//Le parsing est termine ;)
-			doc_map = sxb.build(new File("data/Maps/map_constance.xml"));
-			doc_types = sxb.build(new File("data/Maps/types_tiles.xml"));
-		}
-		catch(Exception e){
-			System.out.println("Erreur de parsing XML de la carte");
-		}
-
-		//On initialise un nouvel element racine avec l'element racine du document.
-		racine_maps = doc_map.getRootElement();
-		racine_types = doc_types.getRootElement();
-
-		grille = new Grille();
-
-		Element[] calques_e = new Element[racine_maps.getChildren("calque").size()];
-
-		for(int i = 0; i < racine_maps.getChildren("calque").size(); i++)
-			calques_e[i] = (Element) racine_maps.getChildren("calque").get(i);
-
-		for(int i = 0; i < (Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(calques_e[0].getChildren("tile").size()-1)).getChild("id_x").getText())+1); i++)
-		{
-			grille.add(new ArrayList<Tile>());
-			for(int j = 0; j < (Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(calques_e[0].getChildren("tile").size()-1)).getChild("id_y").getText())+1); j++)
-				grille.get(i).add(new Tile(new Vector2f(i , j), null));
-		}
-
-		for(int u = 0; u < calques_e[0].getChildren("tile").size(); u++)
-		{
-
-			if( grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-					.get( Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText())).getPos().x
-					== Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText())
-					&&
-					grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-					.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText())).getPos().y
-					== Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText())
-					)
-			{
-				for(int k = 0; k < racine_types.getChild("calque1").getChildren("type").size(); k ++)
-				{
-					if(((Element) calques_e[0].getChildren("tile").get(u)).getChild("type").getText()
-							.equals(((Element)racine_types.getChild("calque1").getChildren("type").get(k)).getChild("nom").getText()))
-					{
-						String[] str_n = ((Element)racine_types.getChild("calque1").getChildren("type").get(k)).getChild("base").getText().split(",");
-						Rectangle base = new Rectangle(Integer.parseInt(str_n[0]), Integer.parseInt(str_n[1]),80,40);
-
-						try {
-							grille.get(	Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-							.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-							.getTypes().add(new Type_tile(
-									((Element)racine_types.getChild("calque1").getChildren("type").get(k)).getChild("nom").getText(),
-									base
-									, Boolean.getBoolean(((Element)racine_types.getChild("calque1").getChildren("type").get(k)).getChild("collidable").getText())
-									,1));
-						} catch (NumberFormatException e) {
-							e.printStackTrace();
-						} 
-					}
-				}
-
-				grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-				.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-				.setMonsterHolder( Boolean.parseBoolean(((Element) calques_e[0].getChildren("tile").get(u)).getChild("monsterHolder").getText()));
-			}
-		}
-
-		LoadingList.setDeferredLoading(true);
-
-		for(int u = 0; u < calques_e[1].getChildren().size(); u++)
-		{
-			if(((Element) calques_e[1].getChildren().get(u)).getText().equals("tile"))
-			{
-				for(int k = 0; k < racine_types.getChild("calque2").getChildren("type").size(); k ++)
-				{
-					if(((Element) calques_e[1].getChildren("tile").get(u)).getChild("type").getText()
-							.equals(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText()))
-					{
-						String[] str_n = ((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("base").getText().split(",");
-						Rectangle base = new Rectangle(Integer.parseInt(str_n[0]), Integer.parseInt(str_n[1]),80,40);
-
-						try {
-							grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-							.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-							.getTypes().add(new Type_tile(
-									((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText(),
-									base
-									, Boolean.getBoolean(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("collidable").getText())
-									,2));
-						} catch (NumberFormatException e) {
-							e.printStackTrace();
-						} 
-					}
-				}
-			}
-			else if(((Element) calques_e[1].getChildren().get(u)).getText().equals("group_tiles"))
-			{
-				for(int k = 0; k < racine_types.getChild("calque2").getChildren("type").size(); k ++)
-				{
-					if(((Element) calques_e[1].getChildren().get(u)).getChild("type").getText()
-							.equals(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText()))
-					{
-						String[] str_n = ((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("base").getText().split(",");
-						Rectangle base = new Rectangle(Integer.parseInt(str_n[0]), Integer.parseInt(str_n[1]),Integer.parseInt(str_n[2]),Integer.parseInt(str_n[3]));
-
-						try {
-
-							if(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getAttributes().size() > 0)
-							{
-								grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-								.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-								.getTypes().add(new Type_tile(
-										((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText(),
-										base
-										, Boolean.getBoolean(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("collidable").getText())
-										,2
-										, Boolean.getBoolean(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getAttributeValue("multiTiles"))));
-							}
-							else
-							{
-								grille.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_x").getText()))
-								.get(Integer.parseInt(((Element) calques_e[0].getChildren("tile").get(u)).getChild("id_y").getText()))
-								.getTypes().add(new Type_tile(
-										((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("nom").getText(),
-										base
-										, Boolean.getBoolean(((Element)racine_types.getChild("calque2").getChildren("type").get(k)).getChild("collidable").getText())
-										,2));
-							}
-						} catch (NumberFormatException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		}
-
-		ArrayList<String> monstres = new ArrayList<String>();
-		monstres.add("bouftou");
-		monstres.add("tofu");
-
-		Map map = new Map(grille, monstres);
-
-		return map;
-	}
 	/**
 	 * Fonction d'initialisation du socket serveur
 	 */
@@ -240,11 +80,9 @@ public class Server
 			l.fatal(e.getMessage());
 			System.exit(0);
 		}
-		Map entire_map = loadMap();
-		MapManager mapManager = new MapManager(entire_map);
 		//world = new World(entire_map);
 
-		calculator = new Calculator(mapManager, cl);
+		calculator = new Calculator(cl);
 	}
 
 

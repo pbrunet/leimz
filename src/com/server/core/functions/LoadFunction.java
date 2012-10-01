@@ -52,6 +52,9 @@ public class LoadFunction implements Functionable
 		case "map":
 			askMap(client);
 			break;
+		case "mapc":
+			askMapContent(client);
+			break;
 		default:
 			throw new RuntimeException("Unimplemented");
 		}
@@ -325,7 +328,7 @@ public class LoadFunction implements Functionable
 			{
 				sql = "SELECT tiles_map_content.nom, tiles_map_content.image, tiles_map_content.collidable, tiles_map_content.base_x, tiles_map_content.base_y " +
 						"FROM tiles_map_content " +
-						"WHERE tiles_map_content.nom=" + name;
+						"WHERE tiles_map_content.nom='" + name + "'";
 				rs = stmt.executeQuery(sql);
 				rc = "";
 				while(rs.next())
@@ -375,6 +378,31 @@ public class LoadFunction implements Functionable
 			stmt.close();
 		} catch (SQLException e) {
 			throw new RuntimeException("Map");
+		}
+	}
+
+	public void askMapContent(Client client)
+	{
+		ResultSet rs;
+		//Chargement des informations de la map
+		try {
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			String rc = "";
+			String sql = "SELECT map_content.x, map_content.y, tiles_map_content.nom " +
+					"FROM tiles_map_content,map_content " +
+					"WHERE tiles_map_content.id=map_content.type";
+			rs = stmt.executeQuery(sql);
+			while(rs.next())
+			{
+				rc += rs.getInt("map_content.x") + ";";
+				rc += rs.getInt("map_content.y") + ";";
+				rc += rs.getString("tiles_map_content.nom") + ";";
+			}
+			client.sendToClient(rc);
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			throw new RuntimeException("Map Content");
 		}
 	}
 }

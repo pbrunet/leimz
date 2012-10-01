@@ -32,7 +32,7 @@ public class Loading extends BasicGameState
 	private UnicodeFont label;
 	private float purcent = 0;
 
-	private boolean loadM =  false;
+	private boolean loadM =  false, loadJ = false;
 
 	@Override
 	public int getID() 
@@ -57,7 +57,6 @@ public class Loading extends BasicGameState
 		barre = new Image("data/Images/Loading/Barre_remplie.png");
 
 		loadJoueur();
-		loadMaps();
 			}
 
 
@@ -77,6 +76,13 @@ public class Loading extends BasicGameState
 			throws SlickException 
 			{
 
+		
+		if(load_joueur != null && !load_joueur.isRunning() && !loadJ)
+		{
+			loadMaps();
+			loadJ=true;
+		}
+		
 		if(load_map != null && !load_map.isRunning() && !loadM)
 		{
 			((Principal) sbg.getState(Base.PRINCIPAL)).setMap_manager(new MapManager(load_map.getMap()));
@@ -90,9 +96,14 @@ public class Loading extends BasicGameState
 		else
 			purcent = 0;
 
-		purcent += load_joueur.getPurcent() + load_map.getPurcent();
+		if(load_map != null && load_map.isRunning())
+			purcent += load_map.getPurcent();
+		else
+			purcent += 0;
 
-		if(purcent == 100)
+		purcent += load_joueur.getPurcent();
+
+		if(load_entities != null && !load_entities.isRunning() && load_joueur != null && !load_joueur.isRunning() && load_map != null && !load_map.isRunning())
 		{
 			MainJoueur j = new MainJoueur(load_joueur.getPerso(), MapManager.instance.getEntire_map().getGrille().get(20).get(20), Orientation.DROITE);
 
