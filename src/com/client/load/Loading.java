@@ -2,7 +2,6 @@ package com.client.load;
 
 import java.awt.Font;
 
-
 import com.client.gamestates.Base;
 import com.client.gamestates.Principal;
 
@@ -11,6 +10,7 @@ import com.game_entities.Orientation;
 import com.game_entities.managers.EntitiesManager;
 import com.game_entities.managers.PlayersManager;
 
+import com.map.Map;
 import com.map.client.managers.MapManager;
 
 import org.newdawn.slick.Color;
@@ -27,12 +27,13 @@ public class Loading extends BasicGameState
 {
 	private LoadMap load_map;
 	private LoadJoueur load_joueur;
-	private LoadEntities load_entities;
+	private LoadPnj load_pnj;
+	private LoadMonster load_monster;
 	private Image fond, barre;
 	private UnicodeFont label;
 	private float purcent = 0;
 
-	private boolean loadM =  false, loadJ = false;
+	private boolean loadM =  false, loadJ = false, loadMon = false;
 
 	@Override
 	public int getID() 
@@ -65,6 +66,7 @@ public class Loading extends BasicGameState
 			throws SlickException
 			{
 		//FIXME mettre des coordonnées qui ne dépendes que des images (donc refaire image)
+		purcent=(purcent>=100)?100:purcent;
 		fond.draw();
 		barre.getSubImage(0, 0, (int) ((purcent/100)*barre.getWidth()), barre.getHeight()).draw(237, 321);
 
@@ -76,40 +78,39 @@ public class Loading extends BasicGameState
 			throws SlickException 
 			{
 
-		
 		if(load_joueur != null && !load_joueur.isRunning() && !loadJ)
 		{
 			loadMaps();
 			loadJ=true;
 		}
-		
-		if(load_map != null && !load_map.isRunning() && !loadM)
+
+		if(load_map != null && !load_map.isRunning() && !loadMon)
 		{
-			((Principal) sbg.getState(Base.PRINCIPAL)).setMap_manager(new MapManager(load_map.getMap()));
+			loadMonsters();
+			loadMon=true;
+		}
+
+		if(load_map != null && !load_map.isRunning() && !loadM)
+		{			
+			new MapManager(new Map(load_map.getGrille(),load_monster.getMonster_list()));
 
 			loadEntities();
 			loadM=true;
 		}
 
-		if(load_entities != null && load_entities.isRunning())
-			purcent = load_entities.getPurcent();
-		else
-			purcent = 0;
+		purcent = (load_pnj != null)?load_pnj.getPurcent():0;
 
-		if(load_map != null && load_map.isRunning())
-			purcent += load_map.getPurcent();
-		else
-			purcent += 0;
+		purcent += (load_map != null)?load_map.getPurcent():0;
 
 		purcent += load_joueur.getPurcent();
 
-		if(load_entities != null && !load_entities.isRunning() && load_joueur != null && !load_joueur.isRunning() && load_map != null && !load_map.isRunning())
+		if(load_pnj != null && !load_pnj.isRunning() && load_monster != null && !load_monster.isRunning() && load_joueur != null && !load_joueur.isRunning() && load_map != null && !load_map.isRunning())
 		{
 			MainJoueur j = new MainJoueur(load_joueur.getPerso(), MapManager.instance.getEntire_map().getGrille().get(20).get(20), Orientation.DROITE);
 
-			EntitiesManager e_m = load_entities.getEntities_manager();
-			PlayersManager players_manager = new PlayersManager(j);
-			e_m.setPlayers_manager(players_manager);
+			EntitiesManager e_m = new EntitiesManager();
+			e_m.setPnjs_manager(load_pnj.getPnjs_manager());
+			e_m.setPlayers_manager(new PlayersManager(j));
 
 			((Principal) sbg.getState(Base.PRINCIPAL)).setEntities_manager(e_m);
 
@@ -120,21 +121,25 @@ public class Loading extends BasicGameState
 	@Override
 	public void init(GameContainer arg0, StateBasedGame arg1)
 			throws SlickException {
-
 	}
 
 	private void loadJoueur()
 	{
-		load_joueur = new LoadJoueur(0);
+		load_joueur = new LoadJoueur();
 	}
 
 	private void loadMaps()
 	{
-		load_map = new LoadMap(0);
+		load_map = new LoadMap();
 	}
 
 	private void loadEntities()
 	{
-		load_entities = new LoadEntities(0);
+		load_pnj = new LoadPnj();
+	}
+
+	private void loadMonsters()
+	{
+		load_monster = new LoadMonster();
 	}
 }

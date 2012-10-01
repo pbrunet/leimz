@@ -7,7 +7,6 @@ import org.newdawn.slick.loading.LoadingList;
 
 import com.client.network.NetworkManager;
 import com.map.Grille;
-import com.map.Map;
 import com.map.Tile;
 import com.map.Type_tile;
 
@@ -18,12 +17,9 @@ public class LoadMap implements Runnable
 	private int purcent;
 	private boolean running;
 
-	private Map map;
-
-
-	public LoadMap(int purcent)
+	public LoadMap()
 	{
-		this.purcent = purcent;
+		this.purcent = 0;
 		looper = new Thread(this);
 		looper.start();
 		running = true;
@@ -65,7 +61,9 @@ public class LoadMap implements Runnable
 			NetworkManager.instance.sendToServer("lo;map"); //load map
 			NetworkManager.instance.waitForNewMessage();
 			String[] args_map = NetworkManager.instance.getMessage_recu_serveur().split(";");
-System.out.println(args_map[0] + ")))" + args_map[1]);
+			if(args_map.length<3)
+				throw new RuntimeException("Map loading error");
+
 			int max_x=Integer.parseInt(args_map[0]);
 			int max_y=Integer.parseInt(args_map[1]);
 
@@ -79,36 +77,34 @@ System.out.println(args_map[0] + ")))" + args_map[1]);
 			}
 
 			LoadingList.setDeferredLoading(true);
-			for(int u = 0; u < args_map.length/4; u++)
+			for(int u = 0; u < args_map.length-4; u+=4)
 			{
-				if(u%(args_map.length/278)==0)
+				if(u%(args_map.length/70)==0)
 					purcent++;
 
-				int id_x=Integer.parseInt(args_map[4*u+2]);
-				int id_y=Integer.parseInt(args_map[4*u+3]);
-				grille.get(id_x).get(id_y).addTypes(Type_tile.getTypesTile(args_map[4*u+4]));
-				grille.get(id_x).get(id_y).setMonsterHolder( Boolean.parseBoolean(args_map[4*u+5]));
+				int id_x=Integer.parseInt(args_map[u+2]);
+				int id_y=Integer.parseInt(args_map[u+3]);
+				grille.get(id_x).get(id_y).addTypes(Type_tile.getTypesTile(args_map[u+4]));
+				grille.get(id_x).get(id_y).setMonsterHolder( Boolean.parseBoolean(args_map[u+5]));
 			}
 
 			NetworkManager.instance.sendToServer("lo;mapc"); //load map content
 			NetworkManager.instance.waitForNewMessage();
 			String[] args_mapc = NetworkManager.instance.getMessage_recu_serveur().split(";");
 
-			for(int u = 0; u < args_mapc.length/3; u++)
+			if(args_map.length>2)
 			{
-				grille.get(Integer.parseInt(args_mapc[3*u]))
-				.get(Integer.parseInt(args_mapc[3*u+1]))
-				.addTypes(Type_tile.getTypesTile(args_mapc[3*u+2]));
+				for(int u = 0; u < args_mapc.length; u+=3)
+				{
+					grille.get(Integer.parseInt(args_mapc[u]))
+					.get(Integer.parseInt(args_mapc[u+1]))
+					.addTypes(Type_tile.getTypesTile(args_mapc[u+2]));
+				}
 			}
 			LoadingList.setDeferredLoading(false);
 
 			purcent+=7;
 
-			ArrayList<String> monstres = new ArrayList<String>();
-			monstres.add("bouftou");
-			monstres.add("tofu");
-
-			map = new Map(grille, monstres);
 			try {
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
@@ -118,11 +114,11 @@ System.out.println(args_map[0] + ")))" + args_map[1]);
 		}
 	}
 
-	public Map getMap() {
-		return map;
+	public Grille getGrille() {
+		return grille;
 	}
 
-	public void setMap(Map map) {
-		this.map = map;
+	public void setGrille(Grille grille) {
+		this.grille = grille;
 	}
 }

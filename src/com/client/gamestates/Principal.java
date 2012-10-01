@@ -82,7 +82,7 @@ public class Principal extends BasicGameState
 	public void enter(GameContainer gc, StateBasedGame sbg)
 			throws SlickException 
 	{
-		
+		map_manager = MapManager.instance;
 		main_player = entities_manager.getPlayers_manager().getMain_player();
 		main_player.initImgs();
 		
@@ -360,14 +360,6 @@ public class Principal extends BasicGameState
 		}
 		
     }
-
-	public MapManager getMap_manager() {
-		return map_manager;
-	}
-
-	public void setMap_manager(MapManager mapManager) {
-		map_manager = mapManager;
-	}
 
 	public EntitiesManager getEntities_manager() {
 		return entities_manager;

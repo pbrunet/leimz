@@ -1,8 +1,6 @@
 <?xml version="1.0" encoding="iso-8859-1"?>
 
 <entity>
-
-
 		<imgs_repos>
 			<img nom="bas">data/Images/Persos/perso_bas2.png</img>
 			<img nom="droite">data/Images/Persos/perso_bas_droite2.png</img>
@@ -17,7 +15,4 @@
 		<shapes>
 			<pieds>0,65,45,12</pieds>
 		</shapes>
-		
-
-
 </entity>

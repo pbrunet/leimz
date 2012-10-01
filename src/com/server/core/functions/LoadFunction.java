@@ -55,6 +55,9 @@ public class LoadFunction implements Functionable
 		case "mapc":
 			askMapContent(client);
 			break;
+		case "mon":
+			askMonster(client);
+			break;
 		default:
 			throw new RuntimeException("Unimplemented");
 		}
@@ -403,6 +406,28 @@ public class LoadFunction implements Functionable
 			stmt.close();
 		} catch (SQLException e) {
 			throw new RuntimeException("Map Content");
+		}
+	}
+
+	public void askMonster(Client client)
+	{
+		ResultSet rs;
+		//Chargement des informations des monstres
+		try {
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			String rc = "";
+			String sql = "SELECT monster.name " +
+					"FROM monster ";
+			rs = stmt.executeQuery(sql);
+			while(rs.next())
+			{
+				rc += rs.getString("monster.name") + ";";
+			}
+			client.sendToClient(rc);
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			throw new RuntimeException("Monster");
 		}
 	}
 }

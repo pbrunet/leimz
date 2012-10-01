@@ -6,7 +6,6 @@ import com.client.network.NetworkManager;
 
 import com.game_entities.Orientation;
 import com.game_entities.PNJ;
-import com.game_entities.managers.EntitiesManager;
 import com.game_entities.managers.PNJsManager;
 
 import com.gameplay.PNJ_discours;
@@ -17,16 +16,17 @@ import com.map.client.managers.MapManager;
  * @author chelendil
  * Classe chargeant les informations de classe et de race du joueur (sort, competences ...)
  */
-public class LoadEntities implements Runnable
+public class LoadPnj implements Runnable
 {
 	private Thread looper;
 	private int purcent;
 	private boolean running;
-	private EntitiesManager entities_manager;
+	private PNJsManager pnjs_manager;
 
-	public LoadEntities(int purcent)
+	public LoadPnj()
 	{
-		this.purcent = purcent;
+		this.purcent = 0;
+		pnjs_manager = new PNJsManager();
 		looper = new Thread(this);
 		looper.start();
 		running = true;
@@ -37,19 +37,16 @@ public class LoadEntities implements Runnable
 	{
 		if(running)
 		{
-			entities_manager = new EntitiesManager();
-
 			NetworkManager network = NetworkManager.instance;
 
 			purcent += 13;
-			
+
 			//-------------------GESTION DES PNJs-----------------------
-			
+
 			network.sendToServer("lo;pnj"); //load pnjs
 			network.waitForNewMessage();
 			String s = network.getMessage_recu_serveur();
 			String[] args_pnj = s.split("new;");
-			PNJsManager pnjs_manager = new PNJsManager();
 			for( int i=1;i<args_pnj.length;i++)
 			{
 				String[] pnj = args_pnj[i].split(";");
@@ -61,8 +58,7 @@ public class LoadEntities implements Runnable
 						Orientation.BAS, 
 						MapManager.instance.getEntire_map().getGrille().get(Integer.parseInt(pnj[0])).get(Integer.parseInt(pnj[1]))));
 			}
-			entities_manager.setPnjs_manager(pnjs_manager);
-			
+
 			try {
 				//TODO Pourquoi un sleep?
 				Thread.sleep(100);
@@ -89,11 +85,11 @@ public class LoadEntities implements Runnable
 		this.running = running;
 	}
 
-	public EntitiesManager getEntities_manager() {
-		return entities_manager;
+	public PNJsManager getPnjs_manager() {
+		return pnjs_manager;
 	}
 
-	public void setEntities_manager(EntitiesManager entitiesManager) {
-		entities_manager = entitiesManager;
+	public void setPnjs_manager(PNJsManager pnjs_manager) {
+		this.pnjs_manager = pnjs_manager;
 	}
 }

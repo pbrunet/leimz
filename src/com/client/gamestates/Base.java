@@ -17,6 +17,8 @@ public class Base extends StateBasedGame
 	//Taille de la fenetre de jeu (largeur (x) et hauteur (y) )
 	public static int sizeOfScreen_x = 900;
 	public static int sizeOfScreen_y = 650;
+	public static int Tile_x = 40;
+	public static int Tile_y = 40;
 	
 	public Base() 
 	{

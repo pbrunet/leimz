@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le : Dim 23 Septembre 2012 à 13:24
+-- Généré le : Lun 01 Octobre 2012 à 22:17
 -- Version du serveur: 5.5.16
 -- Version de PHP: 5.3.8
 
@@ -2811,6 +2811,26 @@ INSERT INTO `map_content` (`x`, `y`, `type`) VALUES
 -- --------------------------------------------------------
 
 --
+-- Structure de la table `monster`
+--
+
+CREATE TABLE IF NOT EXISTS `monster` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(150) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Contenu de la table `monster`
+--
+
+INSERT INTO `monster` (`id`, `name`) VALUES
+(1, 'bouftou'),
+(2, 'tofu');
+
+-- --------------------------------------------------------
+
+--
 -- Structure de la table `personnage`
 --
 
@@ -2870,7 +2890,7 @@ CREATE TABLE IF NOT EXISTS `pnj_discours` (
   PRIMARY KEY (`id`),
   KEY `id_pnj` (`id_pnj`),
   KEY `after_answer` (`after_answer`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=6 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=11 ;
 
 --
 -- Contenu de la table `pnj_discours`
@@ -2878,33 +2898,13 @@ CREATE TABLE IF NOT EXISTS `pnj_discours` (
 
 INSERT INTO `pnj_discours` (`id_pnj`, `discours`, `id`, `after_answer`) VALUES
 (1, 'Bienvenue jeune leimzien !#n#nTu veux partir a l''aventure, risquer ta vie pour sauver notre bon roi Domo ? Alors c''est parti, lance toi !', 1, NULL),
-(1, ' Oui, je comprends ton inquietude. Mais trahiras-tu la confiance que t''as donne ton roi ? J''imagine que non.#nPars a l''aventure, tu ne le regretteras pas.#n#nBonne chance !', 2, 2),
-(1, 'Certes, certes. Mais tente de les m‚langer … de la ciboulette, le gout en est meilleur.#n#nSur ce, bonne chance dans ton aventure !', 3, 3);
-
--- --------------------------------------------------------
-
---
--- Structure de la table `pnj_reponses`
---
-
-CREATE TABLE IF NOT EXISTS `pnj_reponses` (
-  `reponse` text,
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `id_discours` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id`),
-  KEY `id_discours` (`id_discours`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=7 ;
-
---
--- Contenu de la table `pnj_reponses`
---
-
-INSERT INTO `pnj_reponses` (`reponse`, `id`, `id_discours`) VALUES
-('Oui, je suis pret !', 1, 1),
-('Euh ...', 2, 1),
-('Je n''aime pas les champignons.', 3, 1),
-('Merci, bonne journ‚e !', 4, 2),
-('Merci, bonne journ‚e !', 5, 3);
+(1, ' Oui, je comprends ton inquietude. Mais trahiras-tu la confiance que t''as donne ton roi ? J''imagine que non.#nPars a l''aventure, tu ne le regretteras pas.#n#nBonne chance !', 2, 7),
+(1, 'Certes, certes. Mais tente de les m‚langer … de la ciboulette, le gout en est meilleur.#n#nSur ce, bonne chance dans ton aventure !', 3, 8),
+(1, 'Oui, je suis pret !', 6, 1),
+(1, 'Euh ...', 7, 1),
+(1, 'Je n''aime pas les champignons.', 8, 1),
+(1, 'Merci, bonne journée !', 9, 2),
+(1, 'Merci, bonne journée !', 10, 3);
 
 -- --------------------------------------------------------
 
@@ -3063,8 +3063,8 @@ ALTER TABLE `caracteristiques_joueur`
 -- Contraintes pour la table `caracteristiques_objet`
 --
 ALTER TABLE `caracteristiques_objet`
-  ADD CONSTRAINT `caracteristiques_objet_ibfk_2` FOREIGN KEY (`id_caracteristique`) REFERENCES `caracteristiques` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `caracteristiques_objet_ibfk_1` FOREIGN KEY (`id_objet`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `caracteristiques_objet_ibfk_1` FOREIGN KEY (`id_objet`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `caracteristiques_objet_ibfk_2` FOREIGN KEY (`id_caracteristique`) REFERENCES `caracteristiques` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `caracteristiques_race`
@@ -3084,8 +3084,8 @@ ALTER TABLE `classe_sort`
 -- Contraintes pour la table `inventaire`
 --
 ALTER TABLE `inventaire`
-  ADD CONSTRAINT `inventaire_ibfk_2` FOREIGN KEY (`id_objet`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `inventaire_ibfk_1` FOREIGN KEY (`id_joueur`) REFERENCES `joueur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `inventaire_ibfk_1` FOREIGN KEY (`id_joueur`) REFERENCES `joueur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `inventaire_ibfk_2` FOREIGN KEY (`id_objet`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `map`
@@ -3112,13 +3112,7 @@ ALTER TABLE `personnage`
 --
 ALTER TABLE `pnj_discours`
   ADD CONSTRAINT `pnj_discours_ibfk_1` FOREIGN KEY (`id_pnj`) REFERENCES `pnj` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `pnj_discours_ibfk_2` FOREIGN KEY (`after_answer`) REFERENCES `pnj_reponses` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
---
--- Contraintes pour la table `pnj_reponses`
---
-ALTER TABLE `pnj_reponses`
-  ADD CONSTRAINT `pnj_reponses_ibfk_1` FOREIGN KEY (`id_discours`) REFERENCES `pnj_discours` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+  ADD CONSTRAINT `pnj_discours_ibfk_2` FOREIGN KEY (`after_answer`) REFERENCES `pnj_discours` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `race_sort`

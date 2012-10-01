@@ -33,9 +33,9 @@ public class LoadJoueur implements Runnable
 	private Personnage perso;
 	private Joueur joueur;
 
-	public LoadJoueur(int purcent)
+	public LoadJoueur()
 	{
-		this.purcent = purcent;
+		this.purcent = 0;
 		looper = new Thread(this);
 		looper.start();
 		running = true;
@@ -66,7 +66,7 @@ public class LoadJoueur implements Runnable
 			Classe classe = new Classe(nom_classe, getSorts("lo;cs"), getCaracteristic("lo;cc"));
 
 			//---------------GESTION DU PERSONNAGE------------------
-			
+
 			perso = new Personnage(nom_perso, race, classe,getCaracteristic("lo;jcv"),getCaracteristic("lo;jc"));
 
 			//----------------GESTION DE L'INVENTAIRE---------------------

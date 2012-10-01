@@ -2,10 +2,6 @@ package com.map;
 
 import java.util.ArrayList;
 
-
-
-
-
 public class Map 
 {
 	private Grille grille;
@@ -32,5 +28,4 @@ public class Map
 	public void setGrille(Grille grille) {
 		this.grille = grille;
 	}
-
 }
