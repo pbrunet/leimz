@@ -9,6 +9,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f; 
 
+import com.client.gamestates.Base;
 import com.client.gamestates.Principal.GameState;
 import com.client.utils.Data;
 import com.game_entities.Joueur;
@@ -68,97 +69,25 @@ public class DisplayManager
 			filtre = new Color(255,255,255,1f);
 		}
 
-		//On dessine tout
+		//On dessine la carte
 		for(int j = 0; j < current_map.get(0).size(); j++)
 		{
-			if(current_map.get(0).get(0).getPos().x % 2 == 0)
+			int first = (int) (current_map.get(0).get(0).getPos().x%2);
+			for(int k=0;k<2;k++)
 			{
-				//PAIR
-				for(int i = 0; i < current_map.size(); i++) 
+				for(int i = first; i < current_map.size(); i+=2) 
 				{
-					//On verifie qu'on ne sort pas de la grille
-					if(i >= 0 && j >=0 && i < current_map.size() && j < current_map.get(i).size())
-					{
-						if(i%2 == 0)
-						{
-							//On cree la position d'affichage
-							Vector2f pos_aff = new Vector2f();
-							//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
-							//De plus, on ajoute une petite formule demontrable simplement en repere orthonorme pour le zoom
-							pos_aff.x = (current_map.get(i).get(j).getPos_screen().x-current_map.get(i).get(j).getTypes().get(0).getBase().getX())+((1-scale)*40);
-							pos_aff.y = (current_map.get(i).get(j).getPos_screen().y-current_map.get(i).get(j).getTypes().get(0).getBase().getY())+((1-scale)*20);
+					//On cree la position d'affichage
+					Vector2f pos_aff = new Vector2f();
+					//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
+					//De plus, on ajoute une petite formule demontrable simplement en repere orthonorme pour le zoom
+					pos_aff.x = (current_map.get(i).get(j).getPos_screen().x-current_map.get(i).get(j).getTypes().get(0).getBase().getX())+((1-scale)*Base.Tile_x);
+					pos_aff.y = (current_map.get(i).get(j).getPos_screen().y-current_map.get(i).get(j).getTypes().get(0).getBase().getY())+((1-scale)*Base.Tile_y/2);
 
-							current_map.get(i).get(j).getTypes().get(0).getImg().draw(pos_aff.x, pos_aff.y, scale, filtre);
-						}
-						current_map.get(i).get(j).setDrawn(true);
-					}
+					current_map.get(i).get(j).getTypes().get(0).getImg().draw(pos_aff.x, pos_aff.y, scale, filtre);
+					current_map.get(i).get(j).setDrawn(true);
 				}
-
-				//IMPAIR
-				for(int i = 0; i < current_map.size(); i++) 
-				{
-					//On verifie qu'on ne sort pas de la grille
-					if(i >= 0 && j >=0 && i < current_map.size() && j < current_map.get(i).size())
-					{
-						if(i%2 != 0)
-						{
-							//On cree la position d'affichage
-							Vector2f pos_aff = new Vector2f();
-							//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
-							//De plus, on ajoute une petite formule demontrable simplement en repere orthonorme pour le zoom
-							pos_aff.x = (current_map.get(i).get(j).getPos_screen().x-current_map.get(i).get(j).getTypes().get(0).getBase().getX())+((1-scale)*40);
-							pos_aff.y = (current_map.get(i).get(j).getPos_screen().y-current_map.get(i).get(j).getTypes().get(0).getBase().getY())+((1-scale)*20);
-
-							current_map.get(i).get(j).getTypes().get(0).getImg().draw(pos_aff.x, pos_aff.y, scale, filtre);
-						}
-						current_map.get(i).get(j).setDrawn(true);
-					}
-				}
-			}
-			else
-			{
-				//IMPAIR
-				for(int i = 0; i < current_map.size(); i++) 
-				{
-					//On verifie qu'on ne sort pas de la grille
-					if(i >= 0 && j >=0 && i < current_map.size() && j < current_map.get(i).size())
-					{
-						if(i%2 != 0)
-						{
-							//System.out.println("pos tiles : " + (i+current_map.get(0).get(0).getPos_x()) + " ; " + (j+current_map.get(0).get(0).getPos_y()));
-							//On cree la position d'affichage
-							Vector2f pos_aff = new Vector2f();
-							//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
-							//De plus, on ajoute une petite formule demontrable simplement en repere orthonorme pour le zoom
-							pos_aff.x = (current_map.get(i).get(j).getPos_screen().x-current_map.get(i).get(j).getTypes().get(0).getBase().getX())+((1-scale)*40);
-							pos_aff.y = (current_map.get(i).get(j).getPos_screen().y-current_map.get(i).get(j).getTypes().get(0).getBase().getY())+((1-scale)*20);
-
-							current_map.get(i).get(j).getTypes().get(0).getImg().draw(pos_aff.x, pos_aff.y, scale, filtre);
-						}
-						current_map.get(i).get(j).setDrawn(true);
-					}
-				}
-
-				//PAIR
-				for(int i = 0; i < current_map.size(); i++) 
-				{
-					//On verifie qu'on ne sort pas de la grille
-					if(i >= 0 && j >=0 && i < current_map.size() && j < current_map.get(i).size())
-					{
-						if(i%2 == 0)
-						{
-							//On cree la position d'affichage
-							Vector2f pos_aff = new Vector2f();
-							//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
-							//De plus, on ajoute une petite formule demontrable simplement en repere orthonorme pour le zoom
-							pos_aff.x = (current_map.get(i).get(j).getPos_screen().x-current_map.get(i).get(j).getTypes().get(0).getBase().getX())+((1-scale)*40);
-							pos_aff.y = (current_map.get(i).get(j).getPos_screen().y-current_map.get(i).get(j).getTypes().get(0).getBase().getY())+((1-scale)*20);
-
-							current_map.get(i).get(j).getTypes().get(0).getImg().draw(pos_aff.x, pos_aff.y, scale, filtre);
-						}
-						current_map.get(i).get(j).setDrawn(true);
-					}
-				}
+				first=(first==1)?0:1;
 			}
 		}
 
@@ -238,7 +167,7 @@ public class DisplayManager
 								main_player.draw(scale);
 							}
 						}
-						
+
 						if(mm != null)
 						{
 							//-----------------------------MONSTRES--------------------
