@@ -196,52 +196,32 @@ public class DisplayManager
 				entities_manager.getPlayers_manager().getJoueurs().get(k).draw();
 		}
 
-		//Si le joueur n'a finalement pas ete affiche (dans le cas ou, par ex, il n'y a aucun objet le ou il est)
+		//Si le joueur n'a finalement pas ete affiche (dans le cas ou, par ex, il n'y a aucun objet la ou il est)
 		if(joueurAffiche == false)
 		{
 			//On l'affiche
 			main_player.draw(scale);
 		}
-		//Si les pnjs n'ont finalement pas ete affiches (dans le cas ou, par ex, il n'y a aucun objet le ou ils sont)
+		//Si les pnjs n'ont finalement pas ete affiches (dans le cas ou, par ex, il n'y a aucun objet la ou ils sont)
 		Iterator<PNJ> i = pnjsAffiche.keySet().iterator();
 		int k = 0;
 		while (i.hasNext())
 		{
-			if(pnjsAffiche.get(i.next())==false)
-			{
+			if(!pnjsAffiche.get(i.next()))
 				pnjs_manager.getPnjs().get(k).draw();
-			}
-			else
-			{
-
-			}
 			k++;
 		}
-
-		/*if(!monstresAffiche.containsValue(true))
-		{
-			mm.drawMonsters();
-		}*/
 
 		if(main_player.getEtat().equals(Etat.OVER) || main_player.getEtat().equals(Etat.CLICKED))
 		{
 			main_player.getCurrent_img_repos().setAlpha(0.8f);
-		}
-		else
-		{
-			main_player.getCurrent_img_repos().setAlpha(1f);
-		}
-
-		if(main_player.getEtat().equals(Etat.OVER) || main_player.getEtat().equals(Etat.CLICKED))
-		{
 			Font font = Data.getFont("Trebuchet MS", 15);
 			graphics.setFont(font);
 			graphics.drawString(main_player.getPerso().getNom(), main_player.getPos_real_on_screen().x+(main_player.getSize().x/2)-(font.getWidth(main_player.getPerso().getNom())/2), main_player.getPos_real_on_screen().y-20);
 		}
-
-		if(game_state.equals(GameState.COMBAT))
+		else
 		{
-			//TODO display in this case...
+			main_player.getCurrent_img_repos().setAlpha(1f);
 		}
 	}
 }
