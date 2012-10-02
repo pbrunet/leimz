@@ -72,6 +72,9 @@ public class DisplayManager
 		//On dessine la carte
 		for(int j = 0; j < current_map.get(0).size(); j++)
 		{
+			/*On veut ici dessiner la carte ligne par ligne en affichant une tile sur 2
+			 * pair ou impaire en fonction de la premiere tile en haut a gauche
+			 */
 			int first = (int) (current_map.get(0).get(0).getPos().x%2);
 			for(int k=0;k<2;k++)
 			{
@@ -96,7 +99,7 @@ public class DisplayManager
 
 		//On recupere les monstres et pnjs de la grille visible
 		PNJsManager pnjs_manager = entities_manager.getPnjs_manager();
-		MonstersManager mm = null;
+		MonstersManager mm = new MonstersManager();
 
 		//On associe e chaque monstre un booleen qui indique si il a deje ete affiche
 		HashMap<Monstre, Boolean> monstresAffiche = new HashMap<Monstre, Boolean>();
@@ -111,150 +114,78 @@ public class DisplayManager
 		//On associe e chaque joueur (il n'y en a qu'un pour l'instant) un booleen qui indique si il a deje ete affiche
 		boolean joueurAffiche = false;
 
-		//On passe en boucle de l'indice de depart e l'indice de fin
+		//On passe en boucle de l'indice de depart a l'indice de fin
 		for(int i = 0; i < current_map.size(); i++) 
 		{
 			for(int j = 0; j < current_map.get(i).size(); j++)
 			{
-				//On verifie si on se trouve bien dans la grille (utile si on se trouve sur les bords)
-				if(i >= 0 && j >=0 && i < current_map.size() && j < current_map.get(i).size())
+				//On affiche l'objet si au moins il existe !
+				if(current_map.get(i).get(j).getTypes().size() > 1)
 				{
-					//On affiche l'objet si au moins il existe !
-					if(current_map.get(i).get(j).getTypes().size() > 1)
+					//On cree la position d'affichage
+					Vector2f pos_aff = new Vector2f();
+					//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
+					pos_aff.x = current_map.get(i).get(j).getPos_screen().x-current_map.get(i).get(j).getTypes().get(1).getBase().getX();
+					pos_aff.y = current_map.get(i).get(j).getPos_screen().y-current_map.get(i).get(j).getTypes().get(1).getBase().getY();
+
+
+					//On cree la shape associee pour les collisions
+					Rectangle ob = new Rectangle(pos_aff.x, pos_aff.y, (current_map.get(i).get(j).getTypes().get(1).getImg().getWidth()), (current_map.get(i).get(j).getTypes().get(1).getImg().getHeight())-Base.Tile_y/2);
+
+					Rectangle mpps = new Rectangle(main_player.getPos_real_on_screen().x+main_player.getPieds().getX(), main_player.getPos_real_on_screen().y+main_player.getPieds().getY(), main_player.getPieds().getWidth(), main_player.getPieds().getHeight());
+
+					//--------------------------------JOUEUR---------------------------
+
+					//Si on est en intersection
+					if(ob.intersects(mpps))
 					{
-						//On cree la position d'affichage
-						Vector2f pos_aff = new Vector2f();
-						//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
-						pos_aff.x = current_map.get(i).get(j).getPos_screen().x-current_map.get(i).get(j).getTypes().get(1).getBase().getX();
-						pos_aff.y = current_map.get(i).get(j).getPos_screen().y-current_map.get(i).get(j).getTypes().get(1).getBase().getY();
+						//-----------CAS OU LE JOUEUR EST DERRIERE L'OBJET------------------
 
-
-						//On cree la shape associee pour les collisions
-						Rectangle ob = new Rectangle(pos_aff.x, pos_aff.y, (current_map.get(i).get(j).getTypes().get(1).getImg().getWidth()), (current_map.get(i).get(j).getTypes().get(1).getImg().getHeight())-20);
-
-						Rectangle mpps = new Rectangle(main_player.getPos_real_on_screen().x+main_player.getPieds().getX(), main_player.getPos_real_on_screen().y+main_player.getPieds().getY(), main_player.getPieds().getWidth(), main_player.getPieds().getHeight());
-
-						//--------------------------------JOUEUR---------------------------
-
-						//Si on est en intersection
-						if(ob.intersects(mpps) || ob.contains(mpps))
+						//Si le joueur n'a pas encore ete affiche
+						if(joueurAffiche == false)
 						{
-							//-----------CAS OU LE JOUEUR EST DERRIERE L'OBJET------------------
-
-							//Si le joueur n'a pas encore ete affiche
-							if(joueurAffiche == false)
-							{
-								//On affiche le joueur
-								main_player.draw(scale);
-								//On indique que le joueur a ete affiche
-								joueurAffiche = true;
-							}
-
-							//Puis on affiche l'objet
-							current_map.get(i).get(j).getTypes().get(1).getImg().draw(pos_aff.x, pos_aff.y);
+							//On affiche le joueur
+							main_player.draw(scale);
+							//On indique que le joueur a ete affiche
+							joueurAffiche = true;
 						}
-						else
+					}
+					
+					//-----------------------------MONSTRES--------------------
+
+					for(int k = 0; k < mm.getMonsters().size(); k++)
+					{
+						if(ob.intersects(mm.getMonsters().get(k).getPieds_screen()))
 						{
-							//-----------CAS OU LE JOUEUR EST DEVANT L'OBJET------------------
-
-							//On affiche d'abord l'objet
-							current_map.get(i).get(j).getTypes().get(1).getImg().draw(pos_aff.x, pos_aff.y);
-
-							//Ensuite, si le joueur n'a pas encore ete affiche
-							if(joueurAffiche == false)
+							//Si le monstre n'a pas encore ete affiche
+							if(!monstresAffiche.get(mm.getMonsters().get(k)))
 							{
-								//On l'affiche
-								main_player.draw(scale);
+								//On affiche le monstre
+								mm.getMonsters().get(k).draw();
+								//On indique que le monstre a ete affiche
+								monstresAffiche.put(mm.getMonsters().get(k), true);
 							}
 						}
+					}
 
-						if(mm != null)
+					//-----------------------------PNJs--------------------
+
+					for(int k = 0; k < pnjs_manager.getPnjs().size(); k++)
+					{
+						Rectangle pnps = new Rectangle(pnjs_manager.getPnjs().get(k).getPos_real_on_screen().x+pnjs_manager.getPnjs().get(k).getPieds().getX(),
+								pnjs_manager.getPnjs().get(k).getPos_real_on_screen().y+pnjs_manager.getPnjs().get(k).getPieds().getY(), 
+								pnjs_manager.getPnjs().get(k).getPieds().getWidth(), pnjs_manager.getPnjs().get(k).getPieds().getHeight());
+						if(ob.intersects(pnps))
 						{
-							//-----------------------------MONSTRES--------------------
-
-							for(int k = 0; k < mm.getMonsters().size(); k++)
+							if(!pnjsAffiche.get(pnjs_manager.getPnjs().get(k)))
 							{
-
-								if(mm.getMonsters().get(k).getPosOnMap().x >= current_map.get(0).get(0).getPos().x
-										&& mm.getMonsters().get(k).getPosOnMap().x <= current_map.get(current_map.size()-1).get(0).getPos().x
-										&& mm.getMonsters().get(k).getPosOnMap().y >= current_map.get(0).get(0).getPos().y
-										&& mm.getMonsters().get(k).getPosOnMap().y <= current_map.get(current_map.size()-1).get(current_map.get(current_map.size()-1).size()-1).getPos().y)
-								{
-
-									if(ob.intersects(mm.getMonsters().get(k).getPieds_screen()))
-									{
-										//Si le monstre n'a pas encore ete affiche
-										if(monstresAffiche.get(mm.getMonsters().get(k)) == false)
-										{
-											//On affiche le monstre
-											mm.getMonsters().get(k).draw();
-											//On indique que le monstre a ete affiche
-											monstresAffiche.put(mm.getMonsters().get(k), true);
-										}
-
-										//Puis on affiche l'objet
-										current_map.get(i).get(j).getTypes().get(1).getImg().draw(pos_aff.x, pos_aff.y);
-									}
-
-									else
-									{
-										//-----------CAS OU LE MONSTRE EST DEVANT L'OBJET------------------
-
-										//On affiche d'abord l'objet
-										current_map.get(i).get(j).getTypes().get(1).getImg().draw(pos_aff.x, pos_aff.y);
-
-										//Ensuite, si le monstre n'a pas encore ete affiche
-										if(monstresAffiche.get(mm.getMonsters().get(k)) == false)
-										{
-											//On affiche le monstre
-											mm.getMonsters().get(k).draw();
-										}
-									}
-								}
-							}
-
-						}
-
-
-
-						//-----------------------------PNJs--------------------
-
-						for(int k = 0; k < pnjs_manager.getPnjs().size(); k++)
-						{
-							Rectangle pnps = new Rectangle(pnjs_manager.getPnjs().get(k).getPos_real_on_screen().x+pnjs_manager.getPnjs().get(k).getPieds().getX(),
-									pnjs_manager.getPnjs().get(k).getPos_real_on_screen().y+pnjs_manager.getPnjs().get(k).getPieds().getY(), 
-									pnjs_manager.getPnjs().get(k).getPieds().getWidth(), pnjs_manager.getPnjs().get(k).getPieds().getHeight());
-							if(ob.intersects(pnps))
-							{
-								//Si le monstre n'a pas encore ete affiche
-								if(pnjsAffiche.get(pnjs_manager.getPnjs().get(k)) == false)
-								{
-									//On affiche le monstre
-									pnjs_manager.getPnjs().get(k).draw();
-									//On indique que le monstre a ete affiche
-									pnjsAffiche.put(pnjs_manager.getPnjs().get(k), true);
-								}
-
-								//Puis on affiche l'objet
-								current_map.get(i).get(j).getTypes().get(1).getImg().draw(pos_aff.x, pos_aff.y);
-							}
-
-							else
-							{
-								//-----------CAS OU LE PNJ EST DEVANT L'OBJET------------------
-
-								//On affiche d'abord l'objet
-								current_map.get(i).get(j).getTypes().get(1).getImg().draw(pos_aff.x, pos_aff.y);
-
-								//Ensuite, si le monstre n'a pas encore ete affiche
-								if(pnjsAffiche.get(pnjs_manager.getPnjs().get(k)) == false)
-								{
-									//On affiche le monstre
-									pnjs_manager.getPnjs().get(k).draw();
-								}
+								pnjs_manager.getPnjs().get(k).draw();
+								pnjsAffiche.put(pnjs_manager.getPnjs().get(k), true);
 							}
 						}
-					}		
+					}
+					
+					current_map.get(i).get(j).getTypes().get(1).getImg().draw(pos_aff.x, pos_aff.y);	
 				}
 			}
 		}
