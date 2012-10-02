@@ -92,7 +92,7 @@ public class Principal extends BasicGameState
 		}
 		
 		
-		camera = new Camera(map_manager);
+		camera = new Camera();
 		disp = new DisplayManager(camera, entities_manager);
 		
 		ArrayList<NetworkListener> listeners = new ArrayList<NetworkListener>();
@@ -135,7 +135,7 @@ public class Principal extends BasicGameState
         
         Button options = new Button("Options");
         options.setTheme("/button");
-        Button deconnexion = new Button("Se D�connecter");
+        Button deconnexion = new Button("Se Deconnecter");
         deconnexion.setTheme("/button");
         Button retour = new Button("Retour au Jeu");
         retour.setTheme("/button");
@@ -324,7 +324,7 @@ public class Principal extends BasicGameState
 		//System.out.println("Positions : |real|  "+main_player.getEntity().getPos_real().x+" ; "+ main_player.getEntity().getPos_real().y+ "  ---  |tile| "+ main_player.getEntity().getTile().getPos().x+" ; "+main_player.getEntity().getTile().getPos().y);
 		
 		
-		camera.focusOn(main_player.getTile(), new Vector2f(-(main_player.getPos_real().x-main_player.getTile().getPos_real().x), -(main_player.getPos_real().y-main_player.getTile().getPos_real().y)));
+		camera.focusOn(main_player.getTile(), main_player.getTile().getPos_real().copy().sub(main_player.getPos_real()));
 		camera.zoom(current_scale);
 		//camera.focusOn(map_manager.getEntire_map().getGrille().get(25).get(25), new Vector2f(0,0));
 		
@@ -376,7 +376,4 @@ public class Principal extends BasicGameState
 	public void setGame_state(GameState gameState) {
 		game_state = gameState;
 	}
-	
-	
-
 }

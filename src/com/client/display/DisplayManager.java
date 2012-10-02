@@ -19,6 +19,7 @@ import com.game_entities.managers.EntitiesManager;
 import com.game_entities.managers.MonstersManager;
 import com.game_entities.managers.PNJsManager;
 import com.map.Grille;
+import com.map.client.managers.MapManager;
 
 public class DisplayManager 
 {
@@ -51,7 +52,7 @@ public class DisplayManager
 	public void refresh(GameState game_state, EntitiesManager ent)
 	{
 		//On recupere la grille visible, qui a pu changer entre temps
-		current_map = camera.getMap_visible().getGrille();
+		current_map = MapManager.instance.getMap_visible().getGrille();
 		this.entities_manager = ent;
 
 		this.game_state = game_state;

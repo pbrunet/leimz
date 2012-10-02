@@ -16,22 +16,22 @@ public abstract class Entity
 {
 	
 	
-	//Position de l'entité sur la carte
-	//En repère (0;80;40)
+	//Position de l'entite sur la carte
+	//En repere (0;80;40)
 	protected Tile tile;
-	//En repère (0;1;1)
+	//En repere (0;1;1)
 	protected Vector2f pos_real;
 	
-	//Position correspondant au barycentre de la tile sur laquelle l'entité est
+	//Position correspondant au barycentre de la tile sur laquelle l'entite est
 	protected Vector2f pos_real_on_screen;
 
-	//Taille de l'entité
+	//Taille de l'entite
 	protected Vector2f size;
 	
 	//Formes avec la taille + la position
 	protected Rectangle pieds, corps;
 	
-	//Orientation de l'entité
+	//Orientation de l'entite
 	protected Orientation orientation;
 	
 	//Etat
@@ -41,7 +41,7 @@ public abstract class Entity
 	};
 	protected Etat etat;
 	
-	//Booleen indiquant si l'entité est en collision ou non
+	//Booleen indiquant si l'entite est en collision ou non
 	protected boolean on_collision = false;
 	
 	//Gestionnaire de collisions
@@ -49,25 +49,22 @@ public abstract class Entity
 	
 	//*******************************COTE GRAPHIQUE***********************************
 	
-	//Les images de l'entité au repos
+	//Les images de l'entite au repos
 	protected Image[] imgs_repos;
 	
 	//L'image actuelle au repos
 	protected Image current_img_repos;
 	
-	//Les animations (éventuelles de l'entités)
+	//Les animations (eventuelles de l'entites)
 	protected ArrayList<Animation> animations;
 	
 	//*******************************ANNEXES********************************
 	
-	//La taille relative de l'entité
+	//La taille relative de l'entite
 	protected float scaleSize = 1;
 	
-	//La vitesse de l'entité
+	//La vitesse de l'entite
 	protected float speed = 1.0f;
-	
-	
-	
 	
 	public Entity(Orientation orientation, Tile tile)
 	{
@@ -82,8 +79,6 @@ public abstract class Entity
 		}
 		
 	}
-	
-	
 	
 	public Image returnImgOrientation(Orientation orientation)
 	{
@@ -110,23 +105,22 @@ public abstract class Entity
 		}
 	}
 	
-	//Methode permettant de dessiner l'entité
+	//Methode permettant de dessiner l'entite
 	public void draw()
 	{
 		/**
-		 * A voir en fonction de l'entité
+		 * A voir en fonction de l'entite
 		 */
 	}
 	
-	//Méthode permettant de rafraîchir des éléments de l'entité (formes par exemple)
+	//Methode permettant de rafraichir des elements de l'entite (formes par exemple)
 	public void refresh()
 	{
 		/**
-		 * A voir en fonction de l'entité
+		 * A voir en fonction de l'entite
 		 */
 	}
 	
-
 	public Tile getTile() {
 		return tile;
 	}
@@ -215,54 +209,35 @@ public abstract class Entity
 		this.speed = speed;
 	}
 	
-
 	public boolean isOn_collision() {
 		return on_collision;
 	}
-
-
 
 	public void setOn_collision(boolean onCollision) {
 		on_collision = onCollision;
 	}
 
-
-
 	public CollisionManager getCollision_manager() {
 		return collision_manager;
 	}
-
-
 
 	public void setCollision_manager(CollisionManager collisionManager) {
 		collision_manager = collisionManager;
 	}
 
-
-
 	public Vector2f getPos_real() {
 		return pos_real;
 	}
-
-
 
 	public void setPos_real(Vector2f posReal) {
 		pos_real = posReal;
 	}
 
-
-
 	public Etat getEtat() {
 		return etat;
 	}
-
-
-
+	
 	public void setEtat(Etat etat) {
 		this.etat = etat;
 	}
-	
-	
-
-	
 }
