@@ -30,16 +30,9 @@ public class DisplayManager
 
 	//La grille visible
 	private Grille current_map;
-
-	//Le gestionnaire des entitees
 	private EntitiesManager entities_manager;
-
-	//La camera
 	private Camera camera;
-
 	private Graphics graphics;
-
-
 	private GameState game_state;
 
 	public DisplayManager(Camera camera, EntitiesManager entities_manager)
@@ -56,20 +49,11 @@ public class DisplayManager
 		this.entities_manager = ent;
 
 		this.game_state = game_state;
-
-		//On recupere les ENTITES des joueurs de la grille visible
-		/*this.joueurs = new ArrayList<EntityPlayer>();
-		for(int i = 0; i < map_manager.getVisible_players_manager().getJoueurs().size(); i++)
-		{
-			joueurs.add(map_manager.getVisible_players_manager().getJoueurs().get(i).getEntity());
-		}*/
 	}
-
 
 	//Dessin complet
 	public void drawAll(Graphics g)
 	{
-		//System.out.println(entities_manager.getPlayers_manager().getJoueurs().size());
 		this.graphics = g;
 
 		float scale = camera.getZoomScale();
@@ -84,7 +68,7 @@ public class DisplayManager
 			filtre = new Color(255,255,255,1f);
 		}
 
-		//On dessine tout :p
+		//On dessine tout
 		for(int j = 0; j < current_map.get(0).size(); j++)
 		{
 			if(current_map.get(0).get(0).getPos().x % 2 == 0)
@@ -118,7 +102,6 @@ public class DisplayManager
 					{
 						if(i%2 != 0)
 						{
-							//System.out.println("pos tiles : " + (i+current_map.get(0).get(0).getPos_x()) + " ; " + (j+current_map.get(0).get(0).getPos_y()));
 							//On cree la position d'affichage
 							Vector2f pos_aff = new Vector2f();
 							//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
@@ -181,7 +164,6 @@ public class DisplayManager
 
 		//Joueur principal
 		Joueur main_player = entities_manager.getPlayers_manager().getMain_player();
-
 
 		//On recupere les monstres et pnjs de la grille visible
 		PNJsManager pnjs_manager = entities_manager.getPnjs_manager();
