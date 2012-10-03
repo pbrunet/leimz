@@ -27,9 +27,6 @@ public class Base extends StateBasedGame
 	//Methode d'initialisation des etats de jeu
 	public void initStatesList(GameContainer gc) throws SlickException 
 	{
-		
-		//gc.setMouseCursor(new Image("data/Images/Pointeurs/pointeur_1.png"), 0, 0);
-		
 		//Ajouts des etats de jeu, chaque etat correspond a une classe fille de BasicGameState
 		this.addState(new Identification());
 		this.addState(new Loading());
