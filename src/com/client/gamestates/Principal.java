@@ -64,8 +64,6 @@ public class Principal extends BasicGameState
     
     private float current_scale = 1;
     
-    
-    
     public enum GameState
     {
     	NORMAL, COMBAT
@@ -91,21 +89,15 @@ public class Principal extends BasicGameState
 			entities_manager.getPnjs_manager().getPnjs().get(i).initImgs();
 		}
 		
-		
 		camera = new Camera(map_manager);
 		disp = new DisplayManager(camera, entities_manager);
 		
 		ArrayList<NetworkListener> listeners = new ArrayList<NetworkListener>();
 		listeners.add(main_player);
 		
-		
 		NetworkManager.instance.init(map_manager, entities_manager, listeners);
 		
 		pathfinder = new PathFinder(map_manager.getEntire_map());
-		
-		//Music music = new Music("");
-		
-		
 		
 		//--------------------------GUI-----------------------
         try {
@@ -114,20 +106,16 @@ public class Principal extends BasicGameState
 			e.printStackTrace();
 		}
 		
-		
         frame = new ChatFrame(null, main_player);
         frame.setTheme("/resizableframe");
         frame.setTitle("Leimzochat");
         frame.setPosition(50, 300);
-        frame.appendRow("default","Bienvenue sur Le�mz !! /n/nTapez votre message sur la barre en dessous de ce message :)/n/n");
-        
+        frame.appendRow("default","Bienvenue sur Leimz !! /n/nTapez votre message sur la barre en dessous de ce message :)/n/n");
         
         inventaireUI = new InventaireUI(main_player.getPerso().getInventaire());
         inventaireUI.setTheme("/resizableframe");
         inventaireUI.setPosition(100, 100);
         gui_manager.getRoot().add(inventaireUI);
-        
-        
         
         menu = new ResizableFrame();
         menu.setTheme("/resizableframe");
@@ -135,7 +123,7 @@ public class Principal extends BasicGameState
         
         Button options = new Button("Options");
         options.setTheme("/button");
-        Button deconnexion = new Button("Se D�connecter");
+        Button deconnexion = new Button("Se Deconnecter");
         deconnexion.setTheme("/button");
         Button retour = new Button("Retour au Jeu");
         retour.setTheme("/button");
@@ -144,7 +132,6 @@ public class Principal extends BasicGameState
 			@Override
 			public void run() {
 				menu.setVisible(false);
-				
 			}
 		});
         Button quitter = new Button("Quitter");
@@ -163,17 +150,13 @@ public class Principal extends BasicGameState
         l.setVerticalGroup(l.createSequentialGroup(options, deconnexion, retour, quitter));
         menu.add(l);
         
-        menu.setPosition((Base.sizeOfScreen_x/2)-(283/2), (Base.sizeOfScreen_y/2)-(274/2));
+        menu.setPosition((Base.sizeOfScreen_x/2)-(menu.getWidth()/2), (Base.sizeOfScreen_y/2)-(menu.getHeight()/2));
         menu.setVisible(false);
-        
         
         gui_manager.getRoot().add(frame);
         gui_manager.getRoot().add(menu);
-		
-        
         
         game_state = GameState.NORMAL;
-		
 	}
 
 	public MainJoueur getMain_player() {
@@ -188,10 +171,7 @@ public class Principal extends BasicGameState
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException 
 	{
-		
 		Data.loadData();
-		
-		
 		
 		event_listener = new EventListener()
 		{
@@ -199,32 +179,22 @@ public class Principal extends BasicGameState
 			public void pollEvents(Input input)
 			{
 				if(input.isKeyPressed(Input.KEY_ESCAPE))
-				{
 					menu.setVisible(!menu.isVisible());
-				}
 				
 				if(input.isKeyPressed(Input.KEY_I))
-				{
 					inventaireUI.setVisible(!inventaireUI.isVisible());
-				}
 				
 				if(input.isKeyPressed(Input.KEY_SPACE))
 				{
 					//START COMBAT
 					if(game_state != GameState.COMBAT)
-					{
 						setGame_state(GameState.COMBAT);
-					}
 					else
-					{
 						setGame_state(GameState.NORMAL);
-					}
-					
 				}
 				
 				if(input.isMousePressed(0))
 				{
-					//System.out.println(input.getMouseX()+":"+input.getMouseY()+ "      "+map_manager.getEntire_map().getGrille().get(21).get(20).getPos_screen().x+":"+map_manager.getEntire_map().getGrille().get(21).get(20).getPos_screen().y);
 					for(int i = 0; i < entities_manager.getPnjs_manager().getPnjs().size(); i++)
 					{
 						Rectangle c = new Rectangle(
@@ -263,17 +233,13 @@ public class Principal extends BasicGameState
 			public void mouseWheelMoved(int change) {
 			}
 		};
-		//gc.getInput().addListener(event_listener);
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics gr)
 			throws SlickException 
 	{
-		
-		
 		disp.drawAll(gr);
-		
 		gui_manager.getTwlInputAdapter().render();
 	}
 
@@ -321,13 +287,8 @@ public class Principal extends BasicGameState
 		main_player.setAbsolute(map_manager.getAbsolute());
 		main_player.move();
 		
-		//System.out.println("Positions : |real|  "+main_player.getEntity().getPos_real().x+" ; "+ main_player.getEntity().getPos_real().y+ "  ---  |tile| "+ main_player.getEntity().getTile().getPos().x+" ; "+main_player.getEntity().getTile().getPos().y);
-		
-		
 		camera.focusOn(main_player.getTile(), new Vector2f(-(main_player.getPos_real().x-main_player.getTile().getPos_real().x), -(main_player.getPos_real().y-main_player.getTile().getPos_real().y)));
 		camera.zoom(current_scale);
-		//camera.focusOn(map_manager.getEntire_map().getGrille().get(25).get(25), new Vector2f(0,0));
-		
 		
 		main_player.refresh();
 		for(int i = 0; i < entities_manager.getPlayers_manager().getJoueurs().size(); i++)
@@ -384,7 +345,4 @@ public class Principal extends BasicGameState
 	public void setGame_state(GameState gameState) {
 		game_state = gameState;
 	}
-	
-	
-
 }
