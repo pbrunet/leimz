@@ -38,6 +38,9 @@
         <param name="maxHeight"><int>0</int></param>
         <param name="inputMap"><inputMap>-defaultInputMap</inputMap></param>
     </theme>
+    <images file="chat.png">
+        <area name="chat.smiley" xywh="24,1,14,14"/>
+    </images>
     <images file="cursors.png">
         <area name="cursor.text" xywh="41,23,1,15"/>
     </images>
@@ -640,6 +643,7 @@
                             <param name="link"><font>link</font></param>
                         </map></param>
                         <param name="images"><map>
+                <param name="smiley"><image>chat.smiley</image></param>
                         </map></param>
                         <param name="classes"><map>
                         </map></param>
