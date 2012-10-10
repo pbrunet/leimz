@@ -57,10 +57,8 @@ public class Identification extends BasicGameState
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException 
 	{
-		System.out.println("Identification ...");
-
 		fond = new Image("data/Images/finni.png");
-		logo = new Image("data/Images/Logo/Leimz - Logo Final HD (Transparent).png");
+		logo = new Image("data/Images/Logo/Leimz_Logo_Final_HD_Transparent.png");
 		
 		//Un intervalle de 20 entre chaque boucle de rendu et d'update
 		gc.setMinimumLogicUpdateInterval(20);
@@ -75,7 +73,7 @@ public class Identification extends BasicGameState
 	public void enter(GameContainer gc, StateBasedGame sbg)
 			throws SlickException 
 	{
-		//music.loop();
+		music.loop();
 		log();
 	}
 

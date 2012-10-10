@@ -126,7 +126,9 @@ CREATE TABLE IF NOT EXISTS `caracteristiques_objet` (
 --
 
 INSERT INTO `caracteristiques_objet` (`id_objet`, `id_caracteristique`, `value`) VALUES
-(1, 5, 2);
+(1, 5, 2),
+(2, 7, 50),
+(3, 1, 1);
 
 -- --------------------------------------------------------
 
@@ -226,19 +228,43 @@ CREATE TABLE IF NOT EXISTS `item` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `nom` varchar(200) DEFAULT NULL,
   `description` text,
-  `type` varchar(100) DEFAULT NULL,
+  `type` int(11) NOT NULL,
   `icone` varchar(100) DEFAULT NULL,
   `apercu` varchar(100) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `id` (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=2 ;
+  KEY `type` (`type`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=5 ;
 
 --
 -- Contenu de la table `item`
 --
 
 INSERT INTO `item` (`id`, `nom`, `description`, `type`, `icone`, `apercu`) VALUES
-(1, 'Anneau Dfer', 'Un anneau simple mais elegant, qui vous permettra de porter des coups sanglants !', 'anneau', 'data/Images/Objets/anneau_dfer.png', 'data/Images/Objets/anneau_dfer.png');
+(1, 'Anneau Dfer', 'Un anneau simple mais elegant, qui vous permettra de porter des coups sanglants !', 1, 'data/Images/Objets/anneau_dfer.png', 'data/Images/Objets/anneau_dfer.png'),
+(2, 'Anneau Maly', 'Cet anneau fut forgé il y a très longtemps dans les montagnes cléodors. On remarque une fissure sur son côté, encore mystérieuse .....', 1, 'data/Images/Objets/anneau_maly.png', 'data/Images/Objets/anneau_maly.png'),
+(3, 'Cape Ripu', 'Cette cape est pourrie, ne donne (presque) rien. Elle sert juste à faire joli :p', 2, 'data/GUI/Images/ailles.png', 'data/GUI/Images/ailles.png'),
+(4, 'Chapeau D''Vache', 'Ce chapeau, d''une grande valeur, n''est pas très utile. Il sert surtout à se rendre plus beau.', 3, 'data/GUI/Images/ailles.png', 'data/GUI/Images/ailles.png');
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `item_type`
+--
+
+CREATE TABLE IF NOT EXISTS `item_type` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `type` varchar(30) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=4 ;
+
+--
+-- Contenu de la table `item_type`
+--
+
+INSERT INTO `item_type` (`id`, `type`) VALUES
+(1, 'anneau'),
+(2, 'cape'),
+(3, 'chapeau');
 
 -- --------------------------------------------------------
 
@@ -2851,9 +2877,9 @@ CREATE TABLE IF NOT EXISTS `personnage` (
 --
 
 INSERT INTO `personnage` (`joueur`, `race`, `classe`, `name`, `pos`, `orientation`) VALUES
-(1, 1, 1, 'Choco', '840.0;820.0', 'b'),
-(2, 1, 1, 'FaZeGa', '840.0;820.0', 'h'),
-(3, 1, 1, 'Memor', '840.0;820.0', 'b');
+(1, 1, 1, 'Choco', '1163.0;729.5', 'b'),
+(2, 1, 1, 'FaZeGa', '1163.0;729.5', 'h'),
+(3, 1, 1, 'Memor', '1163.0;729.5', 'b');
 
 -- --------------------------------------------------------
 
@@ -3086,6 +3112,12 @@ ALTER TABLE `classe_sort`
 ALTER TABLE `inventaire`
   ADD CONSTRAINT `inventaire_ibfk_1` FOREIGN KEY (`id_joueur`) REFERENCES `joueur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `inventaire_ibfk_2` FOREIGN KEY (`id_objet`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
+
+--
+-- Contraintes pour la table `item`
+--
+ALTER TABLE `item`
+  ADD CONSTRAINT `item_ibfk_1` FOREIGN KEY (`type`) REFERENCES `item_type` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Contraintes pour la table `map`
