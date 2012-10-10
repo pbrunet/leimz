@@ -4,7 +4,7 @@
     <fontDef name="normal" filename="font_leimz.fnt" color="#000000" default="true">
         <fontParam if="error" color="red"/>
         <fontParam if="disabled" color="gray"/>
-        <fontParam if="textSelection" color="blue"/>
+        <fontParam if="textSelection" color="#885206"/>
     </fontDef>
     <fontDef name="title" filename="leimz_title.fnt" color="white"/>
     <include filename="cursors.xml"/>
@@ -38,6 +38,12 @@
         <param name="maxHeight"><int>0</int></param>
         <param name="inputMap"><inputMap>-defaultInputMap</inputMap></param>
     </theme>
+    <images file="chat.png">
+        <area name="chat.smiley" xywh="24,1,14,14"/>
+    </images>
+    <images file="cursors.png">
+        <area name="cursor.text" xywh="41,23,1,15"/>
+    </images>
     <images file="theme.png">
         <select name="vscrollbar.upbutton.background">
             <area xywh="491,20,15,15" if="pressed"/>
@@ -237,6 +243,8 @@
       
         <param name="mouseCursor"><cursor>cursor.text</cursor></param>
         <param name="minHeight"><int>25</int></param>
+        <param name="cursor"><image>cursor.text</image></param>
+        <param name="selection"><image>none</image></param>
     </theme>
 
     <theme name="button" ref="-defaults">
@@ -353,6 +361,16 @@
     </theme>
   
   <theme name="dialoglayout" ref="-defaults" allowWildcard="true">
+        <param name="smallGap"><dimension>2,2</dimension></param>
+        <param name="mediumGap"><dimension>5,5</dimension></param>
+        <param name="largeGap"><dimension>8,8</dimension></param>
+        <param name="defaultGap"><dimension>5,5</dimension></param>
+        <param name="namedGaps">
+            <map>
+            </map>
+        </param>
+        <param name="cursor"><image>none</image></param>
+        <param name="seletion"><image>none</image></param>
        
 
  </theme>
@@ -625,6 +643,7 @@
                             <param name="link"><font>link</font></param>
                         </map></param>
                         <param name="images"><map>
+                <param name="smiley"><image>chat.smiley</image></param>
                         </map></param>
                         <param name="classes"><map>
                         </map></param>
@@ -636,5 +655,8 @@
         <param name="border"><border>background.border</border></param>
     </theme>
     <theme name="inventairepanel" ref="-defaults"/>
+    <theme name="tooltipwindow" ref="-defaults">
+        <param name="fadeInTime"><int>1000</int></param>
+    </theme>
 
 </themes>

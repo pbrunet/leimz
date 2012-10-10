@@ -30,20 +30,20 @@ public class Identification extends BasicGameState
 {
 	//Images diverses
 	private Image fond, logo;
-	
+
 	//-------------------------------GUI-----------------------------
 	//Gestionnaire de GUI
 	private GUI_Manager gui_manager;
-	
+
 	//Creation des elements GUI
 	private ResizableFrame loginPanel;
 	private EditField ef_password,ef_login;
 	private Label l_password,l_login;
-	
+
 	//Recuperation de la base et du game container
 	private StateBasedGame test_sbg;
 	private GameContainer test_gc;
-	
+
 	//Musique de fond
 	private Music music;
 
@@ -62,12 +62,12 @@ public class Identification extends BasicGameState
 		
 		//Un intervalle de 20 entre chaque boucle de rendu et d'update
 		gc.setMinimumLogicUpdateInterval(20);
-		
+
 		test_sbg = sbg;
 		test_gc = gc;
-		
+
 		music = new Music("data/Musics/musique1.wav");
-	}
+			}
 
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg)
@@ -75,24 +75,24 @@ public class Identification extends BasicGameState
 	{
 		music.loop();
 		log();
-	}
+			}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g)
 			throws SlickException 
-	{
+			{
 		//Affichage des images de fond
 		fond.draw();
 		logo.draw(110, -125, 0.4f);
-		
+
 		//Affichage des elements GUI
 		gui_manager.getTwlInputAdapter().render();
-	}
+			}
 
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int arg2)
 			throws SlickException 
-	{
+			{
 		gui_manager.getTwlInputAdapter().update();
 
 		//Quand on appuie sur entree, ca valide le ok de login ou de popup
@@ -109,7 +109,7 @@ public class Identification extends BasicGameState
 			}
 
 		}
-	}
+			}
 
 	private void log() 
 	{
@@ -122,8 +122,6 @@ public class Identification extends BasicGameState
 		loginPanel = new ResizableFrame();
 		loginPanel.setTheme("/resizableframe");
 		loginPanel.setResizableAxis(ResizableAxis.NONE);
-		loginPanel.setPosition(258, 250);
-		//loginPanel.setDraggable(false);
 
 		DialogLayout panel = new DialogLayout();
 		panel.setTheme("/dialoglayout");
@@ -168,15 +166,12 @@ public class Identification extends BasicGameState
 			}
 		});
 
-		//Ordre definie comme cela pour assurer un ordre logique aux tabulations
-		panel.add(ef_login);
-		panel.add(ef_password);
-		panel.add(bouton);
-		panel.add(l_password);
-		panel.add(l_login);
+		panel.setVerticalGroup(panel.createSequentialGroup(l_login,ef_login,l_password,ef_password,bouton));
+		panel.setHorizontalGroup(panel.createParallelGroup(l_login,ef_login,l_password,ef_password,bouton));
 
 		loginPanel.add(panel);
 		loginPanel.adjustSize();
+		loginPanel.setPosition(300, 250);
 
 		gui_manager.getRoot().add(loginPanel);
 		gui_manager.getRoot().focusFirstChild();
@@ -185,42 +180,42 @@ public class Identification extends BasicGameState
 
 	private void test() 
 	{
-			NetworkManager network = null;
-			try {
-				//Adresse locale : 127.0.0.1
-				//Adresse serveur Kevin : 37.26.241.19
-				network = new NetworkManager("127.0.0.1",17000);
-				network.waitForNewMessage();
-				if(network.getMessage_recu_serveur().equals("CONNECT_SERVER"))
-					network.sendToServer("c;"+ef_login.getText()+";"+ef_password.getText());
-				else
-				{
-					openPopup("Temps de communication avec le serveur trop long.");
-					return;
-				}
-			} 
-			catch (UnknownHostException ex) 
-			{
-				openPopup("Serveur inconnu. Videz le cache ou redemarrez l'application.");
-				ex.printStackTrace();
-				return;
-			}
-			catch (IOException ex) 
-			{
-				openPopup("Serveur deconnecte");
-				ex.printStackTrace();
-				return;
-			}
-
+		NetworkManager network = null;
+		try {
+			//Adresse locale : 127.0.0.1
+			//Adresse serveur Kevin : 37.26.241.19
+			network = new NetworkManager("127.0.0.1",17000);
 			network.waitForNewMessage();
-			if(network.getMessage_recu_serveur().equals("CONNECT_SUCCEED"))
+			if(network.getMessage_recu_serveur().equals("CONNECT_SERVER"))
+				network.sendToServer("c;"+ef_login.getText()+";"+ef_password.getText());
+			else
 			{
-				System.out.println("Connection OK.");
-				music.stop();
-				test_sbg.enterState(Base.LOADING);
+				openPopup("Temps de communication avec le serveur trop long.");
+				return;
 			}
-			else 
-				openPopup("Nom de compte ou mot de passe incorrect. Veuillez reessayer :p");
+		} 
+		catch (UnknownHostException ex) 
+		{
+			openPopup("Serveur inconnu. Videz le cache ou redemarrez l'application.");
+			ex.printStackTrace();
+			return;
+		}
+		catch (IOException ex) 
+		{
+			openPopup("Serveur deconnecte");
+			ex.printStackTrace();
+			return;
+		}
+
+		network.waitForNewMessage();
+		if(network.getMessage_recu_serveur().equals("CONNECT_SUCCEED"))
+		{
+			System.out.println("Connection OK.");
+			music.stop();
+			test_sbg.enterState(Base.LOADING);
+		}
+		else 
+			openPopup("Nom de compte ou mot de passe incorrect. Veuillez reessayer :p");
 	}
 
 	private void openPopup(String text)
