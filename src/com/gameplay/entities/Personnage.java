@@ -38,6 +38,15 @@ public class Personnage
 		this.inventaire = new Inventaire();
 	}
 	
+	public Personnage(String nom, String race, String classe)
+	{
+		this.nom = nom;
+		this.setEntity_file("data/Gameplay/Races/"+race+"/Classes/"+"entity_"+classe.toLowerCase()+".xml");
+
+		this.quetes_manager = new QuetesManager();
+		this.inventaire = new Inventaire();
+	}
+	
 	public Inventaire getInventaire() {
 		return inventaire;
 	}

@@ -6,6 +6,7 @@ import org.newdawn.slick.geom.Vector2f;
 
 import com.client.network.NetworkManager;
 import com.game_entities.Joueur;
+import com.game_entities.MainJoueur;
 
 import de.matthiasmann.twl.DialogLayout;
 import de.matthiasmann.twl.EditField;
@@ -27,12 +28,10 @@ public class ChatFrame extends ResizableFrame
     private final ScrollPane scrollPane;
     private String curColor = "black";
     
-    private Joueur main_player;
     
 
-    public ChatFrame(Vector2f size, Joueur main_player) {
+    public ChatFrame(Vector2f size) {
 
-        this.main_player = main_player;
         
         this.sb = new StringBuilder();
         this.textAreaModel = new HTMLTextAreaModel();
@@ -140,7 +139,7 @@ public class ChatFrame extends ResizableFrame
     
     public void appendWhenCallBack(String path)
     {
-    	System.out.println("Texte de l'éditfield : " + editField.getText());
+    	System.out.println("Texte de l'ï¿½ditfield : " + editField.getText());
     	/*if(editField.getText().contains("\\i"))
     	{
     		appendRow("font_red", "/nInventaire");
@@ -164,7 +163,7 @@ public class ChatFrame extends ResizableFrame
     	}*/
        if(editField.getText().contains("\\pos"))
     	{
-    		appendRow("font_red","/n/nPosition : " + "[" + main_player.getTile().getPos().x + "][" + main_player.getTile().getPos().y + "]");
+    		appendRow("font_red","/n/nPosition : " + "[" + MainJoueur.instance.getTile().getPos().x + "][" + MainJoueur.instance.getTile().getPos().y + "]");
     		appendRow(path, "/n/n");
     	}
     	else
@@ -175,9 +174,8 @@ public class ChatFrame extends ResizableFrame
     }
     
     
-    public void refresh(Joueur main_player)
+    public void refresh()
     {
-    	this.main_player = main_player;
     	
     	String receive = NetworkManager.instance.getMessage_recu_serveur();
     	if(receive != null)

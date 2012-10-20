@@ -1,44 +1,66 @@
 package com.game_entities;
 
+import java.io.File;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.jdom.Document;
+import org.jdom.Element;
+import org.jdom.input.SAXBuilder;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.geom.Vector2f;
 
-import com.client.network.NetworkListener;
+import com.client.network.NetworkManager;
 import com.client.utils.pathfinder.Chemin;
 import com.client.utils.pathfinder.Noeud;
+import com.game_entities.Entity.Etat;
 import com.gameplay.entities.Personnage;
 import com.map.Tile;
 
-public class MainJoueur extends Joueur implements NetworkListener
+public class MainJoueur extends Joueur
 {
-	//Evenements
+	//Ev�nements
 	private ArrayList<String> events = new ArrayList<String>();
-
-	private String messageToSend;
-	private boolean wantToSend;
-
+	
 	//PATHFINDING
 	private Chemin current_chemin;
 	private ArrayList<Tile> list_tiles_done;
 	private Tile next_tile;
-
+	
+	public static MainJoueur instance;
+	
 	public MainJoueur(Personnage perso, Tile tile, Orientation orientation) 
 	{
 		super(perso, tile, orientation);
+		
+		
 
 		this.pos_real.x += 40;
 		this.pos_real.y += 20;
-		this.list_tiles_done = new ArrayList<Tile>();
 
-		sendMessageToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
+		
+		this.list_tiles_done = new ArrayList<Tile>();
+		
+		NetworkManager.instance.sendToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
+		
+		if(instance == null)
+		{
+			instance = this;
+		}
+		
 	}
 
+	
+	
+	
 	public void pollEvents(Input input)
 	{
 		/**
-		 * Gestion des evenements, pour le deplacement du perso
+		 * Gestion des �v�nements, pour le d�placement du perso
 		 * 
 		 */
 		if(input.isKeyDown(Input.KEY_D))
@@ -66,7 +88,8 @@ public class MainJoueur extends Joueur implements NetworkListener
 			if(!events.contains("PRESSED"))
 				events.add("PRESSED");
 		}
-
+		
+		
 		if(!input.isKeyDown(Input.KEY_D))
 		{
 			if(events.contains("DROITE"))
@@ -92,7 +115,8 @@ public class MainJoueur extends Joueur implements NetworkListener
 			if(events.contains("PRESSED"))
 				events.remove("PRESSED");
 		}
-
+		
+		
 		if(events.contains("GAUCHE") && !(events.contains("DROITE") && events.contains("HAUT") && events.contains("BAS")))
 		{
 			setOrientation(Orientation.GAUCHE);
@@ -125,18 +149,18 @@ public class MainJoueur extends Joueur implements NetworkListener
 		{
 			setOrientation(Orientation.BAS_DROITE);
 		}
-
+		
 		if(events.contains("BAS") || events.contains("HAUT") || events.contains("DROITE") || events.contains("GAUCHE"))
 		{
 			moveKey();
 		}
-
-
+	
+		
 		/**
-		 * Gestion des evenements, pour la vitesse du perso
+		 * Gestion des �v�nements, pour la vitesse du perso
 		 * 
 		 */
-
+		
 		if(input.isKeyDown(Input.KEY_LSHIFT))
 		{
 			events.add("SPEED+");
@@ -150,10 +174,10 @@ public class MainJoueur extends Joueur implements NetworkListener
 				setSpeed(1.0f);
 			}
 		}
-
+		
 		float mouseX = input.getMouseX();
 		float mouseY = input.getMouseY();
-
+		
 		if((new Rectangle(this.pos_real_on_screen.x+this.corps.getX(), this.pos_real_on_screen.y+this.corps.getY(), this.corps.getWidth(), this.corps.getHeight())).contains(mouseX, mouseY))
 		{
 			etat = Etat.OVER;
@@ -167,8 +191,8 @@ public class MainJoueur extends Joueur implements NetworkListener
 			etat = Etat.NORMAL;
 		}
 	}
-
-
+	
+	
 	public void startMoving(Chemin chemin)
 	{
 		this.current_chemin = new Chemin(chemin.getObjectif(), chemin.getDepart());
@@ -178,12 +202,12 @@ public class MainJoueur extends Joueur implements NetworkListener
 			noeuds.add(chemin.getNoeuds().get(i));
 		}
 		current_chemin.setNoeuds(noeuds);
-
+		
 		next_tile = current_chemin.getDepart().getTile();
-
+		
 		list_tiles_done = new ArrayList<Tile>();
 	}
-
+	
 	public void move()
 	{
 		if(current_chemin != null)
@@ -241,55 +265,59 @@ public class MainJoueur extends Joueur implements NetworkListener
 						this.pos_real.y -= 1*speed;
 						this.orientation = Orientation.HAUT;
 					}
-					sendMessageToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
+					NetworkManager.instance.sendToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
 				}
 			}
 		}
-
+		
 	}
-
-
+	
+	
 	public void moveKey()
 	{
 		current_chemin = null;
-		switch(orientation)
-		{
-		case HAUT:
-			pos_real.y -= 1 * speed;
-			break;
-		case BAS:
-			pos_real.y += 1 * speed;
-			break;
-		case GAUCHE:
-			pos_real.x -= 1 * speed;
-			break;
-		case DROITE:
-			pos_real.x += 1 * speed;
-			break;
-		case HAUT_DROITE:
-			pos_real.x += 1 * speed;
-			pos_real.y -= 0.5f * speed;
-			break;
-		case HAUT_GAUCHE:
-			pos_real.x -= 1 * speed;
-			pos_real.y -= 0.5f * speed;
-			break;
-		case BAS_DROITE:
-			pos_real.x += 1 * speed;
-			pos_real.y += 0.5f * speed;
-			break;
-		case BAS_GAUCHE:
-			pos_real.x -= 1 * speed;
-			pos_real.y += 0.5f * speed;
-			break;
-		}
-		sendMessageToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
+			switch(orientation)
+			{
+				case HAUT:
+					pos_real.y -= 1 * speed;
+					break;
+				case BAS:
+					pos_real.y += 1 * speed;
+					break;
+				case GAUCHE:
+					pos_real.x -= 1 * speed;
+					break;
+				case DROITE:
+					pos_real.x += 1 * speed;
+					break;
+				case HAUT_DROITE:
+					pos_real.x += 1 * speed;
+					pos_real.y -= 0.5f * speed;
+					break;
+				case HAUT_GAUCHE:
+					pos_real.x -= 1 * speed;
+					pos_real.y -= 0.5f * speed;
+					break;
+				case BAS_DROITE:
+					pos_real.x += 1 * speed;
+					pos_real.y += 0.5f * speed;
+					break;
+				case BAS_GAUCHE:
+					pos_real.x -= 1 * speed;
+					pos_real.y += 0.5f * speed;
+					break;
+				
+			}
+			
+			NetworkManager.instance.sendToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
+			
+		
 	}
-
+	/*
 	@Override
 	public void listenToServerMessage(String message) 
 	{
-
+		
 	}
 
 	@Override
@@ -317,4 +345,14 @@ public class MainJoueur extends Joueur implements NetworkListener
 		wantToSend = false;
 		messageToSend = "";
 	}
+	*/
+	@Override
+	public void refresh()
+	{
+		super.refresh();
+		
+		//QUETES
+		perso.getQuetes_manager().testQuetes(this);
+	}
+
 }

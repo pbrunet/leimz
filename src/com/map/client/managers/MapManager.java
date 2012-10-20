@@ -1,55 +1,109 @@
 package com.map.client.managers;
 
+
+import java.util.ArrayList;
+
 import org.newdawn.slick.geom.Vector2f;
 
-import com.client.gamestates.Base;
+import com.client.network.NetworkManager;
+import com.game_entities.Entity;
+import com.game_entities.Joueur;
+import com.game_entities.managers.MonstersManager;
+import com.game_entities.managers.PNJsManager;
+import com.game_entities.managers.PlayersManager;
+import com.map.Grille;
 import com.map.Map;
 import com.map.Tile;
 
 public class MapManager 
 {
+	
 	private CollisionManager collision_manager;
-
+	
+	
 	private Vector2f absolute = new Vector2f(0,0);	
 	private Map map_visible, entire_map;
-
-	public static MapManager instance;
-
+	
+    public static MapManager instance;
+	
 	public MapManager(Map entire_map)
 	{
 		this.entire_map = entire_map;
-
+		
 		this.init();
-
+		
+		//this.collision_manager = new CollisionManager(map_visible.getGrille(), null);
 		if(instance == null)
-			instance = this;
+		{
+			 instance = this;
+		}
 		else
-			System.out.println("Erreur : impossible d'instancier un deuxieme MapManager");
+		{
+			System.err.println("Erreur : impossible d'instancier un deuxieme MapManager");
+		}
+		 
 	}
-
+	
+	/*public void init(Tile tile)
+	{
+		Grille g = new Grille();
+		
+		for(int i = 0; i < )
+		
+		
+		this.map_visible = new Map(g, entire_map.getDataMonstres());
+		
+	}*/
+	
+	
 	public void refresh()
 	{
+		/*for(int i = 0; i < pnjs_manager.getPnjs().size(); i++)
+		{
+			pnjs_manager.getPnjs().get(i).refresh();
+		}*/
 	}
-
+	
+	/*public void refreshCollisionManager()
+	{
+		ArrayList<Entity> entities = new ArrayList<Entity>();
+		for(int i = 0; i < players_manager.getJoueurs().size();i++)5
+			entities.add(players_manager.getJoueurs().get(i).getEntity());
+		for(int i = 0; i < pnjs_manager.getPnjs().size();i++)
+			entities.add(pnjs_manager.getPnjs().get(i));
+		this.collision_manager.setEntities(entities);
+	}*/
+	
 	public void init()
 	{		
-		//On parcourt alors les lignes et les colonnes
-		for(int i = 0; i < entire_map.getGrille().size(); i++)
-		{
-			for(int j = 0; j <entire_map.getGrille().get(i).size(); j++)
-			{
-				int shift = 0;
-				if(i%2!=0) 
-					shift = 20;
-				//On dtermine la "vraie" position de la tile par rapport aux coordonnes
-				entire_map.getGrille().get(i).get(j).setPos_screen(
-						new Vector2f((entire_map.getGrille().get(i).get(j).getPos().x*Base.Tile_x), entire_map.getGrille().get(i).get(j).getPos().y*Base.Tile_x+shift));
-				entire_map.getGrille().get(i).get(j).setPos_real(
-						new Vector2f((entire_map.getGrille().get(i).get(j).getPos().x*Base.Tile_x), entire_map.getGrille().get(i).get(j).getPos().y*Base.Tile_x+shift));
-			}
-		}
+			//On parcourt alors les lignes et les colonnes
+			for(int i = 0; i < entire_map.getGrille().size(); i++)
+	    	{
+	    		for(int j = 0; j <entire_map.getGrille().get(i).size(); j++)
+	    		{
+	    			if(i%2 ==0) //Si la ligne est paire
+	    			{
+	    				//On détermine la "vraie" position de la tile par rapport aux coordonnées
+	    				entire_map.getGrille().get(i).get(j).setPos_screen(
+	    						new Vector2f((entire_map.getGrille().get(i).get(j).getPos().x/2)*80, entire_map.getGrille().get(i).get(j).getPos().y*40));
+	    				entire_map.getGrille().get(i).get(j).setPos_real(
+	    						new Vector2f((entire_map.getGrille().get(i).get(j).getPos().x/2)*80, entire_map.getGrille().get(i).get(j).getPos().y*40));
+	    			}
+	    			
+	    			else //Si la ligne est impaire
+	    			{
+	    				//On détermine la "vraie" position de la tile par rapport aux coordonnées
+	    				entire_map.getGrille().get(i).get(j).setPos_screen(
+	    						new Vector2f((entire_map.getGrille().get(i).get(j).getPos().x*80)/2, (entire_map.getGrille().get(i).get(j).getPos().y*40)+20));
+	    				entire_map.getGrille().get(i).get(j).setPos_real(
+	    						new Vector2f((entire_map.getGrille().get(i).get(j).getPos().x*80)/2, (entire_map.getGrille().get(i).get(j).getPos().y*40)+20));
+	    			}
+	    			
+	    		}
+	    	}
+		
 	}
-
+	
 	/**
 	 * 
 	 * Retourne la tile en fonction du (x;y)
@@ -66,9 +120,10 @@ public class MapManager
 					return this.entire_map.getGrille().get(i).get(j);
 			}
 		}
+		
 		return null;
 	}
-
+	
 	public Tile getTileReal(Vector2f posReal)
 	{
 		for(int i=0; i < this.entire_map.getGrille().size(); i++)
@@ -79,7 +134,45 @@ public class MapManager
 					return this.entire_map.getGrille().get(i).get(j);
 			}
 		}
+		
 		return null;
+	}
+	
+	public ArrayList<ArrayList<Tile>> getTilesAutour(Tile tile, int spread)
+	{
+		ArrayList<ArrayList<Tile>> grille = new ArrayList<ArrayList<Tile>>();
+		
+		//Récupération de l'index de départ en x et y des Tile à afficher.
+		int indiceStart_x = (int) (tile.getPos().x - (spread / 2));
+		int indiceStart_y = (int) (tile.getPos().y - (spread / 2));
+		
+		//Récupération de l'index de fin en x et y des Tile à afficher.
+		int indiceFin_x = indiceStart_x + spread;
+		int indiceFin_y = indiceStart_y + spread;
+
+		int h = 0;
+			//On parcourt alors les lignes et les colonnes
+			for(int i = indiceStart_x; i < indiceFin_x; i++) 
+	    	{
+				if(i >= 0 && i < this.getEntire_map().getGrille().size())
+				{
+					grille.add(new ArrayList<Tile>());
+				}
+				
+	    		for(int j = indiceStart_y; j < indiceFin_y; j++)
+	    		{
+	    			//Attention aux cas où la tile voulue se situe sur une extrémité de la map.
+    				if(i >= 0 && j >=0 && i < this.getEntire_map().getGrille().size() && j < this.getEntire_map().getGrille().get(i).size())
+    				{
+		    			grille.get(h).add(this.getEntire_map().getGrille().get(i).get(j));
+    				}
+	    		}
+	    		if(i >= 0 && i < this.getEntire_map().getGrille().size())
+				{
+	    			h++;
+				}
+	    	}
+		return grille;
 	}
 
 	public CollisionManager getCollision_manager() {
@@ -113,4 +206,9 @@ public class MapManager
 	public void setAbsolute(Vector2f absolute) {
 		this.absolute = absolute;
 	}
+	
+	
+
+
+
 }

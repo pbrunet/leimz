@@ -2,10 +2,13 @@ package com.server.core;
 
 import java.io.IOException;
 
+
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
 
+
+import com.server.core.functions.CombatFunction;
 import com.server.core.functions.ConnectFunction;
 import com.server.core.functions.Functionable;
 import com.server.core.functions.InfoFunction;
@@ -16,12 +19,10 @@ import com.server.core.functions.StateFunction;
 public class Calculator implements Runnable
 {
 	private static HashMap <String,Functionable> dictfunctions = new HashMap<String,Functionable>();
-	private List<ClientList> cl;
 	private Thread t;
 
-	public Calculator(List<ClientList> cl)
+	public Calculator()
 	{
-		this.cl = cl;
 
 		//On ajoute les fonctions
 		/*
@@ -38,6 +39,7 @@ public class Calculator implements Runnable
 		dictfunctions.put("c",new ConnectFunction());
 		dictfunctions.put("sa",new SayFunction());
 		dictfunctions.put("lo",new LoadFunction());
+		dictfunctions.put("co",new CombatFunction());
 
 		this.t = new Thread(this);
 		t.start();
@@ -70,11 +72,11 @@ public class Calculator implements Runnable
 			try
 			{
 				// Pour chaque client connecte
-				for(int i = 0; i < cl.size(); i++)
+				for(int i = 0; i < ServerSingleton.getInstance().getCl().size(); i++)
 				{
-					for(int j = 0; j < cl.get(i).getClients().size(); j++)
+					for(int j = 0; j < ServerSingleton.getInstance().getCl().get(i).getClients().size(); j++)
 					{
-						Client c = cl.get(i).getClients().get(j);
+						Client c = ServerSingleton.getInstance().getCl().get(i).getClients().get(j);
 						try {
 							this.submit(c,c.receiveFromClient());
 						} catch (IOException e) {
@@ -92,13 +94,5 @@ public class Calculator implements Runnable
 				//l.fatal(e.getMessage());
 			}
 		}
-	}
-
-	public List<ClientList> getCl() {
-		return cl;
-	}
-
-	public void setCl(List<ClientList> cl) {
-		this.cl = cl;
 	}
 }

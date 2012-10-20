@@ -1,5 +1,7 @@
 package com.server.core.functions;
 
+import com.game_entities.Joueur;
+import com.gameplay.entities.Personnage;
 import com.server.core.Client;
 import com.server.core.ServerSingleton;
 import java.sql.ResultSet;
@@ -59,6 +61,7 @@ public class ConnectFunction implements Functionable
 				classe = rsp.getString("classe.name");
 			}
 			c.getCompte().setClient_id(id);
+			c.getCompte().setCurrent_joueur(new Joueur(new Personnage(nom, race, classe), null, null));
 			c.sendToClient("CONNECT_SUCCEED");
 			c.sendToClient(nom+";"+race+";"+classe);
 			rsp.close();

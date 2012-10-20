@@ -1,6 +1,7 @@
 package com.client.gamestates;
 
 import java.io.File;
+
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 
@@ -17,16 +18,22 @@ import com.client.display.Camera;
 import com.client.display.DisplayManager;
 import com.client.display.gui.GUI_Manager;
 import com.client.events.EventListener;
-import com.client.network.NetworkListener;
 import com.client.network.NetworkManager;
 import com.client.utils.Data;
 import com.client.utils.gui.ChatFrame;
 import com.client.utils.gui.InventairePanel;
 import com.client.utils.gui.InventaireUI;
 import com.client.utils.gui.PnjDialogFrame;
+import com.client.utils.gui.PrincipalGui;
 import com.client.utils.pathfinder.PathFinder;
+import com.game_entities.Joueur;
 import com.game_entities.MainJoueur;
+import com.game_entities.PNJ;
 import com.game_entities.managers.EntitiesManager;
+import com.gameplay.Combat;
+import com.gameplay.Equipe;
+import com.gameplay.Combat.EtatCombat;
+import com.gameplay.managers.CombatManager;
 import com.map.Tile;
 import com.map.client.managers.MapManager;
 
@@ -42,10 +49,7 @@ public class Principal extends BasicGameState
 	private DisplayManager disp;
 	
 	//------------------GUI----------------
-    private GUI_Manager gui_manager;
-    private ChatFrame frame;
-    private ResizableFrame menu;
-    private InventaireUI inventaireUI;
+    private PrincipalGui maingui;
     
     //EVENTS
     private EventListener event_listener;
@@ -64,11 +68,9 @@ public class Principal extends BasicGameState
     
     private float current_scale = 1;
     
-    public enum GameState
-    {
-    	NORMAL, COMBAT
-    };
-    private GameState game_state;
+    //------------COMBAT-------------
+    private CombatManager combatManager;
+    
 
 	@Override
 	public int getID() 
@@ -80,6 +82,10 @@ public class Principal extends BasicGameState
 	public void enter(GameContainer gc, StateBasedGame sbg)
 			throws SlickException 
 	{
+		entities_manager =  EntitiesManager.instance;
+		
+		GUI_Manager.instance.getRoot().removeAllChildren();
+		
 		map_manager = MapManager.instance;
 		main_player = entities_manager.getPlayers_manager().getMain_player();
 		main_player.initImgs();
@@ -92,71 +98,14 @@ public class Principal extends BasicGameState
 		camera = new Camera();
 		disp = new DisplayManager(camera, entities_manager);
 		
-		ArrayList<NetworkListener> listeners = new ArrayList<NetworkListener>();
-		listeners.add(main_player);
+		combatManager = new CombatManager();
 		
-		NetworkManager.instance.init(map_manager, entities_manager, listeners);
+		
+		NetworkManager.instance.init();
 		
 		pathfinder = new PathFinder(map_manager.getEntire_map());
 		
-		//--------------------------GUI-----------------------
-        try {
-			gui_manager = new GUI_Manager(new File("data/GUI/Theme/projet.xml").toURI().toURL(), gc);
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		
-        frame = new ChatFrame(null, main_player);
-        frame.setTheme("/resizableframe");
-        frame.setTitle("Leimzochat");
-        frame.setPosition(50, 300);
-        frame.appendRow("default","Bienvenue sur Leimz !! /n/nTapez votre message sur la barre en dessous de ce message :)/n/n");
-        
-        inventaireUI = new InventaireUI(main_player.getPerso().getInventaire());
-        inventaireUI.setTheme("/resizableframe");
-        inventaireUI.setPosition(100, 100);
-        gui_manager.getRoot().add(inventaireUI);
-        
-        menu = new ResizableFrame();
-        menu.setTheme("/resizableframe");
-        menu.setTitle("Menu");
-        
-        Button options = new Button("Options");
-        options.setTheme("/button");
-        Button deconnexion = new Button("Se Deconnecter");
-        deconnexion.setTheme("/button");
-        Button retour = new Button("Retour au Jeu");
-        retour.setTheme("/button");
-        retour.addCallback(new Runnable() {
-			
-			@Override
-			public void run() {
-				menu.setVisible(false);
-			}
-		});
-        Button quitter = new Button("Quitter");
-        quitter.setTheme("/button");
-        quitter.addCallback(new Runnable() {
-			
-			@Override
-			public void run() {
-				System.exit(0);
-			}
-		});
-        
-        DialogLayout l = new DialogLayout();
-        l.setTheme("/dialoglayout");
-        l.setHorizontalGroup(l.createParallelGroup(options, deconnexion, retour, quitter));
-        l.setVerticalGroup(l.createSequentialGroup(options, deconnexion, retour, quitter));
-        menu.add(l);
-        
-        menu.setPosition((Base.sizeOfScreen_x/2)-(menu.getWidth()/2), (Base.sizeOfScreen_y/2)-(menu.getHeight()/2));
-        menu.setVisible(false);
-        
-        gui_manager.getRoot().add(frame);
-        gui_manager.getRoot().add(menu);
-        
-        game_state = GameState.NORMAL;
+		maingui = new PrincipalGui();
 	}
 
 	public MainJoueur getMain_player() {
@@ -179,42 +128,62 @@ public class Principal extends BasicGameState
 			public void pollEvents(Input input)
 			{
 				if(input.isKeyPressed(Input.KEY_ESCAPE))
-					menu.setVisible(!menu.isVisible());
+					maingui.getMenu().setVisible(!maingui.getMenu().isVisible());
 				
 				if(input.isKeyPressed(Input.KEY_I))
-					inventaireUI.setVisible(!inventaireUI.isVisible());
+					maingui.getInventaireUI().setVisible(!maingui.getInventaireUI().isVisible());
 				
 				if(input.isKeyPressed(Input.KEY_SPACE))
 				{
-					//START COMBAT
-					if(game_state != GameState.COMBAT)
-						setGame_state(GameState.COMBAT);
-					else
-						setGame_state(GameState.NORMAL);
+					
 				}
 				
 				if(input.isMousePressed(0))
 				{
-					for(int i = 0; i < entities_manager.getPnjs_manager().getPnjs().size(); i++)
+					boolean pnj_pressed = false;
+					//System.out.println(input.getMouseX()+":"+input.getMouseY()+ "      "+map_manager.getEntire_map().getGrille().get(21).get(20).getPos_screen().x+":"+map_manager.getEntire_map().getGrille().get(21).get(20).getPos_screen().y);
+					for(int i = 0; i < entities_manager.getEntities().size(); i++)
 					{
 						Rectangle c = new Rectangle(
-								entities_manager.getPnjs_manager().getPnjs().get(i).getCorps().getX()+entities_manager.getPnjs_manager().getPnjs().get(i).getPos_real_on_screen().x,
-								entities_manager.getPnjs_manager().getPnjs().get(i).getCorps().getY()+entities_manager.getPnjs_manager().getPnjs().get(i).getPos_real_on_screen().y,
-								entities_manager.getPnjs_manager().getPnjs().get(i).getCorps().getWidth(),
-								entities_manager.getPnjs_manager().getPnjs().get(i).getCorps().getHeight());
+								entities_manager.getEntities().get(i).getCorps().getX()+entities_manager.getEntities().get(i).getPos_real_on_screen().x,
+								entities_manager.getEntities().get(i).getCorps().getY()+entities_manager.getEntities().get(i).getPos_real_on_screen().y,
+								entities_manager.getEntities().get(i).getCorps().getWidth(),
+								entities_manager.getEntities().get(i).getCorps().getHeight());
 								
 						if(c.contains(input.getMouseX(), input.getMouseY()))
 						{
-							PnjDialogFrame dialog = new PnjDialogFrame(entities_manager.getPnjs_manager().getPnjs().get(i));
+							if((entities_manager.getEntities().get(i)) instanceof PNJ)
+							{
+								PnjDialogFrame dialog = new PnjDialogFrame(entities_manager.getPnjs_manager().getPnjs().get(i));
+								
+								GUI_Manager.instance.getRoot().add(dialog);
+								dialog.setSize(400, 400);
+								dialog.setPosition((Base.sizeOfScreen_x/2)-(dialog.getWidth()/2), (Base.sizeOfScreen_y/2)-(dialog.getHeight()/2));
+								pnj_pressed = true;
+							}
 							
-							gui_manager.getRoot().add(dialog);
-							dialog.setSize(400, 400);
-							dialog.setPosition((Base.sizeOfScreen_x/2)-(dialog.getWidth()/2), (Base.sizeOfScreen_y/2)-(dialog.getHeight()/2));
+							else if((entities_manager.getEntities().get(i)) instanceof Joueur)
+							{
+								boolean encours = false;
+								for(int k = 0; k < combatManager.getMainJoueurCombats().size(); k++)
+								{
+									if(combatManager.getMainJoueurCombats().get(k).getEtat().equals(EtatCombat.EN_COURS))
+									{
+										encours = true;
+									}
+								}
+								if(!encours)
+								{
+									combatManager.askCombat((Joueur)entities_manager.getEntities().get(i));
+								}
+								
+							}
+							
 						}
 					}
 					
 					Tile tile_pressed = map_manager.getTileScreen(new Vector2f(input.getMouseX(), input.getMouseY()));
-					if(tile_pressed != null)
+					if(tile_pressed != null && !pnj_pressed)
 					{
 						main_player.startMoving(pathfinder.calculateChemin(main_player.getTile(), tile_pressed));
 					}
@@ -239,8 +208,25 @@ public class Principal extends BasicGameState
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics gr)
 			throws SlickException 
 	{
-		disp.drawAll(gr);
-		gui_manager.getTwlInputAdapter().render();
+		Combat todraw = null;
+		for(int i = 0; i < combatManager.getMainJoueurCombats().size(); i++)
+		{
+			if(!combatManager.getMainJoueurCombats().get(i).getEtat().equals(EtatCombat.FINI))
+			{
+				todraw = combatManager.getMainJoueurCombats().get(i);
+			}
+		}
+		if(todraw != null)
+		{
+			disp.drawAllCombat(gr, todraw);
+		}
+		else
+		{
+			disp.drawAll(gr);
+		}
+		
+		
+		GUI_Manager.instance.getTwlInputAdapter().render();
 	}
 
 	@Override
@@ -250,26 +236,7 @@ public class Principal extends BasicGameState
 		gc.setMinimumLogicUpdateInterval(10);
 		gc.setMaximumLogicUpdateInterval(10);
 		
-		inventaireUI.refresh(main_player.getPerso().getInventaire());
-		InventairePanel inventory_panel = inventaireUI.getInventory_panel();
-		for(int i = 0; i < inventory_panel.getSlots().size(); i++)
-		{
-			for(int j = 0; j < inventory_panel.getSlots().get(i).size();j++)
-			{
-				if(inventory_panel.getSlots().get(i).get(j).isFenOk())
-				{
-					 ResizableFrame panInfo = InventaireUI.panInfo(inventory_panel.getSlots().get(i).get(j).getItem());
-					
-                     gui_manager.getRoot().add(panInfo);
-                     
-                     panInfo.setSize(300, 250);
-                     panInfo.setPosition((inventory_panel.getX()+(inventory_panel.getWidth()/2))-(panInfo.getWidth()/2), (inventory_panel.getY()+(inventory_panel.getHeight()/2))-(panInfo.getHeight()/2));
-                     inventory_panel.getSlots().get(i).get(j).setFenOk(false);
-                    
-				}
-			}
-		}
-		frame.refresh(main_player);
+
 		
 		for(int i = 0; i < entities_manager.getPlayers_manager().getJoueurs().size(); i++)
 		{
@@ -301,10 +268,10 @@ public class Principal extends BasicGameState
 			if(entities_manager.getPnjs_manager().getPnjs().get(i).getPos_real_on_screen()!=null)
 				entities_manager.getPnjs_manager().getPnjs().get(i).refresh();
 		}
-		disp.refresh(game_state, entities_manager);
+		disp.refresh(entities_manager);
 		
-		gui_manager.getTwlInputAdapter().update();
-		if(!gui_manager.getTwlInputAdapter().isOn_gui_event())
+		GUI_Manager.instance.getTwlInputAdapter().update();
+		if(!GUI_Manager.instance.getTwlInputAdapter().isOn_gui_event())
 		{
 			event_listener.pollEvents(gc.getInput());
 			main_player.pollEvents(gc.getInput());
@@ -314,27 +281,11 @@ public class Principal extends BasicGameState
 			}
 		}
 		
-		if(NetworkManager.instance.modifManager)
+		/*if(NetworkManager.instance.modifManager)
 		{
 			entities_manager = NetworkManager.instance.getVisible_entities_manager();
 			NetworkManager.instance.setVisible_entities_manager(entities_manager);
-		}
+		}*/
 		
     }
-
-	public EntitiesManager getEntities_manager() {
-		return entities_manager;
-	}
-
-	public void setEntities_manager(EntitiesManager entitiesManager) {
-		entities_manager = entitiesManager;
-	}
-
-	public GameState getGame_state() {
-		return game_state;
-	}
-
-	public void setGame_state(GameState gameState) {
-		game_state = gameState;
-	}
 }

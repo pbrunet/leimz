@@ -26,6 +26,19 @@ public class PlayersManager
 		this.joueurs = new ArrayList<Joueur>();
 	}
 	
+	public Joueur getJoueur(String nom)
+	{
+		Joueur j = null;
+		for(int i = 0; i < joueurs.size(); i++)
+		{
+			if(joueurs.get(i).getPerso().getNom().equals(nom))
+			{
+				j = joueurs.get(i);
+			}
+		}
+		return j;
+	}
+	
 	public void refresh()
 	{
 		for(int i = 0; i < joueurs.size(); i++)

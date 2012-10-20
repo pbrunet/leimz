@@ -78,6 +78,7 @@ public abstract class Entity
 			this.pos_real.y = tile.getPos_real().y;
 		}
 		
+		this.etat = Etat.NORMAL;
 	}
 	
 	public Image returnImgOrientation(Orientation orientation)

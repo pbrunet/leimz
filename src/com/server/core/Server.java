@@ -82,7 +82,7 @@ public class Server
 		}
 		//world = new World(entire_map);
 
-		calculator = new Calculator(cl);
+		calculator = new Calculator();
 	}
 
 
@@ -172,7 +172,6 @@ public class Server
 			this.cl.add(toreturn);
 			pool.submit(toreturn);
 		}
-		calculator.setCl(cl);
 		return toreturn;
 	}
 

@@ -5,26 +5,28 @@ import java.util.ArrayList;
 import org.jdom.Element;
 import org.newdawn.slick.geom.Vector2f;
 
+import com.client.display.gui.GUI_Manager;
+import com.client.network.NetworkManager;
 import com.game_entities.Joueur;
+
+import de.matthiasmann.twl.Alignment;
+import de.matthiasmann.twl.Button;
+import de.matthiasmann.twl.DialogLayout;
+import de.matthiasmann.twl.Label;
+import de.matthiasmann.twl.ListBox;
+import de.matthiasmann.twl.ResizableFrame;
+import de.matthiasmann.twl.model.SimpleChangableListModel;
 
 public class Quete 
 {
-	private String nom, commanditaire;
-	private ArrayList<Objectif> objectifs;
+	private String nom;
+	private ArrayList<QueteObjectif> objectifs;
 	
-	public Quete(String commanditaire, Element root)
+	public Quete(String nom, ArrayList<QueteObjectif> objectifs)
 	{
-		this.nom = root.getChild("nom").getText();
-		this.commanditaire = commanditaire;
+		this.nom = nom;
 		
-		this.objectifs = new ArrayList<Objectif>();
-		for(int i = 0; i < root.getChild("objectifs").getChildren("objectif").size(); i++)
-		{
-			this.objectifs.add(new Objectif(
-					((Element) root.getChild("objectifs").getChildren("objectif").get(i)).getChild("description").getText()
-					, ((Element) root.getChild("objectifs").getChildren("objectif").get(i)).getChild("but").getText())
-					);
-		}
+		this.objectifs = objectifs;
 	}
 	
 	public void testObjectifs(Joueur main_player)
@@ -38,61 +40,51 @@ public class Quete
 					if(((float)main_player.getTile().getPos().x) == (((Vector2f)objectifs.get(i).getObjectif()).getX()) && ((float)main_player.getTile().getPos().y) == (((Vector2f)objectifs.get(i).getObjectif()).getY()))
 					{
 						objectifs.get(i).setAccompli(true);
-						System.out.println("Objectif reussie !");
+						NetworkManager.instance.sendToServer("qo;"+this.getNom()+";"+i);
+						System.out.println("Objectif accompli !");
 					}
 				}
 			}
-			
 		}
 	}
 	
-	class Objectif
+	public static ResizableFrame newQueteFrame(Quete quete)
 	{
-		private String description;
-		private boolean accompli;
-		private Object objectif;
-		private String type;
+		final ResizableFrame frame = new ResizableFrame();
+		frame.setTitle("Nouvelle quête !");
 		
-		public Objectif(String description, String text_objectif)
+		Label labN = new Label("Nom de la quête : "+quete.getNom());
+		labN.setTheme("/label");
+		
+		ArrayList<String> o_s = new ArrayList<String>();
+		for(int i = 0; i < quete.getObjectifs().size(); i++)
 		{
-			this.description = description;
-
-			if(text_objectif.contains("tile"))
-			{
-				String[] pos = text_objectif.substring(5, text_objectif.length()-1).split(",");
-				this.objectif = new Vector2f(Float.parseFloat(pos[0]), Float.parseFloat(pos[1]));
-				type = "endroit";
-			}
+			o_s.add(quete.getObjectifs().get(i).getDescription());
 		}
+		SimpleChangableListModel<String> lm = new SimpleChangableListModel<String>(o_s);
+		ListBox lb = new ListBox<String>(lm);
+		lb.setTheme("/listbox");
 		
-		public String getDescription() {
-			return description;
-		}
-		public void setDescription(String description) {
-			this.description = description;
-		}
-		public boolean isAccompli() {
-			return accompli;
-		}
-		public void setAccompli(boolean accompli) {
-			this.accompli = accompli;
-		}
-
-		public Object getObjectif() {
-			return objectif;
-		}
-
-		public void setObjectif(Object objectif) {
-			this.objectif = objectif;
-		}
-
-		public String getType() {
-			return type;
-		}
-
-		public void setType(String type) {
-			this.type = type;
-		}
+		Button okButton = new Button("OK");
+		okButton.setTheme("/button");
+		okButton.addCallback(new Runnable() {
+			
+			@Override
+			public void run() {
+				frame.setVisible(false);
+			}
+		});
+		
+		
+		DialogLayout l = new DialogLayout();
+		l.setTheme("/dialoglayout");
+		l.setHorizontalGroup(l.createParallelGroup().addWidget(labN).addWidget(lb).addWidget(okButton, Alignment.CENTER));
+		l.setVerticalGroup(l.createSequentialGroup().addWidget(labN).addGap(40).addWidget(lb).addGap().addWidget(okButton));
+		
+		frame.add(l);
+		
+		return frame;
+		
 	}
 	
 	public String getNom() {
@@ -103,19 +95,11 @@ public class Quete
 		this.nom = nom;
 	}
 
-	public String getCommanditaire() {
-		return commanditaire;
-	}
-
-	public void setCommanditaire(String commanditaire) {
-		this.commanditaire = commanditaire;
-	}
-
-	public ArrayList<Objectif> getObjectifs() {
+	public ArrayList<QueteObjectif> getObjectifs() {
 		return objectifs;
 	}
 
-	public void setObjectifs(ArrayList<Objectif> objectifs) {
+	public void setObjectifs(ArrayList<QueteObjectif> objectifs) {
 		this.objectifs = objectifs;
 	}
 }

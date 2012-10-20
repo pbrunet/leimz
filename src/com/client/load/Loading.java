@@ -112,11 +112,9 @@ public class Loading extends BasicGameState
 			e_m.setPnjs_manager(load_pnj.getPnjs_manager());
 			e_m.setPlayers_manager(new PlayersManager(j));
 
-			((Principal) sbg.getState(Base.PRINCIPAL)).setEntities_manager(e_m);
-
 			sbg.enterState(Base.PRINCIPAL);
 		}
-			}
+	}
 
 	@Override
 	public void init(GameContainer arg0, StateBasedGame arg1)

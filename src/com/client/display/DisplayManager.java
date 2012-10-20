@@ -1,6 +1,9 @@
 package com.client.display;
 
 import java.util.Iterator;
+
+
+
 import java.util.HashMap;
 
 import org.newdawn.slick.Color;
@@ -10,7 +13,6 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f; 
 
 import com.client.gamestates.Base;
-import com.client.gamestates.Principal.GameState;
 import com.client.utils.Data;
 import com.game_entities.Joueur;
 import com.game_entities.Monstre;
@@ -19,6 +21,8 @@ import com.game_entities.Entity.Etat;
 import com.game_entities.managers.EntitiesManager;
 import com.game_entities.managers.MonstersManager;
 import com.game_entities.managers.PNJsManager;
+import com.gameplay.Combat;
+import com.gameplay.Combat.EtatCombat;
 import com.map.Grille;
 import com.map.client.managers.MapManager;
 
@@ -34,7 +38,6 @@ public class DisplayManager
 	private EntitiesManager entities_manager;
 	private Camera camera;
 	private Graphics graphics;
-	private GameState game_state;
 
 	public DisplayManager(Camera camera, EntitiesManager entities_manager)
 	{
@@ -43,32 +46,16 @@ public class DisplayManager
 	}
 
 	//Rafraichissement du display_manager
-	public void refresh(GameState game_state, EntitiesManager ent)
+	public void refresh(EntitiesManager ent)
 	{
 		//On recupere la grille visible, qui a pu changer entre temps
 		current_map = MapManager.instance.getMap_visible().getGrille();
 		this.entities_manager = ent;
-
-		this.game_state = game_state;
 	}
-
-	//Dessin complet
-	public void drawAll(Graphics g)
+	
+	//Dessin de la map
+	private void drawMap(float scale)
 	{
-		this.graphics = g;
-
-		float scale = camera.getZoomScale();
-
-		Color filtre;
-		if(game_state.equals(GameState.COMBAT))
-		{
-			filtre = new Color(255,255,255,0.5f);
-		}
-		else
-		{
-			filtre = new Color(255,255,255,1f);
-		}
-
 		//On dessine la carte
 		for(int j = 0; j < current_map.get(0).size(); j++)
 		{
@@ -87,13 +74,53 @@ public class DisplayManager
 					pos_aff.x = (current_map.get(i).get(j).getPos_screen().x-current_map.get(i).get(j).getTypes().get(0).getBase().getX())+((1-scale)*Base.Tile_x);
 					pos_aff.y = (current_map.get(i).get(j).getPos_screen().y-current_map.get(i).get(j).getTypes().get(0).getBase().getY())+((1-scale)*Base.Tile_y/2);
 
-					current_map.get(i).get(j).getTypes().get(0).getImg().draw(pos_aff.x, pos_aff.y, scale, filtre);
+					current_map.get(i).get(j).getTypes().get(0).getImg().draw(pos_aff.x, pos_aff.y, scale);
 					current_map.get(i).get(j).setDrawn(true);
 				}
 				first=(first==1)?0:1;
 			}
 		}
+	}
+	
+	
+	//Dessin de la map
+	private void drawMapCombat(float scale, Combat combat)
+	{
+		//On dessine la carte
+		for(int j = 0; j < current_map.get(0).size(); j++)
+		{
+			/*On veut ici dessiner la carte ligne par ligne en affichant une tile sur 2
+			 * pair ou impaire en fonction de la premiere tile en haut a gauche
+			 */
+			int first = (int) (current_map.get(0).get(0).getPos().x%2);
+			for(int k=0;k<2;k++)
+			{
+				for(int i = first; i < current_map.size(); i+=2) 
+				{
+					//On cree la position d'affichage
+					Vector2f pos_aff = new Vector2f();
+					//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
+					//De plus, on ajoute une petite formule demontrable simplement en repere orthonorme pour le zoom
+					pos_aff.x = (current_map.get(i).get(j).getPos_screen().x-current_map.get(i).get(j).getTypes().get(0).getBase().getX())+((1-scale)*Base.Tile_x);
+					pos_aff.y = (current_map.get(i).get(j).getPos_screen().y-current_map.get(i).get(j).getTypes().get(0).getBase().getY())+((1-scale)*Base.Tile_y/2);
 
+					if(!combat.getZone().contains(current_map.get(i).get(j)))
+					{
+						current_map.get(i).get(j).getTypes().get(0).getImg().draw(pos_aff.x, pos_aff.y, new Color(255,255,255,0.4f));
+					}
+					else
+					{
+						current_map.get(i).get(j).getTypes().get(0).getImg().draw(pos_aff.x, pos_aff.y);
+					}
+					current_map.get(i).get(j).setDrawn(true);
+				}
+				first=(first==1)?0:1;
+			}
+		}
+	}
+	
+	private void drawEntities(float scale)
+	{
 		//Joueur principal
 		Joueur main_player = entities_manager.getPlayers_manager().getMain_player();
 
@@ -150,9 +177,8 @@ public class DisplayManager
 							joueurAffiche = true;
 						}
 					}
-					
+							
 					//-----------------------------MONSTRES--------------------
-
 					for(int k = 0; k < mm.getMonsters().size(); k++)
 					{
 						if(ob.intersects(mm.getMonsters().get(k).getPieds_screen()))
@@ -173,8 +199,8 @@ public class DisplayManager
 					for(int k = 0; k < pnjs_manager.getPnjs().size(); k++)
 					{
 						Rectangle pnps = new Rectangle(pnjs_manager.getPnjs().get(k).getPos_real_on_screen().x+pnjs_manager.getPnjs().get(k).getPieds().getX(),
-								pnjs_manager.getPnjs().get(k).getPos_real_on_screen().y+pnjs_manager.getPnjs().get(k).getPieds().getY(), 
-								pnjs_manager.getPnjs().get(k).getPieds().getWidth(), pnjs_manager.getPnjs().get(k).getPieds().getHeight());
+										pnjs_manager.getPnjs().get(k).getPos_real_on_screen().y+pnjs_manager.getPnjs().get(k).getPieds().getY(), 
+										pnjs_manager.getPnjs().get(k).getPieds().getWidth(), pnjs_manager.getPnjs().get(k).getPieds().getHeight());
 						if(ob.intersects(pnps))
 						{
 							if(!pnjsAffiche.get(pnjs_manager.getPnjs().get(k)))
@@ -184,33 +210,78 @@ public class DisplayManager
 							}
 						}
 					}
-					
+							
 					current_map.get(i).get(j).getTypes().get(1).getImg().draw(pos_aff.x, pos_aff.y);	
 				}
 			}
 		}
 
-		for(int k = 0; k < entities_manager.getPlayers_manager().getJoueurs().size(); k++)
+				for(int k = 0; k < entities_manager.getPlayers_manager().getJoueurs().size(); k++)
+				{
+					if(entities_manager.getPlayers_manager().getJoueurs().get(k).getCurrent_img_repos() != null)
+						entities_manager.getPlayers_manager().getJoueurs().get(k).draw();
+				}
+
+				//Si le joueur n'a finalement pas ete affiche (dans le cas ou, par ex, il n'y a aucun objet la ou il est)
+				if(joueurAffiche == false)
+				{
+					//On l'affiche
+					main_player.draw(scale);
+				}
+				//Si les pnjs n'ont finalement pas ete affiches (dans le cas ou, par ex, il n'y a aucun objet la ou ils sont)
+				Iterator<PNJ> i = pnjsAffiche.keySet().iterator();
+				int k = 0;
+				while (i.hasNext())
+				{
+					if(!pnjsAffiche.get(i.next()))
+						pnjs_manager.getPnjs().get(k).draw();
+					k++;
+				}
+	}
+	
+	//Dessin complet
+	public void drawAll(Graphics g)
+	{
+		this.graphics = g;
+
+		float scale = camera.getZoomScale();
+		
+		drawMap(scale);
+		drawEntities(scale);
+
+		//Joueur principal
+		Joueur main_player = entities_manager.getPlayers_manager().getMain_player();
+
+		if(main_player.getEtat().equals(Etat.OVER) || main_player.getEtat().equals(Etat.CLICKED))
 		{
-			if(entities_manager.getPlayers_manager().getJoueurs().get(k).getCurrent_img_repos() != null)
-				entities_manager.getPlayers_manager().getJoueurs().get(k).draw();
+			main_player.getCurrent_img_repos().setAlpha(0.8f);
+			Font font = Data.getFont("Trebuchet MS", 15);
+			graphics.setFont(font);
+			graphics.drawString(main_player.getPerso().getNom(), main_player.getPos_real_on_screen().x+(main_player.getSize().x/2)-(font.getWidth(main_player.getPerso().getNom())/2), main_player.getPos_real_on_screen().y-20);
+		}
+		else
+		{
+			main_player.getCurrent_img_repos().setAlpha(1f);
+		}
+	}
+	
+
+	public void drawAllCombat(Graphics g, Combat combat)
+	{
+		this.graphics = g;
+
+		float scale = camera.getZoomScale();
+		
+		drawMapCombat(scale, combat);
+		drawEntities(scale);
+		
+		if(combat.getEtat().equals(EtatCombat.INIT))
+		{
+			
 		}
 
-		//Si le joueur n'a finalement pas ete affiche (dans le cas ou, par ex, il n'y a aucun objet la ou il est)
-		if(joueurAffiche == false)
-		{
-			//On l'affiche
-			main_player.draw(scale);
-		}
-		//Si les pnjs n'ont finalement pas ete affiches (dans le cas ou, par ex, il n'y a aucun objet la ou ils sont)
-		Iterator<PNJ> i = pnjsAffiche.keySet().iterator();
-		int k = 0;
-		while (i.hasNext())
-		{
-			if(!pnjsAffiche.get(i.next()))
-				pnjs_manager.getPnjs().get(k).draw();
-			k++;
-		}
+		//Joueur principal
+		Joueur main_player = entities_manager.getPlayers_manager().getMain_player();
 
 		if(main_player.getEtat().equals(Etat.OVER) || main_player.getEtat().equals(Etat.CLICKED))
 		{

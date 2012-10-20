@@ -7,6 +7,7 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.GameContainer;
 
+import de.matthiasmann.twl.Event;
 import de.matthiasmann.twl.GUI;
 import de.matthiasmann.twl.Widget;
 import de.matthiasmann.twl.renderer.lwjgl.LWJGLRenderer;
@@ -19,9 +20,15 @@ public class GUI_Manager {
 	private GUI gui;
 	private Widget root;
 	private TWLInputAdapter twlInputAdapter;
+	
+	public static GUI_Manager instance;
 
 	public GUI_Manager(URL url, GameContainer gc) 
 	{
+		if(instance == null)
+		{
+			instance = this;
+		}
 		
 		root = new Widget();
 		root.setTheme("");
@@ -77,4 +84,5 @@ public class GUI_Manager {
 	public void setTwlInputAdapter(TWLInputAdapter twlInputAdapter) {
 		this.twlInputAdapter = twlInputAdapter;
 	}
+
 }
