@@ -37,7 +37,7 @@ public class MainJoueur extends Joueur
 	{
 		super(perso, tile, orientation);
 		
-		
+
 
 		this.pos_real.x += 40;
 		this.pos_real.y += 20;

@@ -18,6 +18,9 @@ public class Personnage
 	private Classe classe;
 	private HashMap<Caracteristique,Integer> caracs_values;
 	private HashMap<Caracteristique,Integer> caracs;
+	private ArrayList<Sort> sorts;
+	
+	private Sort current_sort;
 
 	//------------------STATIC CARACS--------------------
 	public enum caracteristique { VIE, ENERGIE, DEPLACEMENT, ENDURANCE, PRECISION, DOMMAGE_CAC, DOMMAGE_MAGIE };
@@ -43,6 +46,21 @@ public class Personnage
 		this.nom = nom;
 		this.setEntity_file("data/Gameplay/Races/"+race+"/Classes/"+"entity_"+classe.toLowerCase()+".xml");
 
+		this.race = new Race();
+		this.classe = new Classe();
+		this.caracs = new HashMap<>();
+		this.caracs_values = new HashMap<>();
+		this.quetes_manager = new QuetesManager();
+		this.inventaire = new Inventaire();
+	}
+	
+	public Personnage()
+	{
+		this.race = new Race();
+		this.classe = new Classe();
+		
+		this.caracs = new HashMap<>();
+		this.caracs_values = new HashMap<>();
 		this.quetes_manager = new QuetesManager();
 		this.inventaire = new Inventaire();
 	}
@@ -88,7 +106,7 @@ public class Personnage
 
 	public HashMap<Caracteristique,Integer> getCaracsBase() {
 		
-		HashMap<Caracteristique,Integer> caracs_base = new HashMap<Caracteristique,Integer>(classe.getCarac());
+		HashMap<Caracteristique,Integer> caracs_base = new HashMap<Caracteristique,Integer>(classe.getCaracs());
 		for(Entry<Caracteristique, Integer> entry : race.getCarac().entrySet()) {
 			if(caracs_base.containsKey(entry.getKey()))
 				caracs_base.put(entry.getKey(),caracs_base.get(entry.getKey()) + entry.getValue());
@@ -129,4 +147,24 @@ public class Personnage
 	public void setEntity_file(String entity_file) {
 		this.entity_file = entity_file;
 	}
+
+	public Sort getCurrent_sort() {
+		return current_sort;
+	}
+
+	public void setCurrent_sort(Sort current_sort) {
+		this.current_sort = current_sort;
+	}
+
+	public boolean isDead() {
+		return this.getCaracs().get(Caracteristique.VIE)<=0;
+	}
+
+	public void setSorts(ArrayList<Sort> sorts) {
+		this.sorts = sorts;
+	}
+	
+	
+	
+	
 }

@@ -15,6 +15,11 @@ public class Race
 		this.sorts = sorts;
 		this.carac = carac;
 	}
+	
+	public Race()
+	{
+		
+	}
 
 	public String getNom() {
 		return nom;

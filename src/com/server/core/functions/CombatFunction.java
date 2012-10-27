@@ -1,5 +1,6 @@
 package com.server.core.functions;
 
+import com.gameplay.Caracteristique;
 import com.server.core.Client;
 import com.server.core.ServerSingleton;
 
@@ -53,6 +54,8 @@ public class CombatFunction implements Functionable
 		if(args[2].equals("y"))
 		{
 			receiver.sendToClient("co;an;y;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
+			receiver.sendToClient("s;"+c.getCompte().getCurrent_joueur().getPerso().getNom()+";vie;"+c.getCompte().getCurrent_joueur().getPerso().getCaracs().get(Caracteristique.VIE));
+			c.sendToClient("s;"+receiver.getCompte().getCurrent_joueur().getPerso().getNom()+";vie;"+receiver.getCompte().getCurrent_joueur().getPerso().getCaracs().get(Caracteristique.VIE));
 		}
 		else if(args[2].equals("n"))
 		{

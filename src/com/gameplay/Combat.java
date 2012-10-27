@@ -1,7 +1,9 @@
 package com.gameplay;
 
 import java.util.ArrayList;
+import java.util.Timer;
 
+import com.client.utils.Chrono;
 import com.map.Tile;
 
 public class Combat
@@ -13,13 +15,22 @@ public class Combat
 		INIT, EN_COURS, FINI
 	};
 	private EtatCombat etat;
+	private Chrono timer_start;
+	private static long time_start = 3000;
 	
 	public Combat(ArrayList<Equipe> equipes, ArrayList<Tile> zone)
 	{
 		this.equipes = equipes;
 		this.zone = zone;
 		
-		etat =  EtatCombat.INIT;
+		etat = EtatCombat.INIT;
+		
+		timer_start = new Chrono(time_start);
+	}
+	
+	public void stop()
+	{
+		this.etat = EtatCombat.FINI;
 	}
 
 	public ArrayList<Equipe> getEquipes() {
@@ -45,5 +56,14 @@ public class Combat
 	public void setEtat(EtatCombat etat) {
 		this.etat = etat;
 	}
+
+	public Chrono getTimer_start() {
+		return timer_start;
+	}
+
+	public void setTimer_start(Chrono timer_start) {
+		this.timer_start = timer_start;
+	}
+
 	
 }

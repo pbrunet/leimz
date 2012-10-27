@@ -9,6 +9,7 @@ import com.client.network.NetworkManager;
 import com.map.Grille;
 import com.map.Tile;
 import com.map.Type_tile;
+import com.map.client.managers.MapManager;
 
 public class LoadMap implements Runnable
 {
@@ -84,7 +85,7 @@ public class LoadMap implements Runnable
 
 				int id_x=Integer.parseInt(args_map[u+2]);
 				int id_y=Integer.parseInt(args_map[u+3]);
-				grille.get(id_x).get(id_y).addTypes(Type_tile.getTypesTile(args_map[u+4]));
+				grille.get(id_x).get(id_y).addTypes(MapManager.getTypesTile(args_map[u+4]));
 				grille.get(id_x).get(id_y).setMonsterHolder( Boolean.parseBoolean(args_map[u+5]));
 			}
 
@@ -98,7 +99,7 @@ public class LoadMap implements Runnable
 				{
 					grille.get(Integer.parseInt(args_mapc[u]))
 					.get(Integer.parseInt(args_mapc[u+1]))
-					.addTypes(Type_tile.getTypesTile(args_mapc[u+2]));
+					.addTypes(MapManager.getTypesTile(args_mapc[u+2]));
 				}
 			}
 			LoadingList.setDeferredLoading(false);

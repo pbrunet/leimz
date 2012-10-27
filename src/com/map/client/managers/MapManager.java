@@ -2,7 +2,11 @@ package com.map.client.managers;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
 
 import com.client.network.NetworkManager;
@@ -14,6 +18,7 @@ import com.game_entities.managers.PlayersManager;
 import com.map.Grille;
 import com.map.Map;
 import com.map.Tile;
+import com.map.Type_tile;
 
 public class MapManager 
 {
@@ -25,6 +30,30 @@ public class MapManager
 	private Map map_visible, entire_map;
 	
     public static MapManager instance;
+    
+    private static HashMap<String, Type_tile> types = new HashMap<String, Type_tile>();
+	
+	public static Type_tile getTypesTile(String name)
+	{
+		if(types.get(name) != null)
+			return types.get(name);
+
+		//Caracteristiques de race
+		NetworkManager.instance.sendToServer("lo;tt;" + name); //load joueur, type tile, name
+		NetworkManager.instance.waitForNewMessage();
+		String[] info_tile= NetworkManager.instance.getMessage_recu_serveur().split(";"); //nom, img adresse, collidable, x, y, calque
+		Type_tile t = null;
+		try {
+			t= new Type_tile(info_tile[0], new Image(info_tile[1]),new Rectangle(Integer.parseInt(info_tile[3]),Integer.parseInt(info_tile[4]),80,40),Boolean.parseBoolean(info_tile[2]),Integer.parseInt(info_tile[5]));
+			types.put(info_tile[0], t);
+			return t;
+		} catch (NumberFormatException e) {
+			e.printStackTrace();
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
 	
 	public MapManager(Map entire_map)
 	{
@@ -83,7 +112,7 @@ public class MapManager
 	    		{
 	    			if(i%2 ==0) //Si la ligne est paire
 	    			{
-	    				//On détermine la "vraie" position de la tile par rapport aux coordonnées
+	    				//On dï¿½termine la "vraie" position de la tile par rapport aux coordonnï¿½es
 	    				entire_map.getGrille().get(i).get(j).setPos_screen(
 	    						new Vector2f((entire_map.getGrille().get(i).get(j).getPos().x/2)*80, entire_map.getGrille().get(i).get(j).getPos().y*40));
 	    				entire_map.getGrille().get(i).get(j).setPos_real(
@@ -92,7 +121,7 @@ public class MapManager
 	    			
 	    			else //Si la ligne est impaire
 	    			{
-	    				//On détermine la "vraie" position de la tile par rapport aux coordonnées
+	    				//On dï¿½termine la "vraie" position de la tile par rapport aux coordonnï¿½es
 	    				entire_map.getGrille().get(i).get(j).setPos_screen(
 	    						new Vector2f((entire_map.getGrille().get(i).get(j).getPos().x*80)/2, (entire_map.getGrille().get(i).get(j).getPos().y*40)+20));
 	    				entire_map.getGrille().get(i).get(j).setPos_real(
@@ -142,11 +171,11 @@ public class MapManager
 	{
 		ArrayList<ArrayList<Tile>> grille = new ArrayList<ArrayList<Tile>>();
 		
-		//Récupération de l'index de départ en x et y des Tile à afficher.
+		//Rï¿½cupï¿½ration de l'index de dï¿½part en x et y des Tile ï¿½ afficher.
 		int indiceStart_x = (int) (tile.getPos().x - (spread / 2));
 		int indiceStart_y = (int) (tile.getPos().y - (spread / 2));
 		
-		//Récupération de l'index de fin en x et y des Tile à afficher.
+		//Rï¿½cupï¿½ration de l'index de fin en x et y des Tile ï¿½ afficher.
 		int indiceFin_x = indiceStart_x + spread;
 		int indiceFin_y = indiceStart_y + spread;
 
@@ -161,7 +190,7 @@ public class MapManager
 				
 	    		for(int j = indiceStart_y; j < indiceFin_y; j++)
 	    		{
-	    			//Attention aux cas où la tile voulue se situe sur une extrémité de la map.
+	    			//Attention aux cas oï¿½ la tile voulue se situe sur une extrï¿½mitï¿½ de la map.
     				if(i >= 0 && j >=0 && i < this.getEntire_map().getGrille().size() && j < this.getEntire_map().getGrille().get(i).size())
     				{
 		    			grille.get(h).add(this.getEntire_map().getGrille().get(i).get(j));

@@ -18,6 +18,7 @@ import com.client.display.Camera;
 import com.client.display.DisplayManager;
 import com.client.display.gui.GUI_Manager;
 import com.client.events.EventListener;
+import com.client.events.MainEventListener;
 import com.client.network.NetworkManager;
 import com.client.utils.Data;
 import com.client.utils.gui.ChatFrame;
@@ -52,7 +53,7 @@ public class Principal extends BasicGameState
     private PrincipalGui maingui;
     
     //EVENTS
-    private EventListener event_listener;
+    private MainEventListener event_listener;
     
     //Entites du jeu
     private EntitiesManager entities_manager;
@@ -100,10 +101,11 @@ public class Principal extends BasicGameState
 		
 		combatManager = new CombatManager();
 		
-		
 		NetworkManager.instance.init();
 		
 		pathfinder = new PathFinder(map_manager.getEntire_map());
+		
+		event_listener = new MainEventListener(pathfinder);
 		
 		maingui = new PrincipalGui();
 	}
@@ -121,87 +123,6 @@ public class Principal extends BasicGameState
 			throws SlickException 
 	{
 		Data.loadData();
-		
-		event_listener = new EventListener()
-		{
-			@Override
-			public void pollEvents(Input input)
-			{
-				if(input.isKeyPressed(Input.KEY_ESCAPE))
-					maingui.getMenu().setVisible(!maingui.getMenu().isVisible());
-				
-				if(input.isKeyPressed(Input.KEY_I))
-					maingui.getInventaireUI().setVisible(!maingui.getInventaireUI().isVisible());
-				
-				if(input.isKeyPressed(Input.KEY_SPACE))
-				{
-					
-				}
-				
-				if(input.isMousePressed(0))
-				{
-					boolean pnj_pressed = false;
-					//System.out.println(input.getMouseX()+":"+input.getMouseY()+ "      "+map_manager.getEntire_map().getGrille().get(21).get(20).getPos_screen().x+":"+map_manager.getEntire_map().getGrille().get(21).get(20).getPos_screen().y);
-					for(int i = 0; i < entities_manager.getEntities().size(); i++)
-					{
-						Rectangle c = new Rectangle(
-								entities_manager.getEntities().get(i).getCorps().getX()+entities_manager.getEntities().get(i).getPos_real_on_screen().x,
-								entities_manager.getEntities().get(i).getCorps().getY()+entities_manager.getEntities().get(i).getPos_real_on_screen().y,
-								entities_manager.getEntities().get(i).getCorps().getWidth(),
-								entities_manager.getEntities().get(i).getCorps().getHeight());
-								
-						if(c.contains(input.getMouseX(), input.getMouseY()))
-						{
-							if((entities_manager.getEntities().get(i)) instanceof PNJ)
-							{
-								PnjDialogFrame dialog = new PnjDialogFrame(entities_manager.getPnjs_manager().getPnjs().get(i));
-								
-								GUI_Manager.instance.getRoot().add(dialog);
-								dialog.setSize(400, 400);
-								dialog.setPosition((Base.sizeOfScreen_x/2)-(dialog.getWidth()/2), (Base.sizeOfScreen_y/2)-(dialog.getHeight()/2));
-								pnj_pressed = true;
-							}
-							
-							else if((entities_manager.getEntities().get(i)) instanceof Joueur)
-							{
-								boolean encours = false;
-								for(int k = 0; k < combatManager.getMainJoueurCombats().size(); k++)
-								{
-									if(combatManager.getMainJoueurCombats().get(k).getEtat().equals(EtatCombat.EN_COURS))
-									{
-										encours = true;
-									}
-								}
-								if(!encours)
-								{
-									combatManager.askCombat((Joueur)entities_manager.getEntities().get(i));
-								}
-								
-							}
-							
-						}
-					}
-					
-					Tile tile_pressed = map_manager.getTileScreen(new Vector2f(input.getMouseX(), input.getMouseY()));
-					if(tile_pressed != null && !pnj_pressed)
-					{
-						main_player.startMoving(pathfinder.calculateChemin(main_player.getTile(), tile_pressed));
-					}
-				}
-			}
-
-			@Override
-			public void mousePressed(int button, int x, int y) {
-			}
-
-			@Override
-			public void mouseReleased(int button, int x, int y) {
-			}
-
-			@Override
-			public void mouseWheelMoved(int change) {
-			}
-		};
 	}
 
 	@Override
@@ -218,11 +139,11 @@ public class Principal extends BasicGameState
 		}
 		if(todraw != null)
 		{
-			disp.drawAllCombat(gr, todraw);
+			disp.drawAllCombat(gr, new Vector2f(gc.getInput().getMouseX(), gc.getInput().getMouseY()), todraw);
 		}
 		else
 		{
-			disp.drawAll(gr);
+			disp.drawAll(gr, new Vector2f(gc.getInput().getMouseX(), gc.getInput().getMouseY()));
 		}
 		
 		
@@ -270,6 +191,8 @@ public class Principal extends BasicGameState
 		}
 		disp.refresh(entities_manager);
 		
+		combatManager.refresh();
+		
 		GUI_Manager.instance.getTwlInputAdapter().update();
 		if(!GUI_Manager.instance.getTwlInputAdapter().isOn_gui_event())
 		{
@@ -280,12 +203,5 @@ public class Principal extends BasicGameState
 				entities_manager.getPnjs_manager().getPnjs().get(i).pollEvents(gc.getInput());
 			}
 		}
-		
-		/*if(NetworkManager.instance.modifManager)
-		{
-			entities_manager = NetworkManager.instance.getVisible_entities_manager();
-			NetworkManager.instance.setVisible_entities_manager(entities_manager);
-		}*/
-		
     }
 }

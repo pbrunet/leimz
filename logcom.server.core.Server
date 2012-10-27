@@ -1,0 +1,42 @@
+Date/heure : 2012-10-09 22:40:23.825 
+Classe emettrice : com.server.core.Server 
+Niveau : FATAL 
+Localisation : com.server.core.Server.initServer(Server.java:80) 
+Message: Address already in use: JVM_Bind 
+
+Date/heure : 2012-10-17 21:12:22.642 
+Classe emettrice : com.server.core.Server 
+Niveau : FATAL 
+Localisation : com.server.core.Server.initServer(Server.java:80) 
+Message: Address already in use: JVM_Bind 
+
+Date/heure : 2012-10-24 19:35:23.472 
+Classe emettrice : com.server.core.Server 
+Niveau : FATAL 
+Localisation : com.server.core.Server.initServer(Server.java:80) 
+Message: Address already in use: JVM_Bind 
+
+Date/heure : 2012-10-24 19:49:27.598 
+Classe emettrice : com.server.core.Server 
+Niveau : FATAL 
+Localisation : com.server.core.Server.initServer(Server.java:80) 
+Message: Address already in use: JVM_Bind 
+
+Date/heure : 2012-10-25 19:12:17.058 
+Classe emettrice : com.server.core.Server 
+Niveau : FATAL 
+Localisation : com.server.core.Server.initServer(Server.java:80) 
+Message: Address already in use: JVM_Bind 
+
+Date/heure : 2012-10-25 19:38:29.862 
+Classe emettrice : com.server.core.Server 
+Niveau : FATAL 
+Localisation : com.server.core.Server.initServer(Server.java:80) 
+Message: Address already in use: JVM_Bind 
+
+Date/heure : 2012-10-27 10:28:16.235 
+Classe emettrice : com.server.core.Server 
+Niveau : FATAL 
+Localisation : com.server.core.Server.initServer(Server.java:80) 
+Message: Address already in use: JVM_Bind 
+

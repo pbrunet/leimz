@@ -39,8 +39,12 @@ public class PrincipalGui implements NetworkListener
         
         inventaireUI = new InventaireUI(MainJoueur.instance.getPerso().getInventaire());
         inventaireUI.setTheme("/resizableframe");
-        inventaireUI.setPosition(100, 100);
         GUI_Manager.instance.getRoot().add(inventaireUI);
+        inventaireUI.adjustSize();
+        System.out.println("Size : w;"+inventaireUI.getPreferredInnerWidth()+"       h;"+inventaireUI.getPreferredInnerHeight());
+        System.out.println("Border : l;"+inventaireUI.getBorderLeft()+"     r;"+inventaireUI.getBorderRight()+"       t;"+inventaireUI.getBorderTop()+"      b;"+inventaireUI.getBorderBottom());
+        inventaireUI.setPosition((Base.sizeOfScreen_x-(inventaireUI.getWidth()))/2, (Base.sizeOfScreen_y-(inventaireUI.getHeight()))/2);
+        
         
         
         
@@ -75,12 +79,14 @@ public class PrincipalGui implements NetworkListener
         l.setHorizontalGroup(l.createParallelGroup(options, deconnexion, retour, quitter));
         l.setVerticalGroup(l.createSequentialGroup(options, deconnexion, retour, quitter));
         menu.add(l);
-        
-        menu.setPosition((Base.sizeOfScreen_x/2)-(menu.getWidth()/2), (Base.sizeOfScreen_y/2)-(menu.getHeight()/2));
-        menu.setVisible(false);
+
         
         GUI_Manager.instance.getRoot().add(chat_frame);
         GUI_Manager.instance.getRoot().add(menu);
+        
+        menu.adjustSize();
+        menu.setPosition((Base.sizeOfScreen_x/2)-(menu.getWidth()/2), (Base.sizeOfScreen_y/2)-(menu.getHeight()/2));
+        menu.setVisible(false);
 	}
 	
 	public void refresh()
@@ -151,8 +157,6 @@ public class PrincipalGui implements NetworkListener
 		}
 		
 		frame.add(l);
-		
-		frame.setPosition((Base.sizeOfScreen_x-frame.getWidth())/2, (Base.sizeOfScreen_y-frame.getHeight())/2);
 		
 		return frame;
 	}

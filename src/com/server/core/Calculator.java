@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 
 
+import com.server.core.functions.AttackFunction;
 import com.server.core.functions.CombatFunction;
 import com.server.core.functions.ConnectFunction;
 import com.server.core.functions.Functionable;
@@ -40,6 +41,7 @@ public class Calculator implements Runnable
 		dictfunctions.put("sa",new SayFunction());
 		dictfunctions.put("lo",new LoadFunction());
 		dictfunctions.put("co",new CombatFunction());
+		dictfunctions.put("a",new AttackFunction());
 
 		this.t = new Thread(this);
 		t.start();
@@ -58,7 +60,7 @@ public class Calculator implements Runnable
 			}
 			catch(RuntimeException e){
 				source.sendToClient("REQUEST_FAIL");
-				System.out.println("W : " + e.getMessage() + " request failed");
+				e.printStackTrace();
 				ServerSingleton.getInstance().deconnexion(source);
 			}
 		}

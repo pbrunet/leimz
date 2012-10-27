@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.loading.LoadingList;
 
 import com.client.network.NetworkManager;
@@ -31,7 +32,7 @@ public class LoadJoueur implements Runnable
 	private int purcent;
 	private boolean running;
 	private Personnage perso;
-	private Joueur joueur;
+	private Vector2f posj;
 
 	public LoadJoueur()
 	{
@@ -56,6 +57,11 @@ public class LoadJoueur implements Runnable
 			String nom_perso = args_perso[0];
 			String nom_race = args_perso[1];
 			String nom_classe = args_perso[2];
+			
+			NetworkManager.instance.sendToServer("lo;pos");
+			NetworkManager.instance.waitForNewMessage();
+			String[] str_pos = NetworkManager.instance.getMessage_recu_serveur().split(";");
+			posj = new Vector2f(Integer.parseInt(str_pos[0]), Integer.parseInt(str_pos[1]));
 
 			//-------------------GESTION DE LA RACE-----------------------
 
@@ -89,7 +95,7 @@ public class LoadJoueur implements Runnable
 					try {
 						inventaire.addItem(new Equipement(str_i[i], str_i[i+2], str_i[i+1], new Image(str_i[i+3]), new Image(str_i[i+4]), h, 20));
 					} catch (SlickException e) {
-						System.out.println("E: SlickException : this Image doesn't existe");
+						System.out.println("E: SlickException : this Image doesn't exist");
 					}
 				}
 			}
@@ -108,13 +114,15 @@ public class LoadJoueur implements Runnable
 			running = false;
 		}
 	}
+	
+	
 
-	public Joueur getJoueur() {
-		return joueur;
+	public Vector2f getPosj() {
+		return posj;
 	}
 
-	public void setJoueur(Joueur joueur) {
-		this.joueur = joueur;
+	public void setPosj(Vector2f posj) {
+		this.posj = posj;
 	}
 
 	public int getPurcent() {

@@ -3,7 +3,17 @@ package com.server.core.functions;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.HashMap;
 
+import org.newdawn.slick.Image;
+import org.newdawn.slick.SlickException;
+
+import com.gameplay.Caracteristique;
+import com.gameplay.Inventaire;
+import com.gameplay.Sort;
+import com.gameplay.items.Item;
+import com.map.server.managers.MapManager;
 import com.server.core.Client;
 import com.server.core.ServerSingleton;
 
@@ -22,6 +32,9 @@ public class LoadFunction implements Functionable
 	{
 		switch(args[1])
 		{
+		case "pos":
+			askPos(client);
+			break;
 		case "rc":
 			askRaceCaracteristic(client);
 			break;
@@ -63,6 +76,30 @@ public class LoadFunction implements Functionable
 		}
 	}
 
+	private void askPos(Client client) 
+	{
+		ResultSet rs = null;
+		try {
+			String sql = "SELECT Personnage.pos_x, Personnage.pos_y " +
+					"FROM Personnage " +
+					"WHERE personnage.joueur=" + client.getCompte().getClient_id();
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			rs = stmt.executeQuery(sql);
+			int pos_x = 0, pos_y = 0;
+			while(rs.next())
+			{
+				pos_x= rs.getInt("Personnage.pos_x");
+				pos_y = rs.getInt("Personnage.pos_y");
+			}
+			client.getCompte().getCurrent_joueur().setTile(MapManager.instance.getEntire_map().getGrille().get(pos_x).get(pos_y));
+			client.sendToClient(pos_x+";"+pos_y);
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			throw new RuntimeException("Race caracteristic");
+		}
+	}
+
 	public void askRaceCaracteristic(Client client)
 	{
 		ResultSet rs = null;
@@ -74,12 +111,15 @@ public class LoadFunction implements Functionable
 					"AND personnage.joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
+			HashMap<Caracteristique,Integer> caracs_race = new HashMap<Caracteristique,Integer>();
 			String rc = "";
 			while(rs.next())
 			{
 				rc += rs.getString("caracteristiques.name") + ";";
 				rc += rs.getInt("caracteristiques_race.value") + ";";
+				caracs_race.put(Caracteristique.valueOf(rs.getString("caracteristiques.name").toUpperCase()), rs.getInt("caracteristiques_race.value"));
 			}
+			client.getCompte().getCurrent_joueur().getPerso().getRace().setCarac(caracs_race);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -99,12 +139,15 @@ public class LoadFunction implements Functionable
 					"AND personnage.joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
+			HashMap<Caracteristique,Integer> caracs_classe = new HashMap<Caracteristique,Integer>();
 			String rc = "";
 			while(rs.next())
 			{
 				rc += rs.getString("caracteristiques.name") + ";";
 				rc += rs.getInt("caracteristiques_classe.value") + ";";
+				caracs_classe.put(Caracteristique.valueOf(rs.getString("caracteristiques.name").toUpperCase()), rs.getInt("caracteristiques_classe.value"));
 			}
+			client.getCompte().getCurrent_joueur().getPerso().getClasse().setCaracs(caracs_classe);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -123,12 +166,15 @@ public class LoadFunction implements Functionable
 					"AND caracteristiques_joueur.id_joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
+			HashMap<Caracteristique,Integer> caracs = new HashMap<Caracteristique,Integer>();
 			String rc = "";
 			while(rs.next())
 			{
 				rc += rs.getString("caracteristiques.name") + ";";
 				rc += rs.getInt("caracteristiques_joueur.value") + ";";
+				caracs.put(Caracteristique.valueOf(rs.getString("caracteristiques.name").toUpperCase()), rs.getInt("caracteristiques_joueur.value"));
 			}
+			client.getCompte().getCurrent_joueur().getPerso().setCaracs(caracs);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -148,12 +194,15 @@ public class LoadFunction implements Functionable
 					"AND caracteristiques_joueur.id_joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
+			HashMap<Caracteristique,Integer> caracs_value = new HashMap<Caracteristique,Integer>();
 			String rc = "";
 			while(rs.next())
 			{
 				rc += rs.getString("caracteristiques.name") + ";";
 				rc += rs.getInt("caracteristiques_joueur.current_value") + ";";
+				caracs_value.put(Caracteristique.valueOf(rs.getString("caracteristiques.name").toUpperCase()), rs.getInt("caracteristiques_joueur.current_value"));
 			}
+			client.getCompte().getCurrent_joueur().getPerso().setCaracs_values(caracs_value);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -174,6 +223,7 @@ public class LoadFunction implements Functionable
 					"AND personnage.joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
+			ArrayList<Sort> sorts_race = new ArrayList<Sort>();
 			String rc = "";
 			while(rs.next())
 			{
@@ -181,7 +231,14 @@ public class LoadFunction implements Functionable
 				rc += rs.getInt("sorts_race.value_min") + ";";
 				rc += rs.getInt("sorts_race.value_max") + ";";
 				rc += rs.getString("sorts_race.description") + ";";
+				sorts_race.add(new Sort(rs.getString("sorts_race.nom"), rs.getString("sorts_race.description"), rs.getInt("sorts_race.value_min"), rs.getInt("sorts_race.value_max"), null));
 			}
+			client.
+			getCompte().
+			getCurrent_joueur().
+			getPerso().
+			getRace().
+			setSorts(sorts_race);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -202,6 +259,7 @@ public class LoadFunction implements Functionable
 					"AND personnage.joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
+			ArrayList<Sort> sorts_classe = new ArrayList<Sort>();
 			String rc = "";
 			while(rs.next())
 			{
@@ -209,7 +267,9 @@ public class LoadFunction implements Functionable
 				rc += rs.getInt("sorts_classe.value_min") + ";";
 				rc += rs.getInt("sorts_classe.value_max") + ";";
 				rc += rs.getString("sorts_classe.Description") + ";";
+				sorts_classe.add(new Sort(rs.getString("sorts_classe.nom"), rs.getString("sorts_classe.description"), rs.getInt("sorts_classe.value_min"), rs.getInt("sorts_classe.value_max"), null));
 			}
+			client.getCompte().getCurrent_joueur().getPerso().getClasse().setSorts(sorts_classe);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -228,6 +288,7 @@ public class LoadFunction implements Functionable
 					"AND inventaire.id_joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
+			ArrayList<Item> items = new ArrayList<Item>();
 			String rc = "";
 			while(rs.next())
 			{
@@ -243,19 +304,28 @@ public class LoadFunction implements Functionable
 						"AND caracteristiques_objet.id_objet=" + rs.getString("item.id");
 				Statement stmt2 = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 				rs2 = stmt2.executeQuery(sql);
+				HashMap<Caracteristique, Integer> effets = new HashMap<Caracteristique, Integer>();
 				while(rs2.next())
 				{
 					rc += rs2.getString("caracteristiques.name") + ";";
 					rc += rs2.getString("caracteristiques_objet.value") + ";";
+					effets.put(Caracteristique.valueOf(rs2.getString("caracteristiques.name").toUpperCase()), rs2.getInt("caracteristiques_objet.value"));
+				}
+				try {
+					items.add(new Item(rs.getString("item.nom"), rs.getString("item.description"), new Image(rs.getString("item.icone")), new Image(rs.getString("item.apercu")), effets, 10));
+				} catch (SlickException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 				rs2.close();
 				stmt2.close();
 			}
+			client.getCompte().getCurrent_joueur().getPerso().setInventaire(new Inventaire(items));
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			throw new RuntimeException("Bag");
+			e.printStackTrace();
 		}
 	}
 

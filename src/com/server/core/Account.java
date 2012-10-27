@@ -3,6 +3,7 @@ package com.server.core;
 import java.util.ArrayList;
 
 import com.game_entities.Joueur;
+import com.gameplay.entities.Personnage;
 
 
 

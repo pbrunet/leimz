@@ -73,7 +73,6 @@ public class Identification extends BasicGameState
 	public void enter(GameContainer gc, StateBasedGame sbg)
 			throws SlickException 
 	{
-		music.loop();
 		log();
 			}
 

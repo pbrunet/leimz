@@ -106,7 +106,7 @@ public class Loading extends BasicGameState
 
 		if(load_pnj != null && !load_pnj.isRunning() && load_monster != null && !load_monster.isRunning() && load_joueur != null && !load_joueur.isRunning() && load_map != null && !load_map.isRunning())
 		{
-			MainJoueur j = new MainJoueur(load_joueur.getPerso(), MapManager.instance.getEntire_map().getGrille().get(20).get(20), Orientation.DROITE);
+			MainJoueur j = new MainJoueur(load_joueur.getPerso(), MapManager.instance.getEntire_map().getGrille().get((int) load_joueur.getPosj().x).get((int) load_joueur.getPosj().y), Orientation.DROITE);
 
 			EntitiesManager e_m = new EntitiesManager();
 			e_m.setPnjs_manager(load_pnj.getPnjs_manager());

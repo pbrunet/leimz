@@ -15,8 +15,10 @@ import org.newdawn.slick.geom.Vector2f;
 
 import com.client.utils.gui.PrincipalGui;
 import com.game_entities.Joueur;
+import com.game_entities.MainJoueur;
 import com.game_entities.Orientation;
 import com.game_entities.managers.EntitiesManager;
+import com.gameplay.Caracteristique;
 import com.gameplay.entities.Personnage;
 import com.gameplay.managers.CombatManager;
 import com.map.client.managers.MapManager;
@@ -46,7 +48,6 @@ public class NetworkManager
 
 	private static long timeout = 5000;
 
-	public boolean modifManager = false;
 	public static NetworkManager instance;
 
 	public NetworkManager(String ip, int port) throws UnknownHostException, IOException
@@ -115,7 +116,6 @@ public class NetworkManager
 			{
 				while(true)
 				{
-					modifManager = false;
 					String message = receiveFromServer();
 					if(message != null)
 					{
@@ -125,7 +125,6 @@ public class NetworkManager
 						{
 							if(!EntitiesManager.instance.getPlayers_manager().getMain_player().getPerso().getNom().equals(temp[1]))
 							{
-								modifManager = true;
 								boolean contains = false;
 								int index = 0;
 								for(int i = 0; i < EntitiesManager.instance.getPlayers_manager().getJoueurs().size(); i++)
@@ -143,8 +142,27 @@ public class NetworkManager
 								}
 								else
 								{
-									EntitiesManager.instance.getPlayers_manager().getJoueurs().get(index).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
-									EntitiesManager.instance.getPlayers_manager().getJoueurs().get(index).setOrientation(Joueur.parseStringOrientation(temp[5]));				
+									if(temp[2].equals("pos"))
+									{
+										EntitiesManager.instance.getPlayers_manager().getJoueurs().get(index).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
+										EntitiesManager.instance.getPlayers_manager().getJoueurs().get(index).setOrientation(Joueur.parseStringOrientation(temp[5]));				
+									}
+									
+									else if(temp[2].equals("vie"))
+									{
+										int vie = Integer.parseInt(temp[3]);
+										System.out.println("Vie : "+vie);
+										EntitiesManager.instance.getPlayers_manager().getJoueur(temp[1]).getPerso().getCaracs().put(Caracteristique.VIE, vie);
+									}
+								}
+							}
+							else
+							{
+								if(temp[2].equals("vie"))
+								{
+									int vie = Integer.parseInt(temp[3]);
+									System.out.println("Vie : "+vie);
+									MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, vie);
 								}
 							}
 						}
@@ -152,25 +170,18 @@ public class NetworkManager
 						else if(temp[0].equals("i"))
 						{
 							System.out.println("infos : "+message);
-							System.out.println("infos recues !");
 							EntitiesManager.instance.getPlayers_manager().addNewPlayer(new Joueur(new Personnage(temp[1], temp[2], temp[3]), null, Orientation.BAS));
 							EntitiesManager.instance.getPlayers_manager().getJoueurs().get(EntitiesManager.instance.getPlayers_manager().getJoueurs().size()-1).initImgs();
 						}
 						
 						else if(temp[0].equals("co"))
 						{
-							if(temp[1].equals("ask"))
-							{
-								CombatManager.instance.receiveMessage(message);
-							}
-							else if(temp[1].equals("can"))
-							{
-								CombatManager.instance.receiveMessage(message);
-							}
-							else if(temp[1].equals("an"))
-							{
-								CombatManager.instance.receiveMessage(message);
-							}
+							CombatManager.instance.receiveMessage(message);
+						}
+						else if(temp[0].equals("a"))
+						{
+							MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)-Integer.parseInt(temp[2]));
+							NetworkManager.instance.sendToServer("s;vie;"+MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)+";"+temp[1]);
 						}
 					}
 				}

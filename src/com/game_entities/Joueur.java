@@ -19,7 +19,7 @@ public class Joueur extends Entity
 {
 	protected Personnage perso;
 	protected Vector2f absolute;
-	
+
 	private String str_file;
 	private Element racine;
 	private Document doc = null;
@@ -29,16 +29,18 @@ public class Joueur extends Entity
 		super(orientation, tile);
 		this.perso = perso;
 		
-		this.str_file = perso.getEntity_file();
-		
-		SAXBuilder sxb = new SAXBuilder();
-	    try
-	    {
-	       doc = sxb.build(new File(str_file));
-	    }
-	    catch(Exception e){}
-	    racine = doc.getRootElement();
-	    
+		if(perso.getEntity_file() != null)
+		{
+			this.str_file = perso.getEntity_file();
+			
+			SAXBuilder sxb = new SAXBuilder();
+		    try
+		    {
+		       doc = sxb.build(new File(str_file));
+		    }
+		    catch(Exception e){}
+		    racine = doc.getRootElement();
+		}
 		this.absolute = new Vector2f(0,0);
 	}
 	

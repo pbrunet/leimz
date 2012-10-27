@@ -36,6 +36,13 @@ public class PlayersManager
 				j = joueurs.get(i);
 			}
 		}
+		if(j == null)
+		{
+			if(nom.equals(MainJoueur.instance.getPerso().getNom()))
+			{
+				j = MainJoueur.instance;
+			}
+		}
 		return j;
 	}
 	

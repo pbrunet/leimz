@@ -1,5 +1,11 @@
 package com.server.core;
 
+import com.map.Grille;
+import com.map.Map;
+import com.map.SimpleType_tile;
+import com.map.Tile;
+import com.map.Type_tile;
+import com.map.server.managers.MapManager;
 import com.server.db.DBConnection;
 import com.server.misc.Logging;
 
@@ -8,8 +14,11 @@ import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -17,6 +26,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
+import org.newdawn.slick.geom.Vector2f;
 
 /**
  * Classe du serveur! La connexion d'un client se passe ici
@@ -34,6 +44,7 @@ public class Server
 	private Logger l = Logging.getLogger(Server.class);
 
 	private Calculator calculator;
+	private MapManager mapManager;
 
 	/* private World world;
     private EntitiesManager entities_manager;*/
@@ -51,8 +62,57 @@ public class Server
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		loadMap();
 		//On attend la connexion des joueurs*/
 		waitPlayers();
+	}
+
+	private void loadMap() 
+	{
+		Map entire_map = null;
+		Grille grille = new Grille();
+		ResultSet rs;
+		//Chargement des informations de la map
+		try {
+			int max_x = 0, max_y = 0;
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			String sql = "SELECT MAX(map.x), MAX(map.y)" +
+					"FROM map ";
+			rs = stmt.executeQuery(sql);
+			String rc = "";
+			rs.next();
+			max_x = rs.getInt(1);
+			max_y = rs.getInt(2);
+			for(int i = 0; i < max_x+1 ; i++)
+			{
+				grille.add(new ArrayList<Tile>());
+				for(int j = 0; j < max_y+1; j++)
+					grille.get(i).add(new Tile(new Vector2f(i , j), null));
+			}
+			sql = "SELECT map.x, map.y, map.monsterHolder, tiles_map.nom " +
+					"FROM tiles_map,map " +
+					"WHERE tiles_map.id=map.type";
+			rs = stmt.executeQuery(sql);
+			while(rs.next())
+			{
+				rc += rs.getInt("map.x") + ";";
+				rc += rs.getInt("map.y") + ";";
+				rc += rs.getString("tiles_map.nom") + ";";
+				rc += rs.getBoolean("map.monsterHolder") + ";";
+				grille.get(rs.getInt("map.x")).get(rs.getInt("map.y")).addTypes(MapManager.getTypesTile(rs.getString("tiles_map.nom")));
+				grille.get(rs.getInt("map.x")).get(rs.getInt("map.y")).setMonsterHolder(rs.getBoolean("map.monsterHolder"));
+				
+			}
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			throw new RuntimeException("Map");
+		}
+		entire_map = new Map(grille, null);
+		
+		
+		mapManager = new MapManager(entire_map);
+		
 	}
 
 	/**
@@ -83,6 +143,7 @@ public class Server
 		//world = new World(entire_map);
 
 		calculator = new Calculator();
+
 	}
 
 
