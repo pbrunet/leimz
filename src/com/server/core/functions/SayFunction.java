@@ -18,6 +18,6 @@ public class SayFunction implements Functionable
     @Override
     public void doSomething(String[] args,Client client)
     {
-       client.sendToClient(args[0]+";"+args[1]+";"+args[2]);
+       client.sendToClient("sa"+args[0]+";"+args[1]+";"+args[2]);
     }
 }

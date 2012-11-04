@@ -25,7 +25,7 @@ public class ClientList implements Callable<Void>
 	 **/
 	public void add(Client c)
 	{
-		c.sendToClient("CONNECT_SERVER");
+		c.sendToClient("co;CONNECT_SERVER");
 		clients.add(c);
 	}
 
@@ -37,44 +37,6 @@ public class ClientList implements Callable<Void>
 	{
 		return getClients().size();
 	}
-
-	/**
-	 * fonction principale du thread
-	 */
-	/*
-    @Override
-    public Void call() throws IOException
-    {
-
-        //On boucle tout le temps
-        while(true)
-        {
-
-            try
-            {
-                // Pour chaque client connecte
-                for(int i = 0; i < clients.size(); i++)
-                {
-                    Client c = clients.get(i);
-                    Calcul ca = new Calcul(c.receiveFromClient(), c, s);
-                    pool.submit(ca);
-                }
-            }
-
-            catch (ConcurrentModificationException e)
-            {
-                /*On eteint le serveur si on a une erreur de modification concurrente.
-	 *Car ca voudra dire que j'ai du boulot
-	 *//*
-                ServerSingleton.getInstance().seeToServer(e.getMessage());
-                l.fatal(e.getMessage());
-
-            }
-        }
-
-
-
-    }*/
 
 	/**
 	 * Envoie un message à tous les clients connectés.

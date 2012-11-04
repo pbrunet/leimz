@@ -44,8 +44,8 @@ public class LoadPnj implements Runnable
 			//-------------------GESTION DES PNJs-----------------------
 
 			network.sendToServer("lo;pnj"); //load pnjs
-			network.waitForNewMessage();
-			String s = network.getMessage_recu_serveur();
+			network.waitForNewMessage("pnj");
+			String s = network.receiveFromServer("pnj");
 			String[] args_pnj = s.split("new;");
 			for( int i=1;i<args_pnj.length;i++)
 			{

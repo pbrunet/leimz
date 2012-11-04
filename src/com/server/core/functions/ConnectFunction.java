@@ -59,8 +59,8 @@ public class ConnectFunction implements Functionable
 				classe = rsp.getString("classe.name");
 			}
 			c.getCompte().setClient_id(id);
-			c.sendToClient("CONNECT_SUCCEED");
-			c.sendToClient(nom+";"+race+";"+classe);
+			c.sendToClient("c;CONNECT_SUCCEED");
+			c.sendToClient("ci;"+nom+";"+race+";"+classe);
 			rsp.close();
 			stmt.close();
 		} catch (SQLException e) {

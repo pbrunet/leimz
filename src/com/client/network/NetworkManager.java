@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Timer;
 
 import org.newdawn.slick.geom.Vector2f;
@@ -38,7 +39,7 @@ public class NetworkManager
 
 	private ArrayList<NetworkListener> listeners;
 
-	private ArrayList<String> message_recu_serveur;
+	private HashMap<String,String> message_recu_serveur;
 	private Timer t;
 
 	private EntitiesManager visible_entities_manager;
@@ -53,7 +54,7 @@ public class NetworkManager
 
 	public NetworkManager(String ip, int port) throws UnknownHostException, IOException
 	{
-		message_recu_serveur = new ArrayList<String>();
+		message_recu_serveur = new HashMap<String,String>();
 		s = new Socket(ip, port);
 		s.setSoTimeout(10);
 		br = new BufferedReader(new InputStreamReader(s.getInputStream()));
@@ -69,41 +70,43 @@ public class NetworkManager
 		pw.flush();
 	}
 
-	public void waitForNewMessage()
+	public void waitForNewMessage(String name)
 	{
 		long start = System.currentTimeMillis();
-		while(receiveFromServer() == null){
+		do {
+			receiveFromServerPossible();
 			if((System.currentTimeMillis() - start) > timeout)
-				break;
-		}
+			{
+				System.err.println("Message "+ name + " du serveur non reçu");
+				System.exit(1);
+			}
+		} while(!message_recu_serveur.containsKey(name));
 	}
 
-	public String receiveFromServer()
+	public String receiveFromServer(String name)
 	{
 		try
 		{
-			if(receiveFromServerPossible())
-				return message_recu_serveur.get(message_recu_serveur.size()-1);
-			else
-				return null;
+			if(message_recu_serveur.containsKey(name))
+			{
+				String res = message_recu_serveur.get(name);
+				message_recu_serveur.remove(name);
+				return res;
+			}
 		}
 		catch(Exception e)
-		{
-			return null;
-		}
+		{}
+		return null;
 	}
 
-	public boolean receiveFromServerPossible() 
+	public void receiveFromServerPossible() 
 	{
 		try
 		{
-			message_recu_serveur.add(br.readLine());
-			return true;
+			String res[] = br.readLine().split(";", 2);
+			message_recu_serveur.put(res[0],res[1]);
 		}
-		catch(Exception e)
-		{
-			return false;
-		}
+		catch(Exception e){}
 	}
 
 	public void init(MapManager mapManager2, EntitiesManager ent, ArrayList<NetworkListener> listeners2)
@@ -140,67 +143,50 @@ public class NetworkManager
 				while(true)
 				{
 					modifManager = false;
-					String message = receiveFromServer();
+					String message = receiveFromServer("s"); 
 					if(message != null)
 					{
 						String[] temp = message.split(";");
-
-						if(temp[0].equals("s"))
+						if(!visible_entities_manager.getPlayers_manager().getMain_player().getPerso().getNom().equals(temp[0]))
 						{
-							if(!visible_entities_manager.getPlayers_manager().getMain_player().getPerso().getNom().equals(temp[1]))
+							modifManager = true;
+							boolean contains = false;
+							int index = 0;
+							for(int i = 0; i < visible_entities_manager.getPlayers_manager().getJoueurs().size(); i++)
 							{
-								modifManager = true;
-								boolean contains = false;
-								int index = 0;
-								for(int i = 0; i < visible_entities_manager.getPlayers_manager().getJoueurs().size(); i++)
+								if(visible_entities_manager.getPlayers_manager().getJoueurs().get(i).getPerso().getNom().equals(temp[0]))
 								{
-									if(visible_entities_manager.getPlayers_manager().getJoueurs().get(i).getPerso().getNom().equals(temp[1]))
-									{
-										contains = true;
-										index = i;
-									}
-								}
-
-								if(contains == false)
-								{
-									sendToServer("i;"+temp[1]);
-								}
-								else
-								{
-									visible_entities_manager.getPlayers_manager().getJoueurs().get(index).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
-									visible_entities_manager.getPlayers_manager().getJoueurs().get(index).setOrientation(Joueur.parseStringOrientation(temp[5]));				
+									contains = true;
+									index = i;
 								}
 							}
-						}
 
-						if(temp[0].equals("i"))
-						{
-							System.out.println("infos : "+message);
-							System.out.println("infos recues !");
-							visible_entities_manager.getPlayers_manager().addNewPlayer(new Joueur(new Personnage(temp[1], null, null, null, null), null, Orientation.BAS));
-							visible_entities_manager.getPlayers_manager().getJoueurs().get(visible_entities_manager.getPlayers_manager().getJoueurs().size()-1).initImgs();
+							if(contains == false)
+							{
+								sendToServer("i;s");
+							}
+							else
+							{
+								visible_entities_manager.getPlayers_manager().getJoueurs().get(index).setPos_real(new Vector2f(Float.parseFloat(temp[2]), Float.parseFloat(temp[3])));
+								visible_entities_manager.getPlayers_manager().getJoueurs().get(index).setOrientation(Joueur.parseStringOrientation(temp[4]));				
+							}
 						}
+					}
+
+					message = receiveFromServer("i"); 
+					if(message != null)
+					{
+						String[] temp = message.split(";");
+						System.out.println("infos : "+message);
+						System.out.println("infos recues !");
+						visible_entities_manager.getPlayers_manager().addNewPlayer(new Joueur(new Personnage(temp[0], null, null, null, null), null, Orientation.BAS));
+						visible_entities_manager.getPlayers_manager().getJoueurs().get(visible_entities_manager.getPlayers_manager().getJoueurs().size()-1).initImgs();
 					}
 				}
 			}
 		});
 		handleServerMessages.start();
 
-	}
-
-	public String getMessage_recu_serveur() 
-	{
-		if(!message_recu_serveur.isEmpty())
-		{
-			 String message = message_recu_serveur.remove(0);
-			return message;
-		}
-		return "";
-	}
-
-	public void setMessage_recu_serveur(String messageRecuServeur) 
-	{
-		message_recu_serveur.add(messageRecuServeur);
 	}
 
 	public EntitiesManager getVisible_entities_manager() {
