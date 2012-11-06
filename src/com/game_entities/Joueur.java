@@ -17,7 +17,7 @@ import com.map.Tile;
 
 public class Joueur extends Entity
 {
-	protected Personnage perso;
+	private Personnage perso;
 	protected Vector2f absolute;
 	
 	private String str_file;
@@ -41,7 +41,7 @@ public class Joueur extends Entity
 	    
 		this.absolute = new Vector2f(0,0);
 	}
-	
+
 	public void initImgs()
 	{
 		imgs_repos = new Image[racine.getChild("imgs_repos").getChildren().size()];

@@ -71,7 +71,7 @@ public class LoadFunction implements Functionable
 					"FROM caracteristiques,caracteristiques_race,personnage " +
 					"WHERE caracteristiques.id=caracteristiques_race.id_caracteristique " +
 					"AND caracteristiques_race.id_race=personnage.race " +
-					"AND personnage.joueur=" + client.getCompte().getClient_id();
+					"AND personnage.id_compte=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = "";
@@ -96,7 +96,7 @@ public class LoadFunction implements Functionable
 					"FROM caracteristiques,caracteristiques_classe,personnage " +
 					"WHERE caracteristiques.id=caracteristiques_classe.id_caracteristique " +
 					"AND caracteristiques_classe.id_classe=personnage.classe " +
-					"AND personnage.joueur=" + client.getCompte().getClient_id();
+					"AND personnage.id_compte=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = "";
@@ -120,7 +120,7 @@ public class LoadFunction implements Functionable
 			String sql = "SELECT caracteristiques.name, caracteristiques_joueur.value " +
 					"FROM caracteristiques,caracteristiques_joueur " +
 					"WHERE caracteristiques.id=caracteristiques_joueur.id_caracteristique " +
-					"AND caracteristiques_joueur.id_joueur=" + client.getCompte().getClient_id();
+					"AND caracteristiques_joueur.nom_joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = "";
@@ -145,7 +145,7 @@ public class LoadFunction implements Functionable
 			String sql = "SELECT caracteristiques.name, caracteristiques_joueur.current_value " +
 					"FROM caracteristiques,caracteristiques_joueur " +
 					"WHERE caracteristiques.id=caracteristiques_joueur.id_caracteristique " +
-					"AND caracteristiques_joueur.id_joueur=" + client.getCompte().getClient_id();
+					"AND caracteristiques_joueur.nom_joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = "";
@@ -171,7 +171,7 @@ public class LoadFunction implements Functionable
 					" FROM sorts_race,personnage,race_sort " +
 					"WHERE sorts_race.id=race_sort.id_sort " +
 					"AND race_sort.id_race=personnage.race " +
-					"AND personnage.joueur=" + client.getCompte().getClient_id();
+					"AND personnage.id_compte=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = "";
@@ -199,7 +199,7 @@ public class LoadFunction implements Functionable
 					" FROM sorts_classe,personnage,classe_sort " +
 					"WHERE sorts_classe.id=classe_sort.id_sort " +
 					"AND classe_sort.id_classe=personnage.classe " +
-					"AND personnage.joueur=" + client.getCompte().getClient_id();
+					"AND personnage.id_compte=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = "";
@@ -225,7 +225,7 @@ public class LoadFunction implements Functionable
 			String sql = "SELECT item.id, item.nom, item.description, item.type, item.icone, item.apercu " +
 					"FROM item,inventaire " +
 					"WHERE item.id=inventaire.id_objet " +
-					"AND inventaire.id_joueur=" + client.getCompte().getClient_id();
+					"AND inventaire.nom_joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = "";

@@ -38,6 +38,12 @@ public class Personnage
 		this.inventaire = new Inventaire();
 	}
 	
+	public Personnage(String nom2, String race2, String classe2) {
+		this.race =new Race(race2);
+		this.nom = nom2;
+		this.classe = new Classe(classe2);
+	}
+
 	public Inventaire getInventaire() {
 		return inventaire;
 	}

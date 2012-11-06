@@ -18,6 +18,11 @@ public class Account
 	{
 		
 	}
+	public Account(String ndc,String mpd)
+	{
+		name = ndc;
+		passwd = mpd;
+	}
 	public void setMdp(String mdp) 
 	{
 		passwd = mdp;

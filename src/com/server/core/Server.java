@@ -17,6 +17,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
+import org.newdawn.slick.geom.Vector2f;
 
 /**
  * Classe du serveur! La connexion d'un client se passe ici
@@ -33,7 +34,6 @@ public class Server
 	private DBConnection dbConnexion;
 	private Logger l = Logging.getLogger(Server.class);
 
-	private Calculator calculator;
 
 	/* private World world;
     private EntitiesManager entities_manager;*/
@@ -81,8 +81,6 @@ public class Server
 			System.exit(0);
 		}
 		//world = new World(entire_map);
-
-		calculator = new Calculator(cl);
 	}
 
 
@@ -172,7 +170,6 @@ public class Server
 			this.cl.add(toreturn);
 			pool.submit(toreturn);
 		}
-		calculator.setCl(cl);
 		return toreturn;
 	}
 
@@ -241,4 +238,29 @@ public class Server
 			}
 		}
 	}
+
+
+
+	public Client getClient(String nompersonnage) {
+		Client cli = null ;
+		for(int i =0; i<this.cl.size() && cli == null;i++)
+		{
+			for(int j = 0;j<this.cl.get(i).getClients().size() && cli == null ;j++)
+			{
+				if(this.cl.get(i).getClients().get(j).getCompte().getCurrent_joueur().getPerso().getNom().equals(nompersonnage))
+				{
+					cli = this.cl.get(i).getClients().get(j);
+				}
+					
+			}
+		}
+		return cli;	
+	}
+
+	public List<Client> getClientnear(Vector2f pos_real) {
+		//ArrayList<Client> listCli = new ArrayList<Client>();
+		
+		return null;
+	}
+
 }

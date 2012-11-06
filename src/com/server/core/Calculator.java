@@ -1,10 +1,7 @@
 package com.server.core;
 
-import java.io.IOException;
-
-import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.List;
+import java.util.concurrent.Callable;
 
 import com.server.core.functions.ConnectFunction;
 import com.server.core.functions.Functionable;
@@ -13,16 +10,17 @@ import com.server.core.functions.LoadFunction;
 import com.server.core.functions.SayFunction;
 import com.server.core.functions.StateFunction;
 
-public class Calculator implements Runnable
+public class Calculator implements Callable<Void>
 {
 	private static HashMap <String,Functionable> dictfunctions = new HashMap<String,Functionable>();
-	private List<ClientList> cl;
-	private Thread t;
+	private Client cli;
+	private String mess;
 
-	public Calculator(List<ClientList> cl)
-	{
-		this.cl = cl;
+	public Calculator(String receiveFromClient, Client c) {
+	
 
+		cli = c;
+		mess = receiveFromClient;
 		//On ajoute les fonctions
 		/*
       dictfunctions.put("a",new AttackFunction());
@@ -39,66 +37,27 @@ public class Calculator implements Runnable
 		dictfunctions.put("sa",new SayFunction());
 		dictfunctions.put("lo",new LoadFunction());
 
-		this.t = new Thread(this);
-		t.start();
+	
 	}
 
-	public void submit(Client source, String mess)
+	public Void call()
 	{
 
 		if(mess!=null && !mess.equals("none") && !mess.isEmpty())
 		{
-			System.out.println("Reception du message :" + mess);
 			String[] temp = mess.split(";");
 			Functionable f = dictfunctions.get(temp[0]);
 			try{
-				f.doSomething(temp,source);
+				f.doSomething(temp,cli);
 			}
-			catch(RuntimeException e){
-				source.sendToClient("REQUEST_FAIL");
+			catch(Exception e){
+				cli.sendToClient("REQUEST_FAIL");
 				System.out.println("W : " + e.getMessage() + " request failed");
-				ServerSingleton.getInstance().deconnexion(source);
+				ServerSingleton.getInstance().deconnexion(cli);
 			}
 		}
+		return null;
 	}
 
-	@Override
-	public void run() 
-	{
-		while(true)
-		{
-			try
-			{
-				// Pour chaque client connecte
-				for(int i = 0; i < cl.size(); i++)
-				{
-					for(int j = 0; j < cl.get(i).getClients().size(); j++)
-					{
-						Client c = cl.get(i).getClients().get(j);
-						try {
-							this.submit(c,c.receiveFromClient());
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-			catch (ConcurrentModificationException e)
-			{
-				/*On eteint le serveur si on a une erreur de modification concurrente.
-				 *Car ca voudra dire que j'ai du boulot
-				 */
-				ServerSingleton.getInstance().seeToServer(e.getMessage());
-				//l.fatal(e.getMessage());
-			}
-		}
-	}
 
-	public List<ClientList> getCl() {
-		return cl;
-	}
-
-	public void setCl(List<ClientList> cl) {
-		this.cl = cl;
-	}
 }

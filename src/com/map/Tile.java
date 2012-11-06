@@ -64,6 +64,11 @@ public class Tile
 			this.types.add(type);
 	}
 
+	public Tile(float posx, float posy) {
+		this.pos = new Vector2f(posx, posy);
+		this.types = new ArrayList<Type_tile>();
+	}
+
 	public void checkCollidable()
 	{
 		for(int i = 0; i < types.size(); i++)

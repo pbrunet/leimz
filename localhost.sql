@@ -1,14 +1,13 @@
 -- phpMyAdmin SQL Dump
--- version 3.4.5
+-- version 3.3.7deb7
 -- http://www.phpmyadmin.net
 --
--- Client: localhost
--- Généré le : Lun 01 Octobre 2012 à 22:17
--- Version du serveur: 5.5.16
--- Version de PHP: 5.3.8
+-- Serveur: localhost
+-- Généré le : Sam 13 Octobre 2012 à 14:16
+-- Version du serveur: 5.1.63
+-- Version de PHP: 5.3.3-7+squeeze14
 
 SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
 
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
@@ -19,6 +18,31 @@ SET time_zone = "+00:00";
 --
 -- Base de données: `leimz`
 --
+
+-- --------------------------------------------------------
+
+--
+-- Structure de la table `Account`
+--
+
+CREATE TABLE IF NOT EXISTS `Account` (
+  `id_account` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `mot_de_passe` text NOT NULL,
+  `id_currjoueur` int(11) DEFAULT NULL,
+  `nom_de_compte` varchar(20) NOT NULL,
+  PRIMARY KEY (`id_account`),
+  UNIQUE KEY `nom_de_compte` (`nom_de_compte`),
+  UNIQUE KEY `unique_currjoueur` (`id_currjoueur`),
+  KEY `index_currjoueur` (`id_currjoueur`)
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=3 ;
+
+--
+-- Contenu de la table `Account`
+--
+
+INSERT INTO `Account` (`id_account`, `mot_de_passe`, `id_currjoueur`, `nom_de_compte`) VALUES
+(1, 'chelendil', NULL, 'chelendil'),
+(2, 'greglebg', NULL, 'fazega');
 
 -- --------------------------------------------------------
 
@@ -79,11 +103,11 @@ INSERT INTO `caracteristiques_classe` (`id_classe`, `id_caracteristique`, `value
 --
 
 CREATE TABLE IF NOT EXISTS `caracteristiques_joueur` (
-  `id_joueur` int(11) NOT NULL,
+  `nom_joueur` varchar(30) NOT NULL,
   `id_caracteristique` int(11) NOT NULL,
   `value` int(11) NOT NULL,
   `current_value` int(11) DEFAULT NULL,
-  PRIMARY KEY (`id_joueur`,`id_caracteristique`),
+  PRIMARY KEY (`nom_joueur`,`id_caracteristique`),
   KEY `id_caracteristique` (`id_caracteristique`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -91,21 +115,21 @@ CREATE TABLE IF NOT EXISTS `caracteristiques_joueur` (
 -- Contenu de la table `caracteristiques_joueur`
 --
 
-INSERT INTO `caracteristiques_joueur` (`id_joueur`, `id_caracteristique`, `value`, `current_value`) VALUES
-(1, 1, 150, 0),
-(1, 2, 8000, 0),
-(1, 3, 10, 0),
-(1, 4, 6, 0),
-(1, 5, 60, 0),
-(1, 6, 10, 0),
-(1, 7, 20, 0),
-(2, 1, 150, 0),
-(2, 2, 8000, 0),
-(2, 3, 10, 0),
-(2, 4, 6, 0),
-(2, 5, 60, 0),
-(2, 6, 10, 0),
-(2, 7, 20, 0);
+INSERT INTO `caracteristiques_joueur` (`nom_joueur`, `id_caracteristique`, `value`, `current_value`) VALUES
+('1', 1, 150, 0),
+('1', 2, 8000, 0),
+('1', 3, 10, 0),
+('1', 4, 6, 0),
+('1', 5, 60, 0),
+('1', 6, 10, 0),
+('1', 7, 20, 0),
+('2', 1, 150, 0),
+('2', 2, 8000, 0),
+('2', 3, 10, 0),
+('2', 4, 6, 0),
+('2', 5, 60, 0),
+('2', 6, 10, 0),
+('2', 7, 20, 0);
 
 -- --------------------------------------------------------
 
@@ -127,8 +151,7 @@ CREATE TABLE IF NOT EXISTS `caracteristiques_objet` (
 
 INSERT INTO `caracteristiques_objet` (`id_objet`, `id_caracteristique`, `value`) VALUES
 (1, 5, 2),
-(2, 7, 50),
-(3, 1, 1);
+(2, 7, 50);
 
 -- --------------------------------------------------------
 
@@ -203,10 +226,10 @@ INSERT INTO `classe_sort` (`id_classe`, `id_sort`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `inventaire` (
-  `id_joueur` int(11) DEFAULT NULL,
+  `nom_joueur` varchar(30) DEFAULT NULL,
   `id_objet` int(11) DEFAULT NULL,
   `quantity` int(11) NOT NULL,
-  KEY `id_joueur` (`id_joueur`),
+  KEY `id_joueur` (`nom_joueur`),
   KEY `id_objet` (`id_objet`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -214,9 +237,9 @@ CREATE TABLE IF NOT EXISTS `inventaire` (
 -- Contenu de la table `inventaire`
 --
 
-INSERT INTO `inventaire` (`id_joueur`, `id_objet`, `quantity`) VALUES
-(2, 1, 1),
-(1, 1, 1);
+INSERT INTO `inventaire` (`nom_joueur`, `id_objet`, `quantity`) VALUES
+('2', 1, 1),
+('1', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -265,28 +288,6 @@ INSERT INTO `item_type` (`id`, `type`) VALUES
 (1, 'anneau'),
 (2, 'cape'),
 (3, 'chapeau');
-
--- --------------------------------------------------------
-
---
--- Structure de la table `joueur`
---
-
-CREATE TABLE IF NOT EXISTS `joueur` (
-  `nom_de_compte` varchar(50) NOT NULL,
-  `mot_de_passe` varchar(50) NOT NULL,
-  `id` int(11) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Contenu de la table `joueur`
---
-
-INSERT INTO `joueur` (`nom_de_compte`, `mot_de_passe`, `id`) VALUES
-('chelendil', 'chelendil', 1),
-('fazega', 'greglebg', 2),
-('gamega', 'greglebg', 3);
 
 -- --------------------------------------------------------
 
@@ -2861,25 +2862,27 @@ INSERT INTO `monster` (`id`, `name`) VALUES
 --
 
 CREATE TABLE IF NOT EXISTS `personnage` (
-  `joueur` int(11) NOT NULL DEFAULT '0',
+  `id_compte` int(11) NOT NULL,
   `race` int(11) NOT NULL,
   `classe` int(50) NOT NULL,
   `name` varchar(30) NOT NULL,
-  `pos` varchar(200) DEFAULT NULL,
+  `posx` double DEFAULT NULL,
   `orientation` varchar(50) DEFAULT NULL,
-  PRIMARY KEY (`joueur`),
+  `posy` double NOT NULL,
+  UNIQUE KEY `index_id_joueur` (`name`),
   KEY `race` (`race`),
-  KEY `classe` (`classe`)
+  KEY `classe` (`classe`),
+  KEY `id_compte` (`id_compte`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Contenu de la table `personnage`
 --
 
-INSERT INTO `personnage` (`joueur`, `race`, `classe`, `name`, `pos`, `orientation`) VALUES
-(1, 1, 1, 'Choco', '1163.0;729.5', 'b'),
-(2, 1, 1, 'FaZeGa', '1163.0;729.5', 'h'),
-(3, 1, 1, 'Memor', '1163.0;729.5', 'b');
+INSERT INTO `personnage` (`id_compte`, `race`, `classe`, `name`, `posx`, `orientation`, `posy`) VALUES
+(1, 1, 1, 'Choco', 840, 'b', 820),
+(2, 1, 1, 'FaZeGa', 320, 'h', 320),
+(1, 1, 1, 'Memor', 840, 'b', 820);
 
 -- --------------------------------------------------------
 
@@ -3082,7 +3085,6 @@ ALTER TABLE `caracteristiques_classe`
 -- Contraintes pour la table `caracteristiques_joueur`
 --
 ALTER TABLE `caracteristiques_joueur`
-  ADD CONSTRAINT `Caracteristiques_joueur_ibfk_1` FOREIGN KEY (`id_joueur`) REFERENCES `joueur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `Caracteristiques_joueur_ibfk_2` FOREIGN KEY (`id_caracteristique`) REFERENCES `caracteristiques` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -3110,7 +3112,6 @@ ALTER TABLE `classe_sort`
 -- Contraintes pour la table `inventaire`
 --
 ALTER TABLE `inventaire`
-  ADD CONSTRAINT `inventaire_ibfk_1` FOREIGN KEY (`id_joueur`) REFERENCES `joueur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `inventaire_ibfk_2` FOREIGN KEY (`id_objet`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
@@ -3135,7 +3136,6 @@ ALTER TABLE `map_content`
 -- Contraintes pour la table `personnage`
 --
 ALTER TABLE `personnage`
-  ADD CONSTRAINT `Personnage_ibfk_1` FOREIGN KEY (`joueur`) REFERENCES `joueur` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `Personnage_ibfk_2` FOREIGN KEY (`race`) REFERENCES `race` (`id`) ON UPDATE CASCADE,
   ADD CONSTRAINT `Personnage_ibfk_3` FOREIGN KEY (`classe`) REFERENCES `classe` (`id`);
 
@@ -3152,7 +3152,3 @@ ALTER TABLE `pnj_discours`
 ALTER TABLE `race_sort`
   ADD CONSTRAINT `Race_sort_ibfk_2` FOREIGN KEY (`id_sort`) REFERENCES `sorts_race` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   ADD CONSTRAINT `Race_sort_ibfk_3` FOREIGN KEY (`id_race`) REFERENCES `race` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
-
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
