@@ -491,6 +491,7 @@
             <param name="border"><border>6,11,6,2</border></param>
             <param name="textAlignment"><enum type="alignment">LEFT</enum></param>
         </theme>
+        <param name="minDisplayedRows"><int>5</int></param>
     </theme>
     <theme name="fileselector-filesMRUpopup" ref="-defaults">
         <param name="background"><image>none</image></param>

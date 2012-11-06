@@ -38,7 +38,7 @@
         <param name="maxHeight"><int>0</int></param>
         <param name="inputMap"><inputMap>-defaultInputMap</inputMap></param>
     </theme>
-    <images file="/media/Documents/Documents/java/leimz/leimz_client/trunk/data/GUI/Theme/chat.png">
+    <images file="chat.png">
         <area name="chat.smiley" xywh="24,1,14,14"/>
     </images>
     <images file="cursors.png">
@@ -649,7 +649,6 @@
                         </map></param>
                         <theme name="image" ref="-defaults"/>
                         <param name="mouseCursor.link"><cursor>cursor.finger</cursor></param>
-        <param name="smiley"><image>chat.smiley</image></param>
                     </theme>
     <theme name="itemslot" ref="-defaults">
         <param name="background"><image>itemslot.background</image></param>
