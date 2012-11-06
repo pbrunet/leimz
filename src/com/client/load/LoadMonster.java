@@ -36,8 +36,8 @@ public class LoadMonster implements Runnable
 			//-------------------GESTION DES PNJs-----------------------
 
 			NetworkManager.instance.sendToServer("lo;mon"); //load monsters
-			NetworkManager.instance.waitForNewMessage();
-			String[] args_pnj = NetworkManager.instance.getMessage_recu_serveur().split(";");
+			NetworkManager.instance.waitForNewMessage("mon");
+			String[] args_pnj = NetworkManager.instance.receiveFromServer("mon").split(";");
 
 			for( int i=0;i<args_pnj.length;i++)
 			{

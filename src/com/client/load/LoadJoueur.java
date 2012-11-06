@@ -46,10 +46,10 @@ public class LoadJoueur implements Runnable
 	{
 		if(running)
 		{
-			NetworkManager.instance.waitForNewMessage();
+			NetworkManager.instance.waitForNewMessage("ci");
 
 			//On recupere la chaine avec les infos sur le perso
-			String[] args_perso = NetworkManager.instance.getMessage_recu_serveur().split(";");
+			String[] args_perso = NetworkManager.instance.receiveFromServer("ci").split(";");
 			if(args_perso.length<3)
 				throw new RuntimeException("Incorrect login message from server");
 
@@ -76,8 +76,8 @@ public class LoadJoueur implements Runnable
 			Inventaire inventaire = new Inventaire();
 
 			NetworkManager.instance.sendToServer("lo;in"); //load joueur, joueur caracteristiques
-			NetworkManager.instance.waitForNewMessage();
-			String[] str_i = NetworkManager.instance.getMessage_recu_serveur().split(";");
+			NetworkManager.instance.waitForNewMessage("in");
+			String[] str_i = NetworkManager.instance.receiveFromServer("in").split(";");
 
 			//Do nothing if inventaire is empty
 			if(str_i.length>6)
@@ -145,8 +145,8 @@ public class LoadJoueur implements Runnable
 	private HashMap<Caracteristique,Integer>getCaracteristic(String message)
 	{
 		NetworkManager.instance.sendToServer(message);
-		NetworkManager.instance.waitForNewMessage();
-		String[] caract = NetworkManager.instance.getMessage_recu_serveur().split(";");
+		NetworkManager.instance.waitForNewMessage(message.split(";",3)[1]);
+		String[] caract = NetworkManager.instance.receiveFromServer(message.split(";",3)[1]).split(";");
 		if(caract.length<2)
 			throw new RuntimeException("Incorrect caracteristic loading message from server");
 
@@ -161,8 +161,8 @@ public class LoadJoueur implements Runnable
 	{
 		ArrayList<Sort> sorts = new ArrayList<Sort>();
 		NetworkManager.instance.sendToServer(message);
-		NetworkManager.instance.waitForNewMessage();
-		String[] sort = NetworkManager.instance.getMessage_recu_serveur().split(";");
+		NetworkManager.instance.waitForNewMessage(message.split(";",3)[1]);
+		String[] sort = NetworkManager.instance.receiveFromServer(message.split(";",3)[1]).split(";");
 		if(sort.length<4)
 			throw new RuntimeException("Incorrect sorts loading message from server");
 

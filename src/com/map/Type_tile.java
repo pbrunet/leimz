@@ -29,8 +29,8 @@ public class Type_tile
 
 		//Caracteristiques de race
 		NetworkManager.instance.sendToServer("lo;tt;" + name); //load joueur, type tile, name
-		NetworkManager.instance.waitForNewMessage();
-		String[] info_tile= NetworkManager.instance.getMessage_recu_serveur().split(";"); //nom, img adresse, collidable, x, y, calque
+		NetworkManager.instance.waitForNewMessage("tt");
+		String[] info_tile= NetworkManager.instance.receiveFromServer("tt").split(";"); //nom, img adresse, collidable, x, y, calque
 		
 		try {
 			return new Type_tile(info_tile[0], new Image(info_tile[1]),new Rectangle(Integer.parseInt(info_tile[3]),Integer.parseInt(info_tile[4]),80,40),Boolean.parseBoolean(info_tile[2]),Integer.parseInt(info_tile[5]));

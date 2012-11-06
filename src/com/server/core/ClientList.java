@@ -35,7 +35,7 @@ public class ClientList implements Callable<Void>
 	 **/
 	public void add(Client c)
 	{
-		c.sendToClient("CONNECT_SERVER");
+		c.sendToClient("co;CONNECT_SERVER");
 		clients.add(c);
 	}
 

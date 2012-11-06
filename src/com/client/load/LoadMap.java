@@ -59,8 +59,8 @@ public class LoadMap implements Runnable
 			grille = new Grille();
 
 			NetworkManager.instance.sendToServer("lo;map"); //load map
-			NetworkManager.instance.waitForNewMessage();
-			String[] args_map = NetworkManager.instance.getMessage_recu_serveur().split(";");
+			NetworkManager.instance.waitForNewMessage("map");
+			String[] args_map = NetworkManager.instance.receiveFromServer("map").split(";");
 			if(args_map.length<3)
 				throw new RuntimeException("Map loading error");
 
@@ -89,8 +89,8 @@ public class LoadMap implements Runnable
 			}
 
 			NetworkManager.instance.sendToServer("lo;mapc"); //load map content
-			NetworkManager.instance.waitForNewMessage();
-			String[] args_mapc = NetworkManager.instance.getMessage_recu_serveur().split(";");
+			NetworkManager.instance.waitForNewMessage("mapc");
+			String[] args_mapc = NetworkManager.instance.receiveFromServer("mapc").split(";");
 
 			if(args_map.length>2)
 			{
