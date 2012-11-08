@@ -1,5 +1,8 @@
 package com.server.core.functions;
 
+import com.game_entities.Joueur_server;
+import com.game_entities.Orientation;
+import com.gameplay.entities.Personnage_serveur;
 import com.server.core.Account;
 import com.server.core.Client;
 import com.server.core.ServerSingleton;
@@ -59,9 +62,10 @@ public class ConnectFunction implements Functionable
 				race = rsp.getString("race.name");
 				classe = rsp.getString("classe.name");
 			}
-			c.getCompte().setClient_id(id);
 			c.sendToClient("c;CONNECT_SUCCEED");
 			c.setCompte(new Account(ndc,mdp));
+			c.getCompte().setClient_id(id);
+			c.getCompte().setCurrent_joueur(new Joueur_server(new Personnage_serveur(nom), 0,0, Orientation.BAS));
 			c.sendToClient("ci;"+nom+";"+race+";"+classe);
 			rsp.close();
 			stmt.close();

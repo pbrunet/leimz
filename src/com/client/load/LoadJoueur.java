@@ -161,8 +161,8 @@ public class LoadJoueur implements Runnable
 	{
 		ArrayList<Sort> sorts = new ArrayList<Sort>();
 		NetworkManager.instance.sendToServer(message);
-		NetworkManager.instance.waitForNewMessage(message.split(";",3)[1]);
-		String[] sort = NetworkManager.instance.receiveFromServer(message.split(";",3)[1]).split(";");
+		NetworkManager.instance.waitForNewMessage(message.split(";")[1]);
+		String[] sort = NetworkManager.instance.receiveFromServer(message.split(";")[1]).split(";");
 		if(sort.length<4)
 			throw new RuntimeException("Incorrect sorts loading message from server");
 

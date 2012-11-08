@@ -17,7 +17,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 import org.apache.log4j.Logger;
-import org.newdawn.slick.geom.Vector2f;
 
 /**
  * Classe du serveur! La connexion d'un client se passe ici
@@ -257,7 +256,7 @@ public class Server
 		return cli;	
 	}
 
-	public List<Client> getClientnear(Vector2f pos_real) {
+	public List<Client> getClientnear(double posx, double posy) {
 		//ArrayList<Client> listCli = new ArrayList<Client>();
 		
 		return null;

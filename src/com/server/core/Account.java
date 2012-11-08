@@ -2,17 +2,15 @@ package com.server.core;
 
 import java.util.ArrayList;
 
-import com.game_entities.Joueur;
-
-
+import com.game_entities.Joueur_server;
 
 public class Account 
 {
 	private int clientId;
 	private String name;
 	private String passwd;
-	private ArrayList<Joueur> joueurs;
-	private Joueur current_joueur;
+	private ArrayList<Joueur_server> joueurs;
+	private Joueur_server current_joueur;
 	
 	public Account()
 	{
@@ -37,19 +35,19 @@ public class Account
 		return this.clientId;
 	}
 	
-	public ArrayList<Joueur> getJoueurs() {
+	public ArrayList<Joueur_server> getJoueurs() {
 		return joueurs;
 	}
 	
-	public void setJoueurs(ArrayList<Joueur> joueurs) {
+	public void setJoueurs(ArrayList<Joueur_server> joueurs) {
 		this.joueurs = joueurs;
 	}
 	
-	public Joueur getCurrent_joueur() {
+	public Joueur_server getCurrent_joueur() {
 		return current_joueur;
 	}
 	
-	public void setCurrent_joueur(Joueur currentJoueur) {
+	public void setCurrent_joueur(Joueur_server currentJoueur) {
 		current_joueur = currentJoueur;
 	}
 	

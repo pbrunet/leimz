@@ -37,7 +37,7 @@ public class SayFunction implements Functionable
 		//On parle a proximité
 		if(args[1].equals("p"))
 		{
-			List<Client> listCli = ServerSingleton.getInstance().getClientnear(client.getCompte().getCurrent_joueur().getPos_real());
+			List<Client> listCli = ServerSingleton.getInstance().getClientnear(client.getCompte().getCurrent_joueur().getPosx(),client.getCompte().getCurrent_joueur().getPosy());
 			for(Client c : listCli)
 			{
 				c.sendToClient("sa"+args[0]+";"+args[1]+";"+client.getCompte().getCurrent_joueur().getPerso().getNom()+";"+args[2]);

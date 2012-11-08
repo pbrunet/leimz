@@ -78,6 +78,7 @@ public class NetworkManager
 			if((System.currentTimeMillis() - start) > timeout)
 			{
 				System.err.println("Message "+ name + " du serveur non reçu");
+				System.err.println("Message en stock : " + message_recu_serveur.toString());
 				System.exit(1);
 			}
 		} while(!message_recu_serveur.containsKey(name));
