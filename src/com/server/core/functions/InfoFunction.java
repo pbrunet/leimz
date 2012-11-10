@@ -17,50 +17,22 @@ public class InfoFunction implements Functionable
 {
 	public InfoFunction()
 	{
-
 	}
 
 	@Override
 	public void doSomething(String[] args,Client client)
 	{
-
 		ResultSet rsp = null;
 		try {
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			rsp = stmt.executeQuery("SELECT personnage.classe, personnage.race " +
+			rsp = stmt.executeQuery("SELECT classe, race " +
 					"FROM personnage " +
 					"WHERE name='"+args[1]+"'");
 
-			int id_race = 0, id_classe = 0;
-			while(rsp.next())
-			{
-				id_race = rsp.getInt("race");
-				id_classe = rsp.getInt("classe");
-			}
+			rsp.next();
+			String race = rsp.getString("race");
+			String classe = rsp.getString("classe");
 			rsp.close();
-			ResultSet rspr = stmt.executeQuery("SELECT race.name " +
-					"FROM race " +
-					"WHERE id="+id_race);
-
-			String race = null;
-
-			while(rspr.next())
-			{
-				race = rspr.getString("name");
-			}
-
-			rspr.close();
-			ResultSet rspc = stmt.executeQuery("SELECT classe.name " +
-					"FROM classe " +
-					"WHERE id="+id_classe);
-
-			String classe = null;
-			while(rspc.next())
-			{
-				classe = rspc.getString("name");
-			}
-			
-			rspc.close();
 			client.sendToClient("i;"+args[1]+";"+race+";"+classe);
 
 			stmt.close();

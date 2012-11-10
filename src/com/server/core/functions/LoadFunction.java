@@ -67,17 +67,16 @@ public class LoadFunction implements Functionable
 	{
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT caracteristiques.name, caracteristiques_race.value " +
-					"FROM caracteristiques,caracteristiques_race,personnage " +
-					"WHERE caracteristiques.id=caracteristiques_race.id_caracteristique " +
-					"AND caracteristiques_race.id_race=personnage.race " +
-					"AND personnage.id_compte=" + client.getCompte().getClient_id();
+			String sql = "SELECT caracteristiques_race.caracteristique, caracteristiques_race.value " +
+					"FROM caracteristiques_race,personnage " +
+					"WHERE caracteristiques_race.race=personnage.race " +
+					"AND personnage.name='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("caracteristiques.name") + ";";
+				rc += rs.getString("caracteristiques_race.caracteristique") + ";";
 				rc += rs.getInt("caracteristiques_race.value") + ";";
 			}
 			client.sendToClient(rc);
@@ -92,17 +91,16 @@ public class LoadFunction implements Functionable
 	{
 		ResultSet rs;
 		try {
-			String sql = "SELECT caracteristiques.name, caracteristiques_classe.value " +
-					"FROM caracteristiques,caracteristiques_classe,personnage " +
-					"WHERE caracteristiques.id=caracteristiques_classe.id_caracteristique " +
-					"AND caracteristiques_classe.id_classe=personnage.classe " +
-					"AND personnage.id_compte=" + client.getCompte().getClient_id();
+			String sql = "SELECT caracteristiques_classe.caracteristique, caracteristiques_classe.value " +
+					"FROM caracteristiques_classe,personnage " +
+					"WHERE caracteristiques_classe.classe=personnage.classe " +
+					"AND personnage.name='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("caracteristiques.name") + ";";
+				rc += rs.getString("caracteristiques_classe.caracteristique") + ";";
 				rc += rs.getInt("caracteristiques_classe.value") + ";";
 			}
 			client.sendToClient(rc);
@@ -117,17 +115,16 @@ public class LoadFunction implements Functionable
 	{
 		ResultSet rs;
 		try {
-			String sql = "SELECT caracteristiques.name, caracteristiques_joueur.value " +
-					"FROM caracteristiques,caracteristiques_joueur " +
-					"WHERE caracteristiques.id=caracteristiques_joueur.id_caracteristique " +
-					"AND caracteristiques_joueur.nom_joueur=" + client.getCompte().getClient_id();
+			String sql = "SELECT caracteristique, value " +
+					"FROM caracteristiques_joueur " +
+					"WHERE nom_joueur='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("caracteristiques.name") + ";";
-				rc += rs.getInt("caracteristiques_joueur.value") + ";";
+				rc += rs.getString("caracteristique") + ";";
+				rc += rs.getInt("value") + ";";
 			}
 			client.sendToClient(rc);
 			rs.close();
@@ -142,17 +139,16 @@ public class LoadFunction implements Functionable
 		ResultSet rs;
 		//Valeurs des caracteristiques du joueur
 		try {
-			String sql = "SELECT caracteristiques.name, caracteristiques_joueur.current_value " +
-					"FROM caracteristiques,caracteristiques_joueur " +
-					"WHERE caracteristiques.id=caracteristiques_joueur.id_caracteristique " +
-					"AND caracteristiques_joueur.nom_joueur=" + client.getCompte().getClient_id();
+			String sql = "SELECT caracteristique, current_value " +
+					"FROM caracteristiques_joueur " +
+					"WHERE nom_joueur='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("caracteristiques.name") + ";";
-				rc += rs.getInt("caracteristiques_joueur.current_value") + ";";
+				rc += rs.getString("caracteristique") + ";";
+				rc += rs.getInt("current_value") + ";";
 			}
 			client.sendToClient(rc);
 			rs.close();
@@ -169,9 +165,9 @@ public class LoadFunction implements Functionable
 		try {
 			String sql = "SELECT sorts_race.nom, sorts_race.value_min, sorts_race.value_max, sorts_race.description" +
 					" FROM sorts_race,personnage,race_sort " +
-					"WHERE sorts_race.id=race_sort.id_sort " +
-					"AND race_sort.id_race=personnage.race " +
-					"AND personnage.id_compte=" + client.getCompte().getClient_id();
+					"WHERE sorts_race.nom=race_sort.sort " +
+					"AND race_sort.race=personnage.race " +
+					"AND personnage.name='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
@@ -197,9 +193,9 @@ public class LoadFunction implements Functionable
 		try {
 			String sql = "SELECT sorts_classe.nom, sorts_classe.value_min, sorts_classe.value_max, sorts_classe.description" +
 					" FROM sorts_classe,personnage,classe_sort " +
-					"WHERE sorts_classe.id=classe_sort.id_sort " +
-					"AND classe_sort.id_classe=personnage.classe " +
-					"AND personnage.id_compte=" + client.getCompte().getClient_id();
+					"WHERE sorts_classe.nom=classe_sort.sort " +
+					"AND classe_sort.classe=personnage.classe " +
+					"AND personnage.name='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
@@ -222,10 +218,10 @@ public class LoadFunction implements Functionable
 	{
 		ResultSet rs;
 		try {
-			String sql = "SELECT item.id, item.nom, item.description, item.type, item.icone, item.apercu " +
+			String sql = "SELECT item.nom, item.description, item.type, item.icone, item.apercu " +
 					"FROM item,inventaire " +
-					"WHERE item.id=inventaire.id_objet " +
-					"AND inventaire.nom_joueur=" + client.getCompte().getClient_id();
+					"WHERE item.nom=inventaire.objet " +
+					"AND inventaire.joueur='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
@@ -237,16 +233,15 @@ public class LoadFunction implements Functionable
 				rc += rs.getString("item.type") + ";";
 				rc += rs.getString("item.icone") + ";";
 				rc += rs.getString("item.apercu") + ";";
-				sql = "SELECT caracteristiques_objet.value,caracteristiques.name " +
-						"FROM caracteristiques_objet, caracteristiques " +
-						"WHERE caracteristiques_objet.id_caracteristique=caracteristiques.id " +
-						"AND caracteristiques_objet.id_objet=" + rs.getString("item.id");
+				sql = "SELECT value,caracteristique " +
+						"FROM caracteristiques_objet " +
+						"WHERE objet='" + rs.getString("item.nom")+"'";
 				Statement stmt2 = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 				rs2 = stmt2.executeQuery(sql);
 				while(rs2.next())
 				{
-					rc += rs2.getString("caracteristiques.name") + ";";
-					rc += rs2.getString("caracteristiques_objet.value") + ";";
+					rc += rs2.getString("caracteristique") + ";";
+					rc += rs2.getInt("value") + ";";
 				}
 				rs2.close();
 				stmt2.close();
@@ -265,7 +260,7 @@ public class LoadFunction implements Functionable
 		try {
 			String sql = "SELECT pnj.pos_x, pnj.pos_y, pnj.nom, pnj_discours.discours, pnj_discours.id " +
 					"FROM pnj, pnj_discours " +
-					"WHERE pnj.id=pnj_discours.id_pnj " +
+					"WHERE pnj.nom=pnj_discours.nom_pnj " +
 					"AND pnj_discours.after_answer IS NULL";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
@@ -291,17 +286,17 @@ public class LoadFunction implements Functionable
 	private String getPnjAnswer(int id_discour, int depth) throws SQLException {
 		String rc = "";
 		ResultSet rs;
-		String sql = "SELECT pnj_discours.discours, pnj_discours.id " +
+		String sql = "SELECT discours, id " +
 				"FROM pnj_discours " +
-				"WHERE pnj_discours.after_answer=" + id_discour;
+				"WHERE after_answer=" + id_discour;
 		Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 		rs = stmt.executeQuery(sql);
 		depth++;
 		while(rs.next())
 		{
 			rc += depth + ";";
-			rc += rs.getString("pnj_discours.discours") + ";";
-			rc += getPnjAnswer(rs.getInt("pnj_discours.id"),depth);
+			rc += rs.getString("discours") + ";";
+			rc += getPnjAnswer(rs.getInt("id"),depth);
 		}
 
 		return rc;
@@ -312,34 +307,34 @@ public class LoadFunction implements Functionable
 		ResultSet rs;
 		//Chargement des informations d'une tile
 		try {
-			String sql = "SELECT tiles_map.nom, tiles_map.image, tiles_map.collidable, tiles_map.base_x, tiles_map.base_y " +
+			String sql = "SELECT nom, image, collidable, base_x, base_y " +
 					"FROM tiles_map " +
-					"WHERE tiles_map.nom='" + name + "'";
+					"WHERE nom='" + name + "'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("tiles_map.nom") + ";";
-				rc += rs.getString("tiles_map.image") + ";";
-				rc += rs.getBoolean("tiles_map.collidable") + ";";
-				rc += rs.getInt("tiles_map.base_x") + ";";
-				rc += rs.getInt("tiles_map.base_y") + ";";
+				rc += rs.getString("nom") + ";";
+				rc += rs.getString("image") + ";";
+				rc += rs.getBoolean("collidable") + ";";
+				rc += rs.getInt("base_x") + ";";
+				rc += rs.getInt("base_y") + ";";
 				rc += "0";
 			}
 			if(rc.equals(tag + ";"))
 			{
-				sql = "SELECT tiles_map_content.nom, tiles_map_content.image, tiles_map_content.collidable, tiles_map_content.base_x, tiles_map_content.base_y " +
+				sql = "SELECT nom, image, collidable, base_x, base_y " +
 						"FROM tiles_map_content " +
-						"WHERE tiles_map_content.nom='" + name + "'";
+						"WHERE nom='" + name + "'";
 				rs = stmt.executeQuery(sql);
 				while(rs.next())
 				{
-					rc += rs.getString("tiles_map_content.nom") + ";";
-					rc += rs.getString("tiles_map_content.image") + ";";
-					rc += rs.getBoolean("tiles_map_content.collidable") + ";";
-					rc += rs.getInt("tiles_map_content.base_x") + ";";
-					rc += rs.getInt("tiles_map_content.base_y") + ";";
+					rc += rs.getString("nom") + ";";
+					rc += rs.getString("image") + ";";
+					rc += rs.getBoolean("collidable") + ";";
+					rc += rs.getInt("base_x") + ";";
+					rc += rs.getInt("base_y") + ";";
 					rc += "1";
 				}
 			}
@@ -364,16 +359,15 @@ public class LoadFunction implements Functionable
 			rs.next();
 			rc += rs.getInt(1) + ";";
 			rc += rs.getInt(2) + ";";
-			sql = "SELECT map.x, map.y, map.monsterHolder, tiles_map.nom " +
-					"FROM tiles_map,map " +
-					"WHERE tiles_map.id=map.type";
+			sql = "SELECT x, y, monsterHolder, type " +
+					"FROM map ";
 			rs = stmt.executeQuery(sql);
 			while(rs.next())
 			{
-				rc += rs.getInt("map.x") + ";";
-				rc += rs.getInt("map.y") + ";";
-				rc += rs.getString("tiles_map.nom") + ";";
-				rc += rs.getBoolean("map.monsterHolder") + ";";
+				rc += rs.getInt("x") + ";";
+				rc += rs.getInt("y") + ";";
+				rc += rs.getString("type") + ";";
+				rc += rs.getBoolean("monsterHolder") + ";";
 			}
 			client.sendToClient(rc);
 			rs.close();
@@ -390,15 +384,14 @@ public class LoadFunction implements Functionable
 		try {
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			String rc = tag + ";";
-			String sql = "SELECT map_content.x, map_content.y, tiles_map_content.nom " +
-					"FROM tiles_map_content,map_content " +
-					"WHERE tiles_map_content.id=map_content.type";
+			String sql = "SELECT x, y, type " +
+					"FROM map_content ";
 			rs = stmt.executeQuery(sql);
 			while(rs.next())
 			{
-				rc += rs.getInt("map_content.x") + ";";
-				rc += rs.getInt("map_content.y") + ";";
-				rc += rs.getString("tiles_map_content.nom") + ";";
+				rc += rs.getInt("x") + ";";
+				rc += rs.getInt("y") + ";";
+				rc += rs.getString("type") + ";";
 			}
 			client.sendToClient(rc);
 			rs.close();
@@ -415,12 +408,12 @@ public class LoadFunction implements Functionable
 		try {
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			String rc = tag + ";";
-			String sql = "SELECT monster.name " +
+			String sql = "SELECT name " +
 					"FROM monster ";
 			rs = stmt.executeQuery(sql);
 			while(rs.next())
 			{
-				rc += rs.getString("monster.name") + ";";
+				rc += rs.getString("name") + ";";
 			}
 			client.sendToClient(rc);
 			rs.close();

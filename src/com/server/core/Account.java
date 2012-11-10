@@ -6,7 +6,6 @@ import com.game_entities.Joueur_server;
 
 public class Account 
 {
-	private int clientId;
 	private String name;
 	private String passwd;
 	private ArrayList<Joueur_server> joueurs;
@@ -24,15 +23,6 @@ public class Account
 	public void setMdp(String mdp) 
 	{
 		passwd = mdp;
-	}
-	public void setClient_id(int parseInt) 
-	{
-		this.clientId = parseInt;
-		
-	}
-	
-	public int getClient_id() {
-		return this.clientId;
 	}
 	
 	public ArrayList<Joueur_server> getJoueurs() {

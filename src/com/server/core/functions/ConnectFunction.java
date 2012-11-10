@@ -10,7 +10,6 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-
 /**
  * Write a description of class ConnectFunction here.
  * 
@@ -25,48 +24,40 @@ public class ConnectFunction implements Functionable
 	@Override
 	public void doSomething(String[] args,Client c)
 	{
-		
-
 		if(args.length <2)
 			throw new RuntimeException("Connection");
 
 		String ndc = args[1];
 		String mdp = args[2];
-		
+
 		ResultSet rsj = null;
 		try {
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			rsj = stmt.executeQuery("SELECT id_account FROM Account " +
+			rsj = stmt.executeQuery("SELECT currjoueur FROM Account " +
 					"WHERE nom_de_compte='"+ndc+"' " +
 					"AND mot_de_passe='"+mdp+"'");
 
-			int id = 0;
-		
+			String name = "";
+
 			while(rsj.next())
 			{
-				id = rsj.getInt("id_account");
+				name = rsj.getString("currjoueur");
 			}
-			if(id == 0)
+			if(name.isEmpty())
 				throw new RuntimeException("Searching player");
 
 			rsj.close();
-			ResultSet rsp = stmt.executeQuery("SELECT personnage.name,race.name,classe.name " +
-					"FROM personnage, race, classe " +
-					"WHERE personnage.id_compte="+id+" " +
-					"AND race.id=personnage.race " +
-					"AND classe.id=personnage.classe");
-			String race = null, classe = null, nom = null;
-			while(rsp.next())
-			{
-				nom = rsp.getString("personnage.name");
-				race = rsp.getString("race.name");
-				classe = rsp.getString("classe.name");
-			}
+			ResultSet rsp = stmt.executeQuery("SELECT race,classe " +
+					"FROM personnage " +
+					"WHERE name='"+name+"'");
+			rsp.next();
+			String race = rsp.getString("personnage.race");
+			String classe = rsp.getString("personnage.classe");
+
 			c.sendToClient("c;CONNECT_SUCCEED");
 			c.setCompte(new Account(ndc,mdp));
-			c.getCompte().setClient_id(id);
-			c.getCompte().setCurrent_joueur(new Joueur_server(new Personnage_serveur(nom), 0,0, Orientation.BAS));
-			c.sendToClient("ci;"+nom+";"+race+";"+classe);
+			c.getCompte().setCurrent_joueur(new Joueur_server(new Personnage_serveur(name), 0,0, Orientation.BAS));
+			c.sendToClient("ci;"+name+";"+race+";"+classe);
 			rsp.close();
 			stmt.close();
 		} catch (SQLException e) {

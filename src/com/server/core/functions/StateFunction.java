@@ -31,7 +31,8 @@ public class StateFunction implements Functionable
 
 				Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 				stmt.executeUpdate("UPDATE personnage " +
-						"SET posx='"+args[2]+"' , posy='"+args[3]+"' where id_compte='"+client.getCompte().getClient_id()+"'");
+						"SET posx="+args[2]+" , posy="+args[3]+" " +
+						"WHERE name='"+client.getCompte().getCurrent_joueur().getPerso().getNom()+"'");
 				
 				String toSend = "s;";
 
