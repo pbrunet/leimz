@@ -51,24 +51,17 @@ public class DisplayManager
 
 		this.game_state = game_state;
 	}
-
-	//Dessin complet
-	public void drawAll(Graphics g)
+	
+	public void drawGround()
 	{
-		this.graphics = g;
-
 		float scale = camera.getZoomScale();
-
 		Color filtre;
+		
 		if(game_state.equals(GameState.COMBAT))
-		{
 			filtre = new Color(255,255,255,0.5f);
-		}
 		else
-		{
 			filtre = new Color(255,255,255,1f);
-		}
-
+		
 		//On dessine la carte
 		for(int j = 0; j < current_map.get(0).size(); j++)
 		{
@@ -93,6 +86,17 @@ public class DisplayManager
 				first=(first==1)?0:1;
 			}
 		}
+		
+	}
+
+	//Dessin complet
+	public void drawAll(Graphics g)
+	{
+		this.graphics = g;
+
+		float scale = camera.getZoomScale();
+
+		drawGround();
 
 		//Joueur principal
 		Joueur main_player = entities_manager.getPlayers_manager().getMain_player();
@@ -194,6 +198,8 @@ public class DisplayManager
 		{
 			if(entities_manager.getPlayers_manager().getJoueurs().get(k).getCurrent_img_repos() != null)
 				entities_manager.getPlayers_manager().getJoueurs().get(k).draw();
+			else
+				entities_manager.getPlayers_manager().getJoueurs().get(k).initImgs();
 		}
 
 		//Si le joueur n'a finalement pas ete affiche (dans le cas ou, par ex, il n'y a aucun objet la ou il est)

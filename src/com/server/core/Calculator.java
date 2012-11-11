@@ -5,7 +5,6 @@ import java.util.concurrent.Callable;
 
 import com.server.core.functions.ConnectFunction;
 import com.server.core.functions.Functionable;
-import com.server.core.functions.InfoFunction;
 import com.server.core.functions.LoadFunction;
 import com.server.core.functions.SayFunction;
 import com.server.core.functions.StateFunction;
@@ -32,7 +31,6 @@ public class Calculator implements Callable<Void>
       dictfunctions.put("gl",new ListInvitFunction());*/
 
 		dictfunctions.put("s",new StateFunction());
-		dictfunctions.put("i",new InfoFunction());
 		dictfunctions.put("c",new ConnectFunction());
 		dictfunctions.put("sa",new SayFunction());
 		dictfunctions.put("lo",new LoadFunction());

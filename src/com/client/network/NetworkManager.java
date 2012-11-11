@@ -14,9 +14,12 @@ import java.util.Timer;
 
 import org.newdawn.slick.geom.Vector2f;
 
+import com.client.gamestates.Base;
 import com.game_entities.Joueur;
 import com.game_entities.Orientation;
 import com.game_entities.managers.EntitiesManager;
+import com.gameplay.Classe;
+import com.gameplay.Race;
 import com.gameplay.entities.Personnage;
 import com.map.client.managers.MapManager;
 
@@ -47,7 +50,7 @@ public class NetworkManager
 
 	private Thread checkListenersSending, handleServerMessages;
 
-	private static long timeout = 5000;
+	private static long timeout = 10000;
 
 	public boolean modifManager = false;
 	public static NetworkManager instance;
@@ -86,18 +89,17 @@ public class NetworkManager
 
 	public String receiveFromServer(String name)
 	{
+		String res = null;
 		try
 		{
 			if(message_recu_serveur.containsKey(name))
 			{
-				String res = message_recu_serveur.get(name);
+				res = message_recu_serveur.get(name);
 				message_recu_serveur.remove(name);
-				return res;
 			}
 		}
-		catch(Exception e)
-		{}
-		return null;
+		catch(Exception e){}
+		return res;
 	}
 
 	public void receiveFromServerPossible() 
@@ -107,7 +109,8 @@ public class NetworkManager
 			String res[] = br.readLine().split(";", 2);
 			message_recu_serveur.put(res[0],res[1]);
 		}
-		catch(Exception e){}
+		catch(Exception e){
+		}
 	}
 
 	public void init(MapManager mapManager2, EntitiesManager ent, ArrayList<NetworkListener> listeners2)
@@ -143,9 +146,10 @@ public class NetworkManager
 			{
 				while(true)
 				{
+					receiveFromServerPossible();
 					modifManager = false;
 					String message = receiveFromServer("s"); 
-					if(message != null)
+					if(message != null && false)
 					{
 						String[] temp = message.split(";");
 						if(!visible_entities_manager.getPlayers_manager().getMain_player().getPerso().getNom().equals(temp[0]))
@@ -174,14 +178,24 @@ public class NetworkManager
 						}
 					}
 
-					message = receiveFromServer("i"); 
+					message = receiveFromServer("aj"); 
 					if(message != null)
 					{
 						String[] temp = message.split(";");
+						String name = temp[0];
+						String race = temp[1];
+						String classe = temp[2];
+						int posx = Integer.parseInt(temp[3]);
+						int posy = Integer.parseInt(temp[4]);
+						Orientation ori = Orientation.valueOf(temp[5]);
+
 						System.out.println("infos : "+message);
 						System.out.println("infos recues !");
-						visible_entities_manager.getPlayers_manager().addNewPlayer(new Joueur(new Personnage(temp[0], null, null, null, null), null, Orientation.BAS));
-						visible_entities_manager.getPlayers_manager().getJoueurs().get(visible_entities_manager.getPlayers_manager().getJoueurs().size()-1).initImgs();
+						if(!visible_entities_manager.getPlayers_manager().getMain_player().getPerso().getNom().equals(name))
+						{
+							visible_entities_manager.getPlayers_manager().addNewPlayer(new Joueur(new Personnage(name, new Race(race), new Classe(classe), null, null), MapManager.instance.getEntire_map().getGrille().get(posx/Base.Tile_x).get(posy/Base.Tile_y), ori));
+							visible_entities_manager.getPlayers_manager().getJoueurs().get(visible_entities_manager.getPlayers_manager().getJoueurs().size()-1).initImgs();
+						}
 					}
 				}
 			}

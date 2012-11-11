@@ -22,6 +22,7 @@ import com.gameplay.Sort;
 import com.gameplay.entities.Personnage;
 import com.gameplay.items.Equipement;
 import com.map.Tile;
+import com.map.client.managers.MapManager;
 
 /**
  * 
@@ -34,6 +35,7 @@ public class LoadJoueur implements Runnable
 	private int purcent;
 	private boolean running;
 	private Joueur joueur;
+	private ArrayList<Joueur> list_joueur;
 
 	public LoadJoueur()
 	{
@@ -41,6 +43,7 @@ public class LoadJoueur implements Runnable
 		looper = new Thread(this);
 		looper.start();
 		running = true;
+		list_joueur = new ArrayList<Joueur>();
 	}
 
 	@Override
@@ -104,6 +107,21 @@ public class LoadJoueur implements Runnable
 
 			purcent+=6;
 
+			//Chargement des autres joueurs sur la carte
+			NetworkManager.instance.sendToServer("lo;pj"); //load joueur, joueur caracteristiques
+			NetworkManager.instance.waitForNewMessage("pj");
+			String[] list_perso = NetworkManager.instance.receiveFromServer("pj").split("new;");
+			for( int i=1;i<list_perso.length;i++)
+			{
+				String[] perso = list_perso[i].split(";");
+				Joueur j = new Joueur(new Personnage(perso[0], new Race(perso[1]), new Classe(perso[2]),null,null),
+						MapManager.instance.getEntire_map().getGrille()
+						.get(Integer.parseInt(perso[3])/Base.Tile_x)
+						.get(Integer.parseInt(perso[4])/Base.Tile_y),
+						Orientation.valueOf(perso[5]));
+				list_joueur.add(j);
+				System.out.println("ok" + i + "/" + list_perso[i]);
+			}
 			try {
 				//TODO Pourquoi un sleep?
 				Thread.sleep(100);
@@ -167,5 +185,9 @@ public class LoadJoueur implements Runnable
 			sorts.add(new Sort(sort[i],sort[i+3],Integer.parseInt(sort[i+1]),Integer.parseInt(sort[i+2]),null));
 
 		return (ArrayList<Sort>) sorts.clone();
+	}
+
+	public ArrayList<Joueur> getPlayers() {
+		return list_joueur;
 	}
 }

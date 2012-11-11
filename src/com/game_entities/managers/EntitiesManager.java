@@ -8,7 +8,6 @@ public class EntitiesManager
 	
 	public EntitiesManager()
 	{
-		
 	}
 
 	public MonstersManager getMonsters_manager() {
@@ -34,6 +33,4 @@ public class EntitiesManager
 	public void setPnjs_manager(PNJsManager pnjsManager) {
 		pnjs_manager = pnjsManager;
 	}
-	
-	
 }

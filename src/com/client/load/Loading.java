@@ -56,7 +56,7 @@ public class Loading extends BasicGameState
 		fond = new Image("data/Images/Loading/fond_v2.png");
 		barre = new Image("data/Images/Loading/Barre_remplie.png");
 
-		loadJoueur();
+		loadMaps();
 			}
 
 
@@ -77,12 +77,6 @@ public class Loading extends BasicGameState
 			throws SlickException 
 			{
 
-		if(load_joueur != null && !load_joueur.isRunning() && !loadJ)
-		{
-			loadMaps();
-			loadJ=true;
-		}
-
 		if(load_map != null && !load_map.isRunning() && !loadMon)
 		{
 			loadMonsters();
@@ -91,17 +85,24 @@ public class Loading extends BasicGameState
 
 		if(load_map != null && !load_map.isRunning() && !loadM)
 		{			
+			//Attention au faux pattern singleton
 			new MapManager(new Map(load_map.getGrille(),load_monster.getMonster_list()));
 
 			loadEntities();
 			loadM=true;
 		}
 
+		if(load_map != null && !load_map.isRunning() && !loadJ)
+		{
+			loadJoueur();
+			loadJ=true;
+		}
+
 		purcent = (load_pnj != null)?load_pnj.getPurcent():0;
 
-		purcent += (load_map != null)?load_map.getPurcent():0;
+		purcent += (load_joueur != null)?load_joueur.getPurcent():0;
 
-		purcent += load_joueur.getPurcent();
+		purcent += load_map.getPurcent();
 
 		if(load_pnj != null && !load_pnj.isRunning() && load_monster != null && !load_monster.isRunning() && load_joueur != null && !load_joueur.isRunning() && load_map != null && !load_map.isRunning())
 		{
@@ -109,7 +110,7 @@ public class Loading extends BasicGameState
 
 			EntitiesManager e_m = new EntitiesManager();
 			e_m.setPnjs_manager(load_pnj.getPnjs_manager());
-			e_m.setPlayers_manager(new PlayersManager(j));
+			e_m.setPlayers_manager(new PlayersManager(j,load_joueur.getPlayers()));
 
 			((Principal) sbg.getState(Base.PRINCIPAL)).setEntities_manager(e_m);
 

@@ -32,20 +32,21 @@ public class ConnectFunction implements Functionable
 		ResultSet rsj = null;
 		try {
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			rsj = stmt.executeQuery("SELECT currjoueur FROM Account " +
+			rsj = stmt.executeQuery("SELECT currjoueur,connected FROM Account " +
 					"WHERE nom_de_compte='"+ndc+"' " +
 					"AND mot_de_passe='"+mdp+"'");
 
-			String name = "";
+			rsj.next();
+			String name = rsj.getString("currjoueur");
+			boolean connected = rsj.getBoolean("connected");
+			if(connected)
+				throw new RuntimeException("Player already connected");
 
-			while(rsj.next())
-			{
-				name = rsj.getString("currjoueur");
-			}
 			if(name.isEmpty())
 				throw new RuntimeException("Searching player");
 
 			rsj.close();
+			stmt.executeUpdate("UPDATE Account SET connected=1 WHERE nom_de_compte='"+ndc+"'");
 			ResultSet rsp = stmt.executeQuery("SELECT race,classe,posx,posy,orientation " +
 					"FROM personnage " +
 					"WHERE name='"+name+"'");
@@ -60,6 +61,7 @@ public class ConnectFunction implements Functionable
 			c.setCompte(new Account(ndc,mdp));
 			c.getCompte().setCurrent_joueur(new Joueur_server(new Personnage_serveur(name), posx,posy));
 			c.sendToClient("ci;"+name+";"+race+";"+classe+";"+posx+";"+posy+";"+ori);
+			ServerSingleton.getInstance().sendAllClient("aj;"+name+";"+race+";"+classe+";"+posx+";"+posy+";"+ori);
 			rsp.close();
 			stmt.close();
 		} catch (SQLException e) {

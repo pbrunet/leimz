@@ -58,6 +58,9 @@ public class LoadFunction implements Functionable
 		case "mon":
 			askMonster(client,args[1]);
 			break;
+		case "pj":
+			askPerso(client,args[1]);
+			break;
 		default:
 			throw new RuntimeException("Unimplemented");
 		}
@@ -251,6 +254,37 @@ public class LoadFunction implements Functionable
 			stmt.close();
 		} catch (SQLException e) {
 			throw new RuntimeException("Bag");
+		}
+	}
+
+	public void askPerso(Client client,String tag)
+	{
+		ResultSet rs;
+		try {
+			String sql = "SELECT name,race,classe,posx,posy,orientation " +
+					"FROM personnage,Account " +
+					"WHERE personnage.name=Account.currjoueur " +
+					"AND Account.connected=1";
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			rs = stmt.executeQuery(sql);
+			String rc = tag + ";";
+			while(rs.next())
+			{
+				rc += "new;";
+				rc += rs.getString("name") + ";";
+				rc += rs.getString("race") + ";";
+				rc += rs.getString("classe") + ";";
+				rc += rs.getInt("posx") + ";";
+				rc += rs.getInt("posy") + ";";
+				rc += rs.getString("orientation") + ";";
+			}
+
+			client.sendToClient(rc);
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Other players");
 		}
 	}
 

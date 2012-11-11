@@ -103,7 +103,8 @@ public class Principal extends BasicGameState
 		try {
 			gui_manager = new GUI_Manager(new File("data/GUI/Theme/projet.xml").toURI().toURL(), gc);
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+			System.err.println("E: Impossible de charger l'interface graphique");
+			System.exit(1);
 		}
 
 		frame = new ChatFrame(null, main_player);
