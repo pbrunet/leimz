@@ -13,6 +13,9 @@ import com.map.Tile;
 
 public class MainJoueur extends Joueur implements NetworkListener
 {
+	static private long TIME_BEFORE_POS_UPD = 50;
+	private long last_upd;
+
 	//Evenements
 	private ArrayList<String> events = new ArrayList<String>();
 
@@ -29,6 +32,7 @@ public class MainJoueur extends Joueur implements NetworkListener
 		super(perso, tile, orientation);
 		this.list_tiles_done = new ArrayList<Tile>();
 
+		last_upd = 0;
 		sendMessageToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
 	}
 
@@ -250,7 +254,14 @@ public class MainJoueur extends Joueur implements NetworkListener
 			pos_real.y += 0.5f * speed;
 			break;
 		}
-		sendMessageToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
+		
+		//Pour eviter d'avoir trop de requete vers le serveur.
+		long time = System.currentTimeMillis();
+		if(time - TIME_BEFORE_POS_UPD > last_upd)
+		{
+			sendMessageToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
+			last_upd = time;
+		}
 	}
 
 	@Override
