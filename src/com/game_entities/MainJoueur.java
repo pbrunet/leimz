@@ -125,7 +125,8 @@ public class MainJoueur extends Joueur implements NetworkListener
 
 		if(events.contains("BAS") || events.contains("HAUT") || events.contains("DROITE") || events.contains("GAUCHE"))
 		{
-			moveKey();
+			current_chemin=null;
+			move();
 		}
 
 
@@ -181,7 +182,7 @@ public class MainJoueur extends Joueur implements NetworkListener
 		list_tiles_done = new ArrayList<Tile>();
 	}
 
-	public void move()
+	public void movePath()
 	{
 		if(current_chemin != null)
 		{
@@ -195,60 +196,29 @@ public class MainJoueur extends Joueur implements NetworkListener
 				else
 				{
 					if(next_tile.getPos_real_barycentre().x > this.getPos_real().x && next_tile.getPos_real_barycentre().y > this.getPos_real().y)
-					{
 						this.orientation = Orientation.BAS_DROITE;
-						this.pos_real.x += 1f*speed;
-						this.pos_real.y += 0.5f*speed;
-					}
 					else if(next_tile.getPos_real_barycentre().x < this.getPos_real().x && next_tile.getPos_real_barycentre().y < this.getPos_real().y)
-					{
 						this.orientation = Orientation.HAUT_GAUCHE;
-						this.pos_real.x -= 1f*speed;
-						this.pos_real.y -= 0.5f*speed;
-					}
 					else if(next_tile.getPos_real_barycentre().x > this.getPos_real().x && next_tile.getPos_real_barycentre().y < this.getPos_real().y)
-					{
 						this.orientation = Orientation.HAUT_DROITE;
-						this.pos_real.x += 1f*speed;
-						this.pos_real.y -= 0.5f*speed;
-					}
 					else if(next_tile.getPos_real_barycentre().x < this.getPos_real().x && next_tile.getPos_real_barycentre().y > this.getPos_real().y)
-					{
 						this.orientation = Orientation.BAS_GAUCHE;
-						this.pos_real.x -= 1f*speed;
-						this.pos_real.y += 0.5f*speed;
-					}
 					else if(next_tile.getPos_real_barycentre().x > this.getPos_real().x)
-					{
 						this.orientation = Orientation.DROITE;
-						this.pos_real.x += 1*speed;
-					}
 					else if(next_tile.getPos_real_barycentre().x < this.getPos_real().x)
-					{
 						this.orientation = Orientation.GAUCHE;
-						this.pos_real.x -= 1*speed;
-					}
 					else if(next_tile.getPos_real_barycentre().y > this.getPos_real().y)
-					{
 						this.orientation = Orientation.BAS;
-						this.pos_real.y += 1*speed;
-					}
 					else if(next_tile.getPos_real_barycentre().y < this.getPos_real().y)
-					{
-						this.pos_real.y -= 1*speed;
 						this.orientation = Orientation.HAUT;
-					}
-					sendMessageToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
+					move();
 				}
 			}
 		}
-
 	}
 
-
-	public void moveKey()
+	public void move()
 	{
-		current_chemin = null;
 		switch(orientation)
 		{
 		case HAUT:

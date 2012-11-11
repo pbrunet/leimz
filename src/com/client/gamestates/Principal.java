@@ -290,7 +290,7 @@ public class Principal extends BasicGameState
 				map_manager.getTileReal(main_player.getPos_real())
 				);
 		main_player.setAbsolute(map_manager.getAbsolute());
-		main_player.move();
+		main_player.movePath();
 
 		camera.focusOn(main_player.getTile(), main_player.getTile().getPos_real().copy().sub(main_player.getPos_real()));
 		camera.zoom(current_scale);
