@@ -72,7 +72,7 @@ public abstract class Entity
 		this.tile = tile;
 		
 		this.pos_real = new Vector2f(0,0);
-		if(tile != null)
+		if(tile != null && tile.getPos_real()!=null)
 		{
 			this.pos_real.x = tile.getPos_real().x;
 			this.pos_real.y = tile.getPos_real().y;

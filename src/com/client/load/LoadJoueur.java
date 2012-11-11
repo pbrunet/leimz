@@ -8,9 +8,11 @@ import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.loading.LoadingList;
 
+import com.client.gamestates.Base;
 import com.client.network.NetworkManager;
 
 import com.game_entities.Joueur;
+import com.game_entities.Orientation;
 
 import com.gameplay.Caracteristique;
 import com.gameplay.Classe;
@@ -19,6 +21,7 @@ import com.gameplay.Race;
 import com.gameplay.Sort;
 import com.gameplay.entities.Personnage;
 import com.gameplay.items.Equipement;
+import com.map.Tile;
 
 /**
  * 
@@ -30,7 +33,6 @@ public class LoadJoueur implements Runnable
 	private Thread looper;
 	private int purcent;
 	private boolean running;
-	private Personnage perso;
 	private Joueur joueur;
 
 	public LoadJoueur()
@@ -50,12 +52,15 @@ public class LoadJoueur implements Runnable
 
 			//On recupere la chaine avec les infos sur le perso
 			String[] args_perso = NetworkManager.instance.receiveFromServer("ci").split(";");
-			if(args_perso.length<3)
+			if(args_perso.length<6)
 				throw new RuntimeException("Incorrect login message from server");
 
 			String nom_perso = args_perso[0];
 			String nom_race = args_perso[1];
 			String nom_classe = args_perso[2];
+			int posx = Integer.parseInt(args_perso[3]);
+			int posy = Integer.parseInt(args_perso[4]);
+			Orientation ori = Orientation.valueOf(args_perso[5]);
 
 			//-------------------GESTION DE LA RACE-----------------------
 
@@ -67,7 +72,7 @@ public class LoadJoueur implements Runnable
 
 			//---------------GESTION DU PERSONNAGE------------------
 
-			perso = new Personnage(nom_perso, race, classe,getCaracteristic("lo;jcv"),getCaracteristic("lo;jc"));
+			joueur = new Joueur(new Personnage(nom_perso, race, classe,getCaracteristic("lo;jcv"),getCaracteristic("lo;jc")), new Tile(posx/Base.Tile_x, posy/Base.Tile_y), ori);
 
 			//----------------GESTION DE L'INVENTAIRE---------------------
 
@@ -95,7 +100,7 @@ public class LoadJoueur implements Runnable
 			}
 			LoadingList.setDeferredLoading(false);
 
-			perso.setInventaire(inventaire);
+			joueur.getPerso().setInventaire(inventaire);
 
 			purcent+=6;
 
@@ -131,14 +136,6 @@ public class LoadJoueur implements Runnable
 
 	public void setRunning(boolean running) {
 		this.running = running;
-	}
-
-	public Personnage getPerso() {
-		return perso;
-	}
-
-	public void setPerso(Personnage perso) {
-		this.perso = perso;
 	}
 
 	@SuppressWarnings("unchecked")

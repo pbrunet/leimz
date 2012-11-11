@@ -27,9 +27,6 @@ public class MainJoueur extends Joueur implements NetworkListener
 	public MainJoueur(Personnage perso, Tile tile, Orientation orientation) 
 	{
 		super(perso, tile, orientation);
-
-		this.pos_real.x += 40;
-		this.pos_real.y += 20;
 		this.list_tiles_done = new ArrayList<Tile>();
 
 		sendMessageToServer("s;pos;"+pos_real.x+";"+pos_real.y+";"+stringOrientation());
