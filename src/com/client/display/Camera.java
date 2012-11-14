@@ -4,7 +4,9 @@ import java.util.ArrayList;
 
 import org.newdawn.slick.geom.Vector2f;
 
+import com.client.entities.Entity;
 import com.client.gamestates.Base;
+import com.game_entities.managers.EntitiesManager;
 import com.map.Grille;
 import com.map.Map;
 import com.map.Tile;
@@ -21,9 +23,12 @@ public class Camera
 
 	private float zoomScale = 1.0f;
 	private float fuzzy = 1.0f;
+	
+	private ArrayList<Entity> visible_entities;
 
 	public Camera()
 	{
+		visible_entities = new ArrayList<Entity>();
 	}
 
 	public void focusOn(Tile tile, Vector2f decalage)
@@ -80,6 +85,21 @@ public class Camera
 				current_map.get(y-x_offset).add(map_manager.getEntire_map().getGrille().get(i).get(j));
 			}
 		}
+		
+		visible_entities.removeAll(visible_entities);
+		for(int i = 0; i < current_map.size();i++)
+		{
+			for(int j=0; j < current_map.get(i).size(); j++)
+			{
+				for(int k = 0; k < EntitiesManager.instance.getEntities().size(); k++)
+				{
+					if(EntitiesManager.instance.getEntities().get(k).getTile().equals(current_map.get(i).get(j)))
+					{
+						visible_entities.add(EntitiesManager.instance.getEntities().get(k));
+					}
+				}
+			}
+		}
 
 		map_manager.setAbsolute(current_map.get(0).get(0).getPos_screen().copy().sub(current_map.get(0).get(0).getPos_real()));
 		map_manager.setMap_visible(new Map(current_map, map_manager.getEntire_map().getDataMonstres()));
@@ -105,4 +125,14 @@ public class Camera
 	public void setZoomScale(float zoomScale) {
 		this.zoomScale = zoomScale;
 	}
+
+	public ArrayList<Entity> getVisible_entities() {
+		return visible_entities;
+	}
+
+	public void setVisible_entities(ArrayList<Entity> visible_entities) {
+		this.visible_entities = visible_entities;
+	}
+	
+	
 }

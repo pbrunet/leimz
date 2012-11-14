@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.client.display.gui.GUI_Manager;
+import com.client.entities.Joueur;
+import com.client.entities.MainJoueur;
 import com.client.gamestates.Base;
 import com.client.network.NetworkListener;
 import com.client.network.NetworkManager;
 import com.client.utils.gui.PrincipalGui;
-import com.game_entities.Joueur;
-import com.game_entities.MainJoueur;
 import com.game_entities.managers.EntitiesManager;
 import com.gameplay.Caracteristique;
 import com.gameplay.Combat;
@@ -23,7 +23,6 @@ import de.matthiasmann.twl.ResizableFrame;
 
 public class CombatManager implements NetworkListener
 {
-	private ArrayList<Combat> mainJoueurCombats;
 	private ArrayList<Combat> combats;
 	private Combat current_combat;
 	
@@ -34,7 +33,6 @@ public class CombatManager implements NetworkListener
 	public CombatManager()
 	{
 		instance = this;
-		mainJoueurCombats = new ArrayList<Combat>();
 		combats = new ArrayList<Combat>();
 	}
 	
@@ -137,14 +135,15 @@ public class CombatManager implements NetworkListener
 						equipes.add(equipe2);
 						
 						ArrayList<Tile> zone= new ArrayList<Tile>();
-						ArrayList<ArrayList<Tile>> tiles_autour = MapManager.instance.getTilesAutour(MainJoueur.instance.getTile(), 10);
+						ArrayList<ArrayList<Tile>> tiles_autour = MapManager.instance.getTilesAutour(MainJoueur.instance.getTile(), 5);
 						for(int k = 0; k < tiles_autour.size(); k++)
 						{
 							zone.addAll(tiles_autour.get(k));
 						}
 						Combat combat = new Combat(equipes, zone);
-						getMainJoueurCombats().add(combat);
+						MainJoueur.instance.getPerso().getCombats().add(combat);
 						current_combat = combat;
+						MainJoueur.instance.getPerso().setCurrent_combat(current_combat);
 					}
 				});
 				((Button)answerFrame.getChild(0).getChild(2)).addCallback(new Runnable() {
@@ -184,8 +183,9 @@ public class CombatManager implements NetworkListener
 						zone.addAll(tiles_autour.get(k));
 					}
 					Combat combat = new Combat(equipes, zone);
-					getMainJoueurCombats().add(combat);
+					MainJoueur.instance.getPerso().getCombats().add(combat);
 					current_combat = combat;
+					MainJoueur.instance.getPerso().setCurrent_combat(current_combat);
 				}
 				else if(temp[2].equals("n"))
 				{
@@ -194,14 +194,6 @@ public class CombatManager implements NetworkListener
 			}
 		}
 		
-	}
-
-	public ArrayList<Combat> getMainJoueurCombats() {
-		return mainJoueurCombats;
-	}
-
-	public void setMainJoueurCombats(ArrayList<Combat> mainJoueurCombats) {
-		this.mainJoueurCombats = mainJoueurCombats;
 	}
 
 	public ArrayList<Combat> getCombats() {

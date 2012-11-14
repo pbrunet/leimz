@@ -1,7 +1,7 @@
 
 package com.server.core.functions;
 
-import com.game_entities.Joueur;
+import com.client.entities.Joueur;
 import com.gameplay.entities.Personnage;
 import com.server.core.Client;
 import com.server.core.ServerSingleton;

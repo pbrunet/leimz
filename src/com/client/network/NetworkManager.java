@@ -13,10 +13,10 @@ import java.util.Timer;
 
 import org.newdawn.slick.geom.Vector2f;
 
+import com.client.entities.Joueur;
+import com.client.entities.MainJoueur;
+import com.client.entities.Orientation;
 import com.client.utils.gui.PrincipalGui;
-import com.game_entities.Joueur;
-import com.game_entities.MainJoueur;
-import com.game_entities.Orientation;
 import com.game_entities.managers.EntitiesManager;
 import com.gameplay.Caracteristique;
 import com.gameplay.entities.Personnage;
@@ -107,8 +107,6 @@ public class NetworkManager
 
 	public void init()
 	{
-
-
 		handleServerMessages = new Thread(new Runnable() {
 
 			@Override
@@ -182,6 +180,22 @@ public class NetworkManager
 						{
 							MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)-Integer.parseInt(temp[2]));
 							NetworkManager.instance.sendToServer("s;vie;"+MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)+";"+temp[1]);
+						}
+						else if(temp[0].equals("sa"))
+						{
+							PrincipalGui.instance.getChat_frame().receiveMessage(message);
+						}
+						else if(temp[0].equals("lo"))
+						{
+							//Loading dynamique
+							if(temp[1].equals("map"))
+							{
+								
+							}
+							else if(temp[1].equals("ent"))
+							{
+								EntitiesManager.instance.receiveMessage(message);
+							}
 						}
 					}
 				}

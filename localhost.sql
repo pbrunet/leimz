@@ -419,7 +419,7 @@ CREATE TABLE `personnage` (
 
 LOCK TABLES `personnage` WRITE;
 /*!40000 ALTER TABLE `personnage` DISABLE KEYS */;
-INSERT INTO `personnage` VALUES (1,1,1,'Choco','b',36,29),(2,1,1,'FaZeGa','h',24,9),(3,1,1,'Memor','b',26,29);
+INSERT INTO `personnage` VALUES (1,1,1,'Choco','b',10,10),(2,1,1,'FaZeGa','h',27,24),(3,1,1,'Memor','b',26,29);
 /*!40000 ALTER TABLE `personnage` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -436,7 +436,7 @@ CREATE TABLE `pnj` (
   `pos_x` int(11) DEFAULT NULL,
   `pos_y` int(11) DEFAULT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -445,7 +445,7 @@ CREATE TABLE `pnj` (
 
 LOCK TABLES `pnj` WRITE;
 /*!40000 ALTER TABLE `pnj` DISABLE KEYS */;
-INSERT INTO `pnj` VALUES ('Well Caume',1,5,5);
+INSERT INTO `pnj` VALUES ('Well Caume',1,5,5),('Garde',2,25,25);
 /*!40000 ALTER TABLE `pnj` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -466,7 +466,7 @@ CREATE TABLE `pnj_discours` (
   KEY `after_answer` (`after_answer`),
   CONSTRAINT `pnj_discours_ibfk_1` FOREIGN KEY (`id_pnj`) REFERENCES `pnj` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `pnj_discours_ibfk_2` FOREIGN KEY (`after_answer`) REFERENCES `pnj_discours` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -475,7 +475,7 @@ CREATE TABLE `pnj_discours` (
 
 LOCK TABLES `pnj_discours` WRITE;
 /*!40000 ALTER TABLE `pnj_discours` DISABLE KEYS */;
-INSERT INTO `pnj_discours` VALUES (1,'Bienvenue jeune leimzien !#n#nTu veux partir a l\'aventure, risquer ta vie pour sauver notre bon roi Domo ? Alors c\'est parti, lance toi !',1,NULL),(1,' Oui, je comprends ton inquietude. Mais trahiras-tu la confiance que t\'as donne ton roi ? J\'imagine que non.#nPars a l\'aventure, tu ne le regretteras pas.#n#nBonne chance !',2,7),(1,'Certes, certes. Mais tente de les m‚langer … de la ciboulette, le gout en est meilleur.#n#nSur ce, bonne chance dans ton aventure !',3,8),(1,'Oui, je suis pret !',6,1),(1,'Euh ...',7,1),(1,'Je n\'aime pas les champignons.',8,1),(1,'Merci, bonne journée !',9,2),(1,'Merci, bonne journée !',10,3);
+INSERT INTO `pnj_discours` VALUES (1,'Bienvenue jeune leimzien !#n#nTu veux partir a l\'aventure, risquer ta vie pour sauver notre bon roi Domo ? Alors c\'est parti, lance toi !',1,NULL),(1,' Oui, je comprends ton inquietude. Mais trahiras-tu la confiance que t\'as donne ton roi ? J\'imagine que non.#nPars a l\'aventure, tu ne le regretteras pas.#n#nBonne chance !',2,7),(1,'Certes, certes. Mais tente de les m‚langer … de la ciboulette, le gout en est meilleur.#n#nSur ce, bonne chance dans ton aventure !',3,8),(1,'Oui, je suis pret !',6,1),(1,'Euh ...',7,1),(1,'Je n\'aime pas les champignons.',8,1),(1,'Merci, bonne journée !',9,2),(1,'Merci, bonne journée !',10,3),(2,'Ola ! On ne passe pas !',11,NULL),(2,'Oups ! Euh ... Il fait beau hein ?',12,11);
 /*!40000 ALTER TABLE `pnj_discours` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -651,4 +651,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-10-27 18:09:42
+-- Dump completed on 2012-11-11 21:18:16

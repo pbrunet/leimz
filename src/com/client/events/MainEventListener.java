@@ -5,19 +5,26 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
 
 import com.client.display.gui.GUI_Manager;
+import com.client.entities.Joueur;
+import com.client.entities.MainJoueur;
+import com.client.entities.PNJ;
 import com.client.gamestates.Base;
 import com.client.network.NetworkManager;
 import com.client.utils.gui.PnjDialogFrame;
 import com.client.utils.gui.PrincipalGui;
 import com.client.utils.pathfinder.PathFinder;
-import com.game_entities.Joueur;
-import com.game_entities.MainJoueur;
-import com.game_entities.PNJ;
 import com.game_entities.managers.EntitiesManager;
 import com.gameplay.Combat.EtatCombat;
 import com.gameplay.managers.CombatManager;
 import com.map.Tile;
 import com.map.client.managers.MapManager;
+
+import de.matthiasmann.twl.CallbackWithReason;
+import de.matthiasmann.twl.ComboBox;
+import de.matthiasmann.twl.ListBox;
+import de.matthiasmann.twl.ListBox.CallbackReason;
+import de.matthiasmann.twl.model.SimpleChangableListModel;
+import de.matthiasmann.twl.model.SimpleListModel;
 
 public class MainEventListener extends EventListener
 {
@@ -69,11 +76,38 @@ public class MainEventListener extends EventListener
 					entity_pressed = true;
 					if((EntitiesManager.instance.getEntities().get(i)) instanceof PNJ)
 					{
-						PnjDialogFrame dialog = new PnjDialogFrame(EntitiesManager.instance.getPnjs_manager().getPnjs().get(i));
+						final PNJ pnj = EntitiesManager.instance.getPnjs_manager().getPnjs().get(i);
+						final SimpleChangableListModel<String> l = new SimpleChangableListModel<String>(
+								"Parler", "Défier");
+						final ListBox<String> combobox = new ListBox<String>(l);
+						combobox.setTheme("/popuplistbox");
+						combobox.addCallback(new CallbackWithReason<ListBox.CallbackReason>() { 
 						
-						GUI_Manager.instance.getRoot().add(dialog);
-						dialog.setSize(400, 400);
-						dialog.setPosition((Base.sizeOfScreen_x/2)-(dialog.getWidth()/2), (Base.sizeOfScreen_y/2)-(dialog.getHeight()/2));
+							@Override
+							public void callback(CallbackReason cbreason) 
+							{
+								if(cbreason == CallbackReason.MOUSE_CLICK) 
+								{
+								 int id = combobox.getSelected();
+								 
+								 if(l.getEntry(id).equals("Parler"))
+								 {
+									PnjDialogFrame dialog = new PnjDialogFrame(pnj);
+										
+									GUI_Manager.instance.getRoot().add(dialog);
+									dialog.setSize(400, 400);
+									dialog.setPosition((Base.sizeOfScreen_x/2)-(dialog.getWidth()/2), (Base.sizeOfScreen_y/2)-(dialog.getHeight()/2));
+								 }
+								 else if(l.getEntry(id).equals("Défier"))
+								 {
+									 
+								 }
+								}
+							}
+						});
+						GUI_Manager.instance.getRoot().add(combobox);
+						combobox.adjustSize();
+						combobox.setPosition(input.getMouseX(), input.getMouseY());
 					}
 					
 					else if((EntitiesManager.instance.getEntities().get(i)) instanceof Joueur)
@@ -87,15 +121,7 @@ public class MainEventListener extends EventListener
 						}
 						else
 						{
-							boolean encours = false;
-							for(int k = 0; k < CombatManager.instance.getMainJoueurCombats().size(); k++)
-							{
-								if(CombatManager.instance.getMainJoueurCombats().get(k).getEtat().equals(EtatCombat.EN_COURS))
-								{
-									encours = true;
-								}
-							}
-							if(!encours)
+							if(CombatManager.instance.getCurrent_combat()==null)
 							{
 								CombatManager.instance.askCombat((Joueur)EntitiesManager.instance.getEntities().get(i));
 							}

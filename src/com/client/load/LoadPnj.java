@@ -2,10 +2,12 @@ package com.client.load;
 
 import java.util.ArrayList;
 
+import org.newdawn.slick.loading.LoadingList;
+
+import com.client.entities.Orientation;
+import com.client.entities.PNJ;
 import com.client.network.NetworkManager;
 
-import com.game_entities.Orientation;
-import com.game_entities.PNJ;
 import com.game_entities.managers.PNJsManager;
 
 import com.gameplay.PNJ_discours;
@@ -16,22 +18,36 @@ import com.map.client.managers.MapManager;
  * @author chelendil
  * Classe chargeant les informations de classe et de race du joueur (sort, competences ...)
  */
-public class LoadPnj implements Runnable
+public class LoadPnj
 {
-	private Thread looper;
-	private int purcent;
-	private boolean running;
-	private PNJsManager pnjs_manager;
+	//private Thread looper;
+	/*private int purcent;
+	private boolean running;*/
+	//private PNJsManager pnjs_manager;
 
-	public LoadPnj()
-	{
-		this.purcent = 0;
+	/*public LoadPnj()
+	{*/
+		/*this.purcent = 0;
 		pnjs_manager = new PNJsManager();
-		looper = new Thread(this);
-		looper.start();
-		running = true;
-	}
+		looper = new Thread(this);*/
 
+	//}
+	
+	public static PNJ loadPnj(String str)
+	{
+		PNJ pnj;
+		String[] args_pnj = str.split(";");
+		PNJ_discours pnj_discours = new PNJ_discours(args_pnj[3], null, new ArrayList<PNJ_discours>(),0);
+		pnj_discours.fillTree(4, args_pnj);
+		pnj = new PNJ(
+					args_pnj[2], 
+					pnj_discours,
+					Orientation.BAS, 
+					MapManager.instance.getEntire_map().getGrille().get(Integer.parseInt(args_pnj[0])).get(Integer.parseInt(args_pnj[1])));
+		System.out.println(str);
+		return pnj;
+	}
+/*
 	@Override
 	public void run() 
 	{
@@ -91,5 +107,5 @@ public class LoadPnj implements Runnable
 
 	public void setPnjs_manager(PNJsManager pnjs_manager) {
 		this.pnjs_manager = pnjs_manager;
-	}
+	}*/
 }

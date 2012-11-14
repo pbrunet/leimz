@@ -4,14 +4,17 @@ package com.map.client.managers;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
 
+import com.client.entities.Entity;
+import com.client.entities.Joueur;
+import com.client.gamestates.Base;
+import com.client.network.NetworkListener;
 import com.client.network.NetworkManager;
-import com.game_entities.Entity;
-import com.game_entities.Joueur;
 import com.game_entities.managers.MonstersManager;
 import com.game_entities.managers.PNJsManager;
 import com.game_entities.managers.PlayersManager;
@@ -20,7 +23,7 @@ import com.map.Map;
 import com.map.Tile;
 import com.map.Type_tile;
 
-public class MapManager 
+public class MapManager implements NetworkListener
 {
 	
 	private CollisionManager collision_manager;
@@ -73,25 +76,42 @@ public class MapManager
 		 
 	}
 	
-	/*public void init(Tile tile)
+	public void drawMap(Map map, Color filter, float scale)
 	{
-		Grille g = new Grille();
-		
-		for(int i = 0; i < )
-		
-		
-		this.map_visible = new Map(g, entire_map.getDataMonstres());
-		
-	}*/
-	
-	
-	public void refresh()
-	{
-		/*for(int i = 0; i < pnjs_manager.getPnjs().size(); i++)
+		//On dessine la carte
+		for(int j = 0; j < map.getGrille().get(0).size(); j++)
 		{
-			pnjs_manager.getPnjs().get(i).refresh();
-		}*/
+			/*On veut ici dessiner la carte ligne par ligne en affichant une tile sur 2
+			 * pair ou impaire en fonction de la premiere tile en haut a gauche
+			 */
+			int first = (int) (map.getGrille().get(0).get(0).getPos().x%2);
+			for(int k=0;k<2;k++)
+			{
+				for(int i = first; i < map.getGrille().size(); i+=2) 
+				{
+					//On cree la position d'affichage
+					Vector2f pos_aff = new Vector2f();
+					//La position vaut la position de la tile moins la position de la base, creee auparavant par le level designer pour chaque objet
+					//De plus, on ajoute une petite formule demontrable simplement en repere orthonorme pour le zoom
+					pos_aff.x = (map.getGrille().get(i).get(j).getPos_screen().x-((Type_tile) map.getGrille().get(i).get(j).getTypes().get(0)).getBase().getX())+((1-scale)*Base.Tile_x);
+					pos_aff.y = (map.getGrille().get(i).get(j).getPos_screen().y-((Type_tile) map.getGrille().get(i).get(j).getTypes().get(0)).getBase().getY())+((1-scale)*Base.Tile_y/2);
+					if(filter != null)
+					{
+						((Type_tile) map.getGrille().get(i).get(j).getTypes().get(0)).getImg().draw(pos_aff.x, pos_aff.y, scale, filter);
+					}
+					else
+					{
+						((Type_tile) map.getGrille().get(i).get(j).getTypes().get(0)).getImg().draw(pos_aff.x, pos_aff.y, scale);
+					}
+					
+					map.getGrille().get(i).get(j).setDrawn(true);
+				}
+				first=(first==1)?0:1;
+			}
+		}		
 	}
+	
+	
 	
 	/*public void refreshCollisionManager()
 	{
@@ -172,12 +192,12 @@ public class MapManager
 		ArrayList<ArrayList<Tile>> grille = new ArrayList<ArrayList<Tile>>();
 		
 		//R�cup�ration de l'index de d�part en x et y des Tile � afficher.
-		int indiceStart_x = (int) (tile.getPos().x - (spread / 2));
-		int indiceStart_y = (int) (tile.getPos().y - (spread / 2));
+		int indiceStart_x = (int) (tile.getPos().x - spread);
+		int indiceStart_y = (int) (tile.getPos().y - spread);
 		
 		//R�cup�ration de l'index de fin en x et y des Tile � afficher.
-		int indiceFin_x = indiceStart_x + spread;
-		int indiceFin_y = indiceStart_y + spread;
+		int indiceFin_x = indiceStart_x + spread*2;
+		int indiceFin_y = indiceStart_y + spread*2;
 
 		int h = 0;
 			//On parcourt alors les lignes et les colonnes
@@ -203,7 +223,15 @@ public class MapManager
 	    	}
 		return grille;
 	}
+	
 
+	@Override
+	public void receiveMessage(String str) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	
 	public CollisionManager getCollision_manager() {
 		return collision_manager;
 	}
@@ -235,9 +263,6 @@ public class MapManager
 	public void setAbsolute(Vector2f absolute) {
 		this.absolute = absolute;
 	}
-	
-	
-
 
 
 }

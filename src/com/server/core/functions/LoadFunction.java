@@ -1,6 +1,7 @@
 package com.server.core.functions;
 
 import java.sql.ResultSet;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
@@ -9,13 +10,20 @@ import java.util.HashMap;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 
+import com.server.entities.PNJ;
 import com.gameplay.Caracteristique;
 import com.gameplay.Inventaire;
+import com.gameplay.PNJ_discours;
 import com.gameplay.Sort;
 import com.gameplay.items.Item;
+import com.gameplay.items.SimpleItem;
+import com.map.Grille;
+import com.map.Tile;
 import com.map.server.managers.MapManager;
 import com.server.core.Client;
+import com.server.core.GlobalConstant;
 import com.server.core.ServerSingleton;
+import com.server.entities.managers.EntitiesManager;
 
 /**
  * classe envoyant les informations de chargement d'informations
@@ -35,6 +43,33 @@ public class LoadFunction implements Functionable
 		case "pos":
 			askPos(client);
 			break;
+		case "j":
+			askJoueur(client, args);
+			break;
+		case "ent":
+			askEntities(client);
+			break;
+		case "tt":
+			askTypeTiles(client,args[2]);
+			break;
+		case "map":
+			askMap(client);
+			break;
+		case "mapc":
+			askMapContent(client);
+			break;
+		case "mon":
+			askMonster(client);
+			break;
+		default:
+			throw new RuntimeException("Unimplemented");
+		}
+	}
+
+	private void askJoueur(Client client, String[] args)
+	{
+		switch(args[2])
+		{
 		case "rc":
 			askRaceCaracteristic(client);
 			break;
@@ -56,26 +91,9 @@ public class LoadFunction implements Functionable
 		case "in":
 			askInventory(client);
 			break;
-		case "pnj":
-			askPnj(client);
-			break;
-		case "tt":
-			askTypeTiles(client,args[2]);
-			break;
-		case "map":
-			askMap(client);
-			break;
-		case "mapc":
-			askMapContent(client);
-			break;
-		case "mon":
-			askMonster(client);
-			break;
-		default:
-			throw new RuntimeException("Unimplemented");
 		}
 	}
-
+	
 	private void askPos(Client client) 
 	{
 		ResultSet rs = null;
@@ -288,7 +306,7 @@ public class LoadFunction implements Functionable
 					"AND inventaire.id_joueur=" + client.getCompte().getClient_id();
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
-			ArrayList<Item> items = new ArrayList<Item>();
+			ArrayList<SimpleItem> items = new ArrayList<SimpleItem>();
 			String rc = "";
 			while(rs.next())
 			{
@@ -311,12 +329,7 @@ public class LoadFunction implements Functionable
 					rc += rs2.getString("caracteristiques_objet.value") + ";";
 					effets.put(Caracteristique.valueOf(rs2.getString("caracteristiques.name").toUpperCase()), rs2.getInt("caracteristiques_objet.value"));
 				}
-				try {
-					items.add(new Item(rs.getString("item.nom"), rs.getString("item.description"), new Image(rs.getString("item.icone")), new Image(rs.getString("item.apercu")), effets, 10));
-				} catch (SlickException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
+				items.add(new SimpleItem(rs.getString("item.nom"), rs.getString("item.description"), rs.getString("item.icone"), rs.getString("item.apercu"), effets, 10));
 				rs2.close();
 				stmt2.close();
 			}
@@ -329,53 +342,73 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askPnj(Client client)
+	
+	
+	
+	
+	
+	
+	private void askEntities(Client client)
 	{
-		ResultSet rs;
-		try {
-			String sql = "SELECT pnj.pos_x, pnj.pos_y, pnj.nom, pnj_discours.discours, pnj_discours.id " +
-					"FROM pnj, pnj_discours " +
-					"WHERE pnj.id=pnj_discours.id_pnj " +
-					"AND pnj_discours.after_answer IS NULL";
-			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			rs = stmt.executeQuery(sql);
-			String rc = "";
-			while(rs.next())
+		ArrayList<ArrayList<Tile>> grille = MapManager.instance.getTilesAutour(client.getCompte().getCurrent_joueur().getTile(), GlobalConstant.nbCaseNear);
+		ArrayList<Tile> tiles_to_test = new ArrayList<Tile>();
+		
+		//Un peu gore, à améliorer
+		for(int i = 0; i < grille.size(); i++)
+		{
+			for(int j = 0; j < grille.get(i).size(); j++)
 			{
-				rc += "new;";
-				rc += rs.getInt("pnj.pos_x") + ";";
-				rc += rs.getInt("pnj.pos_y") + ";";
-				rc += rs.getString("pnj.nom") + ";";
-				rc += rs.getString("pnj_discours.discours") + ";";
-				rc += getPnjAnswer(rs.getInt("pnj_discours.id"),0);
+				tiles_to_test.add(grille.get(i).get(j));
+				for(int u = 0; u < client.getCompte().getCurrent_joueur().getLoaded_zone().size(); u++)
+				{
+					if(grille.get(i).get(j).equals(client.getCompte().getCurrent_joueur().getLoaded_zone().get(u)))
+					{
+						tiles_to_test.remove(grille.get(i).get(j));
+					}
+				}
 			}
-
-			client.sendToClient(rc);
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException("PNJ Informations");
+		}
+		
+		
+		//Idem
+		for(int i = 0; i < EntitiesManager.instance.getPnjs_manager().getPnjs().size(); i++)
+		{
+			for(int k = 0; k < tiles_to_test.size(); k++)
+			{
+				if(tiles_to_test.get(k).equals(EntitiesManager.instance.getPnjs_manager().getPnjs().get(i).getTile()))
+				{
+					loadPnj(client, EntitiesManager.instance.getPnjs_manager().getPnjs().get(i));
+				}
+				client.getCompte().getCurrent_joueur().getLoaded_zone().add(tiles_to_test.get(k));
+			}
 		}
 	}
-
-	private String getPnjAnswer(int id_discour, int depth) throws SQLException {
+	
+	private void loadPnj(Client client, PNJ pnj)
+	{
+		String rc = "lo;ent;pnj;";
+		rc += (int)pnj.getTile().getPos().x + ";";
+		rc += (int)pnj.getTile().getPos().y + ";";
+		rc += pnj.getNom() + ";";
+		rc += pnj.getPnjDiscours().getDiscours() + ";";
+		rc += getPnjAnswer(pnj.getPnjDiscours(), 0);
+		System.out.println(rc);
+		client.sendToClient(rc);
+	}
+	
+	private String getPnjAnswer(PNJ_discours pnj_discours, int depth)
+	{
 		String rc = "";
-		ResultSet rs;
-		String sql = "SELECT pnj_discours.discours, pnj_discours.id " +
-				"FROM pnj_discours " +
-				"WHERE pnj_discours.after_answer=" + id_discour;
-		Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-		rs = stmt.executeQuery(sql);
 		depth++;
-		while(rs.next())
+		for(int i = 0; i < pnj_discours.getReponses().size(); i++)
 		{
 			rc += depth + ";";
-			rc += rs.getString("pnj_discours.discours") + ";";
-			rc += getPnjAnswer(rs.getInt("pnj_discours.id"),depth);
+			rc += pnj_discours.getReponses().get(i).getDiscours() + ";";
+			rc += getPnjAnswer(pnj_discours.getReponses().get(i),depth);
 		}
-
 		return rc;
 	}
+
 
 	public void askTypeTiles(Client client, String name)
 	{

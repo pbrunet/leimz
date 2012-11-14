@@ -4,6 +4,8 @@ import java.util.ArrayList;
 
 
 import com.gameplay.Inventaire;
+import com.gameplay.items.Item;
+import com.gameplay.items.SimpleItem;
 
 import de.matthiasmann.twl.Event;
 import de.matthiasmann.twl.ThemeInfo;
@@ -53,7 +55,7 @@ public class InventairePanel extends Widget {
         {
         	if(i < slots.get(0).size())
         	{
-        		slots.get(j).get(i).setItem(inventaire.getItems().get(i));
+        		slots.get(j).get(i).setItem((Item)inventaire.getItems().get(i));
         	}
         	else
         	{
@@ -164,7 +166,7 @@ public class InventairePanel extends Widget {
 	        {
 	        	if(i < slots.get(0).size())
 	        	{
-	        		slots.get(j).get(i).setItem(inventaire.getItems().get(i));
+	        		slots.get(j).get(i).setItem((Item)inventaire.getItems().get(i));
 	        	}
 	        	else
 	        	{

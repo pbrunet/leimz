@@ -2,8 +2,8 @@ package com.game_entities.managers;
 
 import java.util.ArrayList;
 
-import com.game_entities.Joueur;
-import com.game_entities.MainJoueur;
+import com.client.entities.Joueur;
+import com.client.entities.MainJoueur;
 
 public class PlayersManager 
 {

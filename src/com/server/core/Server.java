@@ -1,6 +1,7 @@
 package com.server.core;
 
 import com.map.Grille;
+
 import com.map.Map;
 import com.map.SimpleType_tile;
 import com.map.Tile;
@@ -62,57 +63,9 @@ public class Server
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		loadMap();
+		Load load = new Load();
 		//On attend la connexion des joueurs*/
 		waitPlayers();
-	}
-
-	private void loadMap() 
-	{
-		Map entire_map = null;
-		Grille grille = new Grille();
-		ResultSet rs;
-		//Chargement des informations de la map
-		try {
-			int max_x = 0, max_y = 0;
-			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			String sql = "SELECT MAX(map.x), MAX(map.y)" +
-					"FROM map ";
-			rs = stmt.executeQuery(sql);
-			String rc = "";
-			rs.next();
-			max_x = rs.getInt(1);
-			max_y = rs.getInt(2);
-			for(int i = 0; i < max_x+1 ; i++)
-			{
-				grille.add(new ArrayList<Tile>());
-				for(int j = 0; j < max_y+1; j++)
-					grille.get(i).add(new Tile(new Vector2f(i , j), null));
-			}
-			sql = "SELECT map.x, map.y, map.monsterHolder, tiles_map.nom " +
-					"FROM tiles_map,map " +
-					"WHERE tiles_map.id=map.type";
-			rs = stmt.executeQuery(sql);
-			while(rs.next())
-			{
-				rc += rs.getInt("map.x") + ";";
-				rc += rs.getInt("map.y") + ";";
-				rc += rs.getString("tiles_map.nom") + ";";
-				rc += rs.getBoolean("map.monsterHolder") + ";";
-				grille.get(rs.getInt("map.x")).get(rs.getInt("map.y")).addTypes(MapManager.getTypesTile(rs.getString("tiles_map.nom")));
-				grille.get(rs.getInt("map.x")).get(rs.getInt("map.y")).setMonsterHolder(rs.getBoolean("map.monsterHolder"));
-				
-			}
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException("Map");
-		}
-		entire_map = new Map(grille, null);
-		
-		
-		mapManager = new MapManager(entire_map);
-		
 	}
 
 	/**
@@ -143,7 +96,6 @@ public class Server
 		//world = new World(entire_map);
 
 		calculator = new Calculator();
-
 	}
 
 

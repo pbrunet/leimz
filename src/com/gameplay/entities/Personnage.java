@@ -6,6 +6,7 @@ import java.util.Map.Entry;
 
 import com.gameplay.Caracteristique;
 import com.gameplay.Classe;
+import com.gameplay.Combat;
 import com.gameplay.Inventaire;
 import com.gameplay.Race;
 import com.gameplay.Sort;
@@ -29,6 +30,9 @@ public class Personnage
 	private Inventaire inventaire;
 	private String entity_file;
 	
+	private ArrayList<Combat> combats;
+	private Combat current_combat;
+	
 	public Personnage(String nom, Race race, Classe classe, HashMap<Caracteristique,Integer> carac_val, HashMap<Caracteristique,Integer> carac)
 	{
 		this.race = race ;
@@ -39,6 +43,7 @@ public class Personnage
 		this.caracs_values = carac_val;
 		this.quetes_manager = new QuetesManager();
 		this.inventaire = new Inventaire();
+		this.combats = new ArrayList<>();
 	}
 	
 	public Personnage(String nom, String race, String classe)
@@ -52,6 +57,7 @@ public class Personnage
 		this.caracs_values = new HashMap<>();
 		this.quetes_manager = new QuetesManager();
 		this.inventaire = new Inventaire();
+		this.combats = new ArrayList<>();
 	}
 	
 	public Personnage()
@@ -63,6 +69,7 @@ public class Personnage
 		this.caracs_values = new HashMap<>();
 		this.quetes_manager = new QuetesManager();
 		this.inventaire = new Inventaire();
+		this.combats = new ArrayList<>();
 	}
 	
 	public Inventaire getInventaire() {
@@ -163,6 +170,24 @@ public class Personnage
 	public void setSorts(ArrayList<Sort> sorts) {
 		this.sorts = sorts;
 	}
+
+	public ArrayList<Combat> getCombats() {
+		return combats;
+	}
+
+	public void setCombats(ArrayList<Combat> combats) {
+		this.combats = combats;
+	}
+
+	public Combat getCurrent_combat() {
+		return current_combat;
+	}
+
+	public void setCurrent_combat(Combat current_combat) {
+		this.current_combat = current_combat;
+	}
+	
+	
 	
 	
 	

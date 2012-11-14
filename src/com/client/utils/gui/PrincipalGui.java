@@ -1,10 +1,10 @@
 package com.client.utils.gui;
 
 import com.client.display.gui.GUI_Manager;
+import com.client.entities.MainJoueur;
 import com.client.gamestates.Base;
 import com.client.network.NetworkListener;
 import com.client.network.NetworkManager;
-import com.game_entities.MainJoueur;
 
 import de.matthiasmann.twl.Button;
 import de.matthiasmann.twl.DialogLayout;
@@ -117,12 +117,6 @@ public class PrincipalGui implements NetworkListener
 	public void receiveMessage(String str) 
 	{
 		String[] temp = str.split(";");
-		
-		if(temp[0].contains("co"))
-		{
-			
-		}
-
 		
 	}
 	

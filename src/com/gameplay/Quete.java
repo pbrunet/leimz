@@ -6,8 +6,8 @@ import org.jdom.Element;
 import org.newdawn.slick.geom.Vector2f;
 
 import com.client.display.gui.GUI_Manager;
+import com.client.entities.Joueur;
 import com.client.network.NetworkManager;
-import com.game_entities.Joueur;
 
 import de.matthiasmann.twl.Alignment;
 import de.matthiasmann.twl.Button;

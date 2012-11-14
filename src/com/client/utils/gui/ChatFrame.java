@@ -4,9 +4,12 @@ import org.lwjgl.Sys;
 
 import org.newdawn.slick.geom.Vector2f;
 
+import com.client.display.gui.GUI_Manager;
+import com.client.entities.Joueur;
+import com.client.entities.MainJoueur;
+import com.client.network.NetworkListener;
 import com.client.network.NetworkManager;
-import com.game_entities.Joueur;
-import com.game_entities.MainJoueur;
+import com.game_entities.managers.EntitiesManager;
 
 import de.matthiasmann.twl.DialogLayout;
 import de.matthiasmann.twl.EditField;
@@ -14,10 +17,12 @@ import de.matthiasmann.twl.Event;
 import de.matthiasmann.twl.ResizableFrame;
 import de.matthiasmann.twl.ScrollPane;
 import de.matthiasmann.twl.TextArea;
+import de.matthiasmann.twl.Widget;
 import de.matthiasmann.twl.textarea.HTMLTextAreaModel;
+import de.matthiasmann.twl.textarea.SimpleTextAreaModel;
 
 
-public class ChatFrame extends ResizableFrame
+public class ChatFrame extends ResizableFrame implements NetworkListener
 {
 	private final StringBuilder sb;
     private final HTMLTextAreaModel textAreaModel;
@@ -168,32 +173,47 @@ public class ChatFrame extends ResizableFrame
     	}
     	else
     	{
-    		System.out.println("envoi !!");
-    		NetworkManager.instance.sendToServer("sa;"+"fazega;"+editField.getText());
+    		NetworkManager.instance.sendToServer("sa;"+MainJoueur.instance.getPerso().getNom()+";"+editField.getText());
     	}
     }
     
-    
-    public void refresh()
-    {
-    	
-    	String receive = NetworkManager.instance.getMessage_recu_serveur();
-    	if(receive != null)
+
+	@Override
+	public void receiveMessage(String str) 
+	{
+		String[] temp = str.split(";");
+		
+		if(temp[0].matches("sa"))
     	{
-    		if(receive.matches("^sa;"))
-        	{
-        		String[] temp = receive.split(";");
-        		appendRow("normal", temp[1] + " : " + temp[2]);
-        	}
-    		NetworkManager.instance.setMessage_recu_serveur(null);
+    		appendRow("default", temp[1] + " : " + temp[2]);
+    		createBulle(temp[1], temp[2]);
     	}
-    	else
-    	{
-    		//System.out.println("receive NULL");
-    	}
-    	
-    	
-    }
+	}
+	
+	private void createBulle(String nom_perso, String text)
+	{
+		Joueur joueur = EntitiesManager.instance.getPlayers_manager().getJoueur(nom_perso);
+
+		ResizableFrame container = new ResizableFrame();
+		container.setTheme("/resizableframe");
+		
+		HTMLTextAreaModel model = new HTMLTextAreaModel();
+		TextArea bulle = new TextArea(model);
+		bulle.setTheme("/textarea");
+		model.setHtml("<div style=\"word-wrap: break-word; font-family: default; \">"+text+"</div>");
+		/*ScrollPane scroll = new ScrollPane(bulle);
+		scroll.setTheme("/scrollpane");*/
+
+		container.add(bulle);
+		container.adjustSize();
+		GUI_Manager.instance.getRoot().add(container);
+		
+		
+	
+		container.setPosition((int)(joueur.getPos_real_on_screen().x-
+				bulle.getWidth())+28, (int)(joueur.getPos_real_on_screen().y-
+						bulle.getHeight()));
+	}
 
     private boolean isURLChar(char ch) {
         return (ch == '.') || (ch == '/') || (ch == '%') ||
@@ -215,5 +235,6 @@ public class ChatFrame extends ResizableFrame
 	public void setCurColor(String curColor) {
 		this.curColor = curColor;
 	}
+
 
 }

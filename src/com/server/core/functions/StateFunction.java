@@ -7,9 +7,10 @@ import java.sql.Statement;
 
 import org.newdawn.slick.geom.Vector2f;
 
-import com.game_entities.Joueur;
+import com.client.entities.Joueur;
 import com.map.Tile;
 import com.map.server.managers.MapManager;
+import com.server.core.Calculator;
 import com.server.core.Client;
 import com.server.core.ServerSingleton;
 
@@ -35,29 +36,29 @@ public class StateFunction implements Functionable
 		{
 			try {
 				Tile tile = MapManager.instance.getTileReal(new Vector2f(Float.parseFloat(args[2]), Float.parseFloat(args[3])));
+				if(tile != client.getCompte().getCurrent_joueur().getTile())
+				{
+					String[] loargs = new String[2];
+					loargs[0]="lo";
+					loargs[1]="ent";
+					Calculator.dictfunctions.get("lo").doSomething(loargs, client);
+				}
 				Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 				stmt.executeUpdate("UPDATE personnage " +
 						" SET pos_x="+tile.getPos().x+" , pos_y="+tile.getPos().y+
 						" WHERE personnage.joueur="+client.getCompte().getClient_id());
 				client.getCompte().getCurrent_joueur().setPos_real(new Vector2f(Float.parseFloat(args[2]), Float.parseFloat(args[3])));
+				client.getCompte().getCurrent_joueur().setTile(MapManager.instance.getTileReal(new Vector2f(Float.parseFloat(args[2]), Float.parseFloat(args[3]))));
 				client.getCompte().getCurrent_joueur().setOrientation(Joueur.parseStringOrientation(args[4]));
 				
 				String toSend = "s;";
-				ResultSet rss = stmt.executeQuery("SELECT personnage.name, personnage.pos_x, personnage.pos_y " +
-						"FROM personnage " +
-						"WHERE joueur=" + client.getCompte().getClient_id());
-
-				while(rss.next())
-				{
-					toSend += (rss.getString("name")+";");
-					toSend += ("pos;");
-					toSend += rss.getInt("personnage.pos_x")+";";
-					toSend += rss.getInt("personnage.pos_y")+";";
-					toSend += (args[4]+";");
-				}
+				toSend += client.getCompte().getCurrent_joueur().getPerso().getNom()+";";
+				toSend += ("pos;");
+				toSend += args[2]+";";
+				toSend += args[3]+";";
+				toSend += (args[4]+";");
+				
 				ServerSingleton.getInstance().sendAllClient(toSend);
-				rss.close();
-				stmt.close();
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

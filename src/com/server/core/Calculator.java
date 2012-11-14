@@ -3,6 +3,7 @@ package com.server.core;
 import java.io.IOException;
 
 
+
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,7 @@ import com.server.core.functions.StateFunction;
 
 public class Calculator implements Runnable
 {
-	private static HashMap <String,Functionable> dictfunctions = new HashMap<String,Functionable>();
+	public static HashMap <String,Functionable> dictfunctions = new HashMap<String,Functionable>();
 	private Thread t;
 
 	public Calculator()

@@ -1,6 +1,7 @@
 package com.server.core.functions;
 
 import com.server.core.Client;
+import com.server.core.ServerSingleton;
 
 /**
  * Write a description of class SayFunction here.
@@ -18,6 +19,6 @@ public class SayFunction implements Functionable
     @Override
     public void doSomething(String[] args,Client client)
     {
-       client.sendToClient(args[0]+";"+args[1]+";"+args[2]);
+       ServerSingleton.getInstance().sendAllClient("sa;"+args[1]+";"+args[2]);
     }
 }

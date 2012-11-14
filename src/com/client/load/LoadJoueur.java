@@ -9,9 +9,9 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.loading.LoadingList;
 
+import com.client.entities.Joueur;
 import com.client.network.NetworkManager;
 
-import com.game_entities.Joueur;
 
 import com.gameplay.Caracteristique;
 import com.gameplay.Classe;
@@ -65,15 +65,15 @@ public class LoadJoueur implements Runnable
 
 			//-------------------GESTION DE LA RACE-----------------------
 
-			Race race = new Race(nom_race, getSorts("lo;rs"), getCaracteristic("lo;rc"));
+			Race race = new Race(nom_race, getSorts("lo;j;rs"), getCaracteristic("lo;j;rc"));
 
 			//-------------------GESTION DE LA CLASSE-----------------------
 
-			Classe classe = new Classe(nom_classe, getSorts("lo;cs"), getCaracteristic("lo;cc"));
+			Classe classe = new Classe(nom_classe, getSorts("lo;j;cs"), getCaracteristic("lo;j;cc"));
 
 			//---------------GESTION DU PERSONNAGE------------------
 
-			perso = new Personnage(nom_perso, race, classe,getCaracteristic("lo;jcv"),getCaracteristic("lo;jc"));
+			perso = new Personnage(nom_perso, race, classe,getCaracteristic("lo;j;jcv"),getCaracteristic("lo;j;jc"));
 
 			//----------------GESTION DE L'INVENTAIRE---------------------
 
@@ -81,7 +81,7 @@ public class LoadJoueur implements Runnable
 
 			Inventaire inventaire = new Inventaire();
 
-			NetworkManager.instance.sendToServer("lo;in"); //load joueur, joueur caracteristiques
+			NetworkManager.instance.sendToServer("lo;j;in"); //load joueur, joueur caracteristiques
 			NetworkManager.instance.waitForNewMessage();
 			String[] str_i = NetworkManager.instance.getMessage_recu_serveur().split(";");
 

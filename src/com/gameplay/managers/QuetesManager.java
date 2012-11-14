@@ -3,7 +3,7 @@ package com.gameplay.managers;
 import java.util.ArrayList;
 
 
-import com.game_entities.Joueur;
+import com.client.entities.Joueur;
 import com.gameplay.Quete;
 
 public class QuetesManager 

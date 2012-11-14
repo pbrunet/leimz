@@ -2,9 +2,12 @@ package com.game_entities.managers;
 
 import java.util.ArrayList;
 
-import com.game_entities.Entity;
+import com.client.entities.Entity;
+import com.client.entities.PNJ;
+import com.client.load.LoadPnj;
+import com.client.network.NetworkListener;
 
-public class EntitiesManager 
+public class EntitiesManager implements NetworkListener
 {
 	private MonstersManager monsters_manager;
 	private PlayersManager players_manager;
@@ -33,6 +36,19 @@ public class EntitiesManager
 		for(int i = 0; i < pnjs_manager.getPnjs().size(); i++)
 		{
 			this.entities.add(pnjs_manager.getPnjs().get(i));
+		}
+	}
+	
+
+	@Override
+	public void receiveMessage(String str) 
+	{
+		String[] temp = str.split(";");
+		
+		if(temp[2].contains("pnj"))
+		{
+			PNJ pnj = LoadPnj.loadPnj(str.substring(temp[0].length()+1+temp[1].length()+1+temp[2].length()+1, str.length()));
+			pnjs_manager.add(pnj);
 		}
 	}
 	
@@ -70,6 +86,7 @@ public class EntitiesManager
 	public void setEntities(ArrayList<Entity> entities) {
 		this.entities = entities;
 	}
+
 	
 	
 	

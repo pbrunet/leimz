@@ -3,6 +3,7 @@ package com.map.server.managers;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import org.newdawn.slick.geom.Rectangle;
@@ -169,6 +170,43 @@ public class MapManager
 		}
 
 		return null;
+	}
+	
+	public ArrayList<ArrayList<Tile>> getTilesAutour(Tile tile, int spread)
+	{
+		ArrayList<ArrayList<Tile>> grille = new ArrayList<ArrayList<Tile>>();
+		
+		//R�cup�ration de l'index de d�part en x et y des Tile � afficher.
+		int indiceStart_x = (int) (tile.getPos().x - spread);
+		int indiceStart_y = (int) (tile.getPos().y - spread);
+		
+		//R�cup�ration de l'index de fin en x et y des Tile � afficher.
+		int indiceFin_x = indiceStart_x + spread*2;
+		int indiceFin_y = indiceStart_y + spread*2;
+
+		int h = 0;
+			//On parcourt alors les lignes et les colonnes
+			for(int i = indiceStart_x; i < indiceFin_x; i++) 
+	    	{
+				if(i >= 0 && i < this.getEntire_map().getGrille().size())
+				{
+					grille.add(new ArrayList<Tile>());
+				}
+				
+	    		for(int j = indiceStart_y; j < indiceFin_y; j++)
+	    		{
+	    			//Attention aux cas o� la tile voulue se situe sur une extr�mit� de la map.
+    				if(i >= 0 && j >=0 && i < this.getEntire_map().getGrille().size() && j < this.getEntire_map().getGrille().get(i).size())
+    				{
+		    			grille.get(h).add(this.getEntire_map().getGrille().get(i).get(j));
+    				}
+	    		}
+	    		if(i >= 0 && i < this.getEntire_map().getGrille().size())
+				{
+	    			h++;
+				}
+	    	}
+		return grille;
 	}
 
 	public CollisionManager getCollision_manager() {

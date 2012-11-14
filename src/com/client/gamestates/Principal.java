@@ -17,6 +17,9 @@ import org.newdawn.slick.state.StateBasedGame;
 import com.client.display.Camera;
 import com.client.display.DisplayManager;
 import com.client.display.gui.GUI_Manager;
+import com.client.entities.Joueur;
+import com.client.entities.MainJoueur;
+import com.client.entities.PNJ;
 import com.client.events.EventListener;
 import com.client.events.MainEventListener;
 import com.client.network.NetworkManager;
@@ -27,9 +30,6 @@ import com.client.utils.gui.InventaireUI;
 import com.client.utils.gui.PnjDialogFrame;
 import com.client.utils.gui.PrincipalGui;
 import com.client.utils.pathfinder.PathFinder;
-import com.game_entities.Joueur;
-import com.game_entities.MainJoueur;
-import com.game_entities.PNJ;
 import com.game_entities.managers.EntitiesManager;
 import com.gameplay.Combat;
 import com.gameplay.Equipe;
@@ -97,7 +97,7 @@ public class Principal extends BasicGameState
 		}
 		
 		camera = new Camera();
-		disp = new DisplayManager(camera, entities_manager);
+		disp = new DisplayManager(camera);
 		
 		combatManager = new CombatManager();
 		
@@ -129,22 +129,7 @@ public class Principal extends BasicGameState
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics gr)
 			throws SlickException 
 	{
-		Combat todraw = null;
-		for(int i = 0; i < combatManager.getMainJoueurCombats().size(); i++)
-		{
-			if(!combatManager.getMainJoueurCombats().get(i).getEtat().equals(EtatCombat.FINI))
-			{
-				todraw = combatManager.getMainJoueurCombats().get(i);
-			}
-		}
-		if(todraw != null)
-		{
-			disp.drawAllCombat(gr, new Vector2f(gc.getInput().getMouseX(), gc.getInput().getMouseY()), todraw);
-		}
-		else
-		{
-			disp.drawAll(gr, new Vector2f(gc.getInput().getMouseX(), gc.getInput().getMouseY()));
-		}
+		disp.drawAll(gr, new Vector2f(gc.getInput().getMouseX(), gc.getInput().getMouseY()));
 		
 		
 		GUI_Manager.instance.getTwlInputAdapter().render();
@@ -156,9 +141,7 @@ public class Principal extends BasicGameState
 	{		
 		gc.setMinimumLogicUpdateInterval(10);
 		gc.setMaximumLogicUpdateInterval(10);
-		
 
-		
 		for(int i = 0; i < entities_manager.getPlayers_manager().getJoueurs().size(); i++)
 		{
 			if(entities_manager.getPlayers_manager().getJoueurs().get(i).getPos_real() != null)
@@ -169,6 +152,11 @@ public class Principal extends BasicGameState
 			}
 			
 		}
+		for(int i = 0; i < entities_manager.getPnjs_manager().getPnjs().size(); i++)
+		{
+			if(entities_manager.getPnjs_manager().getPnjs().get(i).getImgs_repos()==null)
+				entities_manager.getPnjs_manager().getPnjs().get(i).initImgs();
+		}
 		main_player.setTile(
 				map_manager.getTileReal(main_player.getPos_real())
 				);
@@ -176,6 +164,7 @@ public class Principal extends BasicGameState
 		main_player.move();
 		
 		camera.focusOn(main_player.getTile(), main_player.getTile().getPos_real().copy().sub(main_player.getPos_real()));
+		//camera.focusOn(MapManager.instance.getEntire_map().getGrille().get(10).get(12), new Vector2f(0,0));
 		camera.zoom(current_scale);
 		
 		main_player.refresh();
@@ -189,7 +178,6 @@ public class Principal extends BasicGameState
 			if(entities_manager.getPnjs_manager().getPnjs().get(i).getPos_real_on_screen()!=null)
 				entities_manager.getPnjs_manager().getPnjs().get(i).refresh();
 		}
-		disp.refresh(entities_manager);
 		
 		combatManager.refresh();
 		

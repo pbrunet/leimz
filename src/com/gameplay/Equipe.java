@@ -2,7 +2,7 @@ package com.gameplay;
 
 import java.util.ArrayList;
 
-import com.game_entities.Joueur;
+import com.client.entities.Joueur;
 
 public class Equipe
 {
