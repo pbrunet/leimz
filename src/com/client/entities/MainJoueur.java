@@ -24,7 +24,7 @@ import com.map.client.managers.MapManager;
 
 public class MainJoueur extends Joueur
 {
-	//Ev�nements
+	//Evenements
 	private ArrayList<String> events = new ArrayList<String>();
 	
 	//PATHFINDING
@@ -377,39 +377,6 @@ public class MainJoueur extends Joueur
 			
 		
 	}
-	/*
-	@Override
-	public void listenToServerMessage(String message) 
-	{
-		
-	}
-
-	@Override
-	public String messageToSend() 
-	{
-		return messageToSend;
-	}
-
-	@Override
-	public boolean wantSending() 
-	{
-		return wantToSend;
-	}
-
-	@Override
-	public void sendMessageToServer(String message) 
-	{
-		wantToSend = true;
-		messageToSend = message;
-	}
-
-	@Override
-	public void setSentOk()
-	{
-		wantToSend = false;
-		messageToSend = "";
-	}
-	*/
 	@Override
 	public void refresh()
 	{

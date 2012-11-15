@@ -81,6 +81,7 @@ public class MainEventListener extends EventListener
 								"Parler", "Défier");
 						final ListBox<String> combobox = new ListBox<String>(l);
 						combobox.setTheme("/popuplistbox");
+						combobox.adjustSize();
 						combobox.addCallback(new CallbackWithReason<ListBox.CallbackReason>() { 
 						
 							@Override
@@ -106,7 +107,6 @@ public class MainEventListener extends EventListener
 							}
 						});
 						GUI_Manager.instance.getRoot().add(combobox);
-						combobox.adjustSize();
 						combobox.setPosition(input.getMouseX(), input.getMouseY());
 					}
 					

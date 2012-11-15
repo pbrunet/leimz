@@ -144,7 +144,6 @@ public class ChatFrame extends ResizableFrame implements NetworkListener
     
     public void appendWhenCallBack(String path)
     {
-    	System.out.println("Texte de l'�ditfield : " + editField.getText());
     	/*if(editField.getText().contains("\\i"))
     	{
     		appendRow("font_red", "/nInventaire");
