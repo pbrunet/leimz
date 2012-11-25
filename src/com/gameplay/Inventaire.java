@@ -1,8 +1,6 @@
 package com.gameplay;
 
 import java.util.ArrayList;
-
-import com.gameplay.items.Item;
 import com.gameplay.items.SimpleItem;
 
 

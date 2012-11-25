@@ -1,14 +1,7 @@
 package com.server.entities;
 
-import java.util.ArrayList;
-
-
-
-import org.newdawn.slick.Animation;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
-
 import com.map.Tile;
 import com.map.client.managers.CollisionManager;
 

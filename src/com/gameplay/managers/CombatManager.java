@@ -114,11 +114,9 @@ public class CombatManager implements NetworkListener
 	public void receiveMessage(String str) 
 	{
 		String[] temp = str.split(";");
-		if(temp[0].equals("co"))
-		{
-			if(temp[1].contains("ask"))
+			if(temp[0].contains("ask"))
 			{
-				final String nom = temp[2];
+				final String nom = temp[1];
 				answerFrame = PrincipalGui.getDialogPane(nom+" vous propose un combat formel. Acceptez-vous ?", PrincipalGui.YES_NO_PANE);
 				((Button)answerFrame.getChild(0).getChild(1)).addCallback(new Runnable() {
 					
@@ -150,7 +148,7 @@ public class CombatManager implements NetworkListener
 					
 					@Override
 					public void run() {
-						NetworkManager.instance.sendToServer("co;an;n;"+nom);
+						NetworkManager.instance.sendToServer("fi;an;n;"+nom);
 						answerFrame.setVisible(false);
 					}
 				});
@@ -159,13 +157,13 @@ public class CombatManager implements NetworkListener
 				answerFrame.adjustSize();
 				answerFrame.setPosition((Base.sizeOfScreen_x/2)-(answerFrame.getWidth()/2), (Base.sizeOfScreen_y/2)-(answerFrame.getHeight()/2));
 			}
-			else if(temp[1].contains("can"))
+			else if(temp[0].contains("can"))
 			{
 				answerFrame.setVisible(false);
 			}
-			else if(temp[1].contains("an"))
+			else if(temp[0].contains("an"))
 			{
-				if(temp[2].equals("y"))
+				if(temp[1].equals("y"))
 				{
 					waitingAskFrame.setVisible(false);
 					
@@ -187,12 +185,12 @@ public class CombatManager implements NetworkListener
 					current_combat = combat;
 					MainJoueur.instance.getPerso().setCurrent_combat(current_combat);
 				}
-				else if(temp[2].equals("n"))
+				else if(temp[1].equals("n"))
 				{
 					waitingAskFrame.setVisible(false);
 				}
 			}
-		}
+		
 		
 	}
 

@@ -1,15 +1,8 @@
 package com.client.load;
 
 import java.util.ArrayList;
-
-import org.newdawn.slick.loading.LoadingList;
-
 import com.client.entities.Orientation;
 import com.client.entities.PNJ;
-import com.client.network.NetworkManager;
-
-import com.game_entities.managers.PNJsManager;
-
 import com.gameplay.PNJ_discours;
 import com.map.client.managers.MapManager;
 

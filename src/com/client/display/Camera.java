@@ -93,9 +93,12 @@ public class Camera
 			{
 				for(int k = 0; k < EntitiesManager.instance.getEntities().size(); k++)
 				{
-					if(EntitiesManager.instance.getEntities().get(k).getTile().equals(current_map.get(i).get(j)))
+					if(EntitiesManager.instance.getEntities().get(k).getTile()!=null)
 					{
-						visible_entities.add(EntitiesManager.instance.getEntities().get(k));
+						if(EntitiesManager.instance.getEntities().get(k).getTile().equals(current_map.get(i).get(j)))
+						{
+							visible_entities.add(EntitiesManager.instance.getEntities().get(k));
+						}
 					}
 				}
 			}

@@ -14,6 +14,7 @@ public class SayFunction implements Functionable
     
     public SayFunction()
     {
+    	
     }
     
     @Override

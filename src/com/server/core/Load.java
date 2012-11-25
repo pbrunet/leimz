@@ -20,7 +20,9 @@ import com.server.entities.managers.PNJsManager;
 
 public class Load implements Runnable
 {
+	@SuppressWarnings("unused")
 	private MapManager mapmanager;
+	@SuppressWarnings("unused")
 	private EntitiesManager entitiesmanager;
 	private Thread t;
 	public Load()
@@ -52,7 +54,7 @@ public class Load implements Runnable
 		try {
 			String sql = "SELECT pnj.pos_x, pnj.pos_y, pnj.nom, pnj_discours.discours, pnj_discours.id " +
 					"FROM pnj, pnj_discours " +
-					"WHERE pnj.id=pnj_discours.id_pnj " +
+					"WHERE pnj.nom=pnj_discours.nom_pnj " +
 					"AND pnj_discours.after_answer IS NULL";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
@@ -71,7 +73,7 @@ public class Load implements Runnable
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			throw new RuntimeException("PNJ Informations");
+			e.printStackTrace();
 		}
 		EntitiesManager.instance.setPnjs_manager(pnjs_manager);
 	}
@@ -113,7 +115,6 @@ public class Load implements Runnable
 			String sql = "SELECT MAX(map.x), MAX(map.y)" +
 					"FROM map ";
 			rs = stmt.executeQuery(sql);
-			String rc = "";
 			rs.next();
 			max_x = rs.getInt(1);
 			max_y = rs.getInt(2);
@@ -123,24 +124,19 @@ public class Load implements Runnable
 				for(int j = 0; j < max_y+1; j++)
 					grille.get(i).add(new Tile(new Vector2f(i , j), null));
 			}
-			sql = "SELECT map.x, map.y, map.monsterHolder, tiles_map.nom " +
-					"FROM tiles_map,map " +
-					"WHERE tiles_map.id=map.type";
+			sql = "SELECT x, y, monsterHolder, type " +
+					"FROM map ";
 			rs = stmt.executeQuery(sql);
 			while(rs.next())
 			{
-				rc += rs.getInt("map.x") + ";";
-				rc += rs.getInt("map.y") + ";";
-				rc += rs.getString("tiles_map.nom") + ";";
-				rc += rs.getBoolean("map.monsterHolder") + ";";
-				grille.get(rs.getInt("map.x")).get(rs.getInt("map.y")).addTypes(MapManager.getTypesTile(rs.getString("tiles_map.nom")));
+				grille.get(rs.getInt("map.x")).get(rs.getInt("map.y")).addTypes(MapManager.getTypesTile(rs.getString("type")));
 				grille.get(rs.getInt("map.x")).get(rs.getInt("map.y")).setMonsterHolder(rs.getBoolean("map.monsterHolder"));
 				
 			}
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			throw new RuntimeException("Map");
+			e.printStackTrace();
 		}
 		entire_map = new Map(grille, null);
 		

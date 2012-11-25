@@ -3,7 +3,6 @@ package com.gameplay.entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-
 import com.gameplay.Caracteristique;
 import com.gameplay.Classe;
 import com.gameplay.Combat;
@@ -19,6 +18,7 @@ public class Personnage
 	private Classe classe;
 	private HashMap<Caracteristique,Integer> caracs_values;
 	private HashMap<Caracteristique,Integer> caracs;
+	@SuppressWarnings("unused")
 	private ArrayList<Sort> sorts;
 	
 	private Sort current_sort;
@@ -51,8 +51,8 @@ public class Personnage
 		this.nom = nom;
 		this.setEntity_file("data/Gameplay/Races/"+race+"/Classes/"+"entity_"+classe.toLowerCase()+".xml");
 
-		this.race = new Race();
-		this.classe = new Classe();
+		this.race = new Race(race);
+		this.classe = new Classe(classe);
 		this.caracs = new HashMap<>();
 		this.caracs_values = new HashMap<>();
 		this.quetes_manager = new QuetesManager();
@@ -62,8 +62,8 @@ public class Personnage
 	
 	public Personnage()
 	{
-		this.race = new Race();
-		this.classe = new Classe();
+		this.race = new Race("");
+		this.classe = new Classe("");
 		
 		this.caracs = new HashMap<>();
 		this.caracs_values = new HashMap<>();

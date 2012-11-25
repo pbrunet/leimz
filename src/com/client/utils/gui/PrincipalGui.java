@@ -4,8 +4,6 @@ import com.client.display.gui.GUI_Manager;
 import com.client.entities.MainJoueur;
 import com.client.gamestates.Base;
 import com.client.network.NetworkListener;
-import com.client.network.NetworkManager;
-
 import de.matthiasmann.twl.Button;
 import de.matthiasmann.twl.DialogLayout;
 import de.matthiasmann.twl.Label;
@@ -116,7 +114,6 @@ public class PrincipalGui implements NetworkListener
 	@Override
 	public void receiveMessage(String str) 
 	{
-		String[] temp = str.split(";");
 		
 	}
 	

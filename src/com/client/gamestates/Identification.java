@@ -184,8 +184,8 @@ public class Identification extends BasicGameState
 			//Adresse locale : 127.0.0.1
 			//Adresse serveur Kevin : 37.26.241.19
 			network = new NetworkManager("127.0.0.1",17000);
-			network.waitForNewMessage();
-			if(network.getMessage_recu_serveur().equals("CONNECT_SERVER"))
+			network.waitForNewMessage("co");
+			if(network.receiveFromServer("co").equals("CONNECT_SERVER"))
 				network.sendToServer("c;"+ef_login.getText()+";"+ef_password.getText());
 			else
 			{
@@ -206,8 +206,8 @@ public class Identification extends BasicGameState
 			return;
 		}
 
-		network.waitForNewMessage();
-		if(network.getMessage_recu_serveur().equals("CONNECT_SUCCEED"))
+		network.waitForNewMessage("c");
+		if(network.receiveFromServer("c").equals("CONNECT_SUCCEED"))
 		{
 			System.out.println("Connection OK.");
 			music.stop();

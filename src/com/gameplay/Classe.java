@@ -16,9 +16,10 @@ public class Classe
 		this.caracs = caracs;
 	}
 	
-	public Classe()
+	public Classe(String classe) 
 	{
-		
+		this.nom = classe;
+		//TODO : Carac et sort;
 	}
 
 	public ArrayList<Sort> getSorts() {

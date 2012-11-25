@@ -3,7 +3,6 @@ package com.server.entities;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-
 import com.gameplay.Caracteristique;
 import com.gameplay.Classe;
 import com.gameplay.Combat;
@@ -19,6 +18,7 @@ public class Personnage
 	private Classe classe;
 	private HashMap<Caracteristique,Integer> caracs_values;
 	private HashMap<Caracteristique,Integer> caracs;
+	@SuppressWarnings("unused")
 	private ArrayList<Sort> sorts;
 	
 	private Sort current_sort;
@@ -44,11 +44,11 @@ public class Personnage
 		this.combats = new ArrayList<>();
 	}
 	
-	public Personnage(String nom, String race, String classe)
+	public Personnage(String nom)
 	{
 		this.nom = nom;
-		this.race = new Race();
-		this.classe = new Classe();
+		this.race = new Race("");
+		this.classe = new Classe("");
 		this.caracs = new HashMap<>();
 		this.caracs_values = new HashMap<>();
 		this.quetes_manager = new QuetesManager();
@@ -58,8 +58,8 @@ public class Personnage
 	
 	public Personnage()
 	{
-		this.race = new Race();
-		this.classe = new Classe();
+		this.race = new Race("");
+		this.classe = new Classe("");
 		
 		this.caracs = new HashMap<>();
 		this.caracs_values = new HashMap<>();

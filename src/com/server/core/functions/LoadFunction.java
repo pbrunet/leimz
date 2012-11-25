@@ -1,23 +1,16 @@
 package com.server.core.functions;
 
 import java.sql.ResultSet;
-
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-
 import com.server.entities.PNJ;
 import com.gameplay.Caracteristique;
 import com.gameplay.Inventaire;
 import com.gameplay.PNJ_discours;
 import com.gameplay.Sort;
-import com.gameplay.items.Item;
 import com.gameplay.items.SimpleItem;
-import com.map.Grille;
 import com.map.Tile;
 import com.map.server.managers.MapManager;
 import com.server.core.Client;
@@ -40,9 +33,6 @@ public class LoadFunction implements Functionable
 	{
 		switch(args[1])
 		{
-		case "pos":
-			askPos(client);
-			break;
 		case "j":
 			askJoueur(client, args);
 			break;
@@ -50,16 +40,19 @@ public class LoadFunction implements Functionable
 			askEntities(client);
 			break;
 		case "tt":
-			askTypeTiles(client,args[2]);
+			askTypeTiles(client,args[2],args[1]);
 			break;
 		case "map":
-			askMap(client);
+			askMap(client,args[1]);
 			break;
 		case "mapc":
-			askMapContent(client);
+			askMapContent(client,args[1]);
 			break;
 		case "mon":
 			askMonster(client);
+			break;
+		case "pj":
+			askPerso(client,args[1]);
 			break;
 		default:
 			throw new RuntimeException("Unimplemented");
@@ -71,30 +64,61 @@ public class LoadFunction implements Functionable
 		switch(args[2])
 		{
 		case "rc":
-			askRaceCaracteristic(client);
+			askRaceCaracteristic(client, args[2]);
 			break;
 		case "cc":
-			askClassCaracteristic(client);
+			askClassCaracteristic(client, args[2]);
 			break;
 		case "jc":
-			askPlayerCaracteristic(client);
+			askPlayerCaracteristic(client, args[2]);
 			break;
 		case "jcv":
-			askPlayerCaracteristicValue(client);
+			askPlayerCaracteristicValue(client, args[2]);
 			break;
 		case "rs":
-			askRaceSort(client);
+			askRaceSort(client, args[2]);
 			break;
 		case "cs":
-			askClassSort(client);
+			askClassSort(client, args[2]);
 			break;
 		case "in":
-			askInventory(client);
+			askInventory(client, args[2]);
 			break;
 		}
 	}
 	
-	private void askPos(Client client) 
+	public void askPerso(Client client,String tag)
+	{
+		ResultSet rs;
+		try {
+			String sql = "SELECT name,race,classe,posx,posy,orientation " +
+					"FROM personnage,Account " +
+					"WHERE personnage.name=Account.currjoueur " +
+					"AND Account.connected=1";
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			rs = stmt.executeQuery(sql);
+			String rc = tag + ";";
+			while(rs.next())
+			{
+				rc += "new;";
+				rc += rs.getString("name") + ";";
+				rc += rs.getString("race") + ";";
+				rc += rs.getString("classe") + ";";
+				rc += rs.getInt("posx") + ";";
+				rc += rs.getInt("posy") + ";";
+				rc += rs.getString("orientation") + ";";
+			}
+
+			client.sendToClient(rc);
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+			throw new RuntimeException("Other players");
+		}
+	}
+	
+	/*private void askPos(Client client) 
 	{
 		ResultSet rs = null;
 		try {
@@ -116,28 +140,24 @@ public class LoadFunction implements Functionable
 		} catch (SQLException e) {
 			throw new RuntimeException("Race caracteristic");
 		}
-	}
+	}*/
 
-	public void askRaceCaracteristic(Client client)
+	public void askRaceCaracteristic(Client client,String tag)
 	{
 		ResultSet rs = null;
 		try {
-			String sql = "SELECT caracteristiques.name, caracteristiques_race.value " +
-					"FROM caracteristiques,caracteristiques_race,personnage " +
-					"WHERE caracteristiques.id=caracteristiques_race.id_caracteristique " +
-					"AND caracteristiques_race.id_race=personnage.race " +
-					"AND personnage.joueur=" + client.getCompte().getClient_id();
+			String sql = "SELECT caracteristiques_race.caracteristique, caracteristiques_race.value " +
+					"FROM caracteristiques_race,personnage " +
+					"WHERE caracteristiques_race.race=personnage.race " +
+					"AND personnage.name='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
-			HashMap<Caracteristique,Integer> caracs_race = new HashMap<Caracteristique,Integer>();
-			String rc = "";
+			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("caracteristiques.name") + ";";
+				rc += rs.getString("caracteristiques_race.caracteristique") + ";";
 				rc += rs.getInt("caracteristiques_race.value") + ";";
-				caracs_race.put(Caracteristique.valueOf(rs.getString("caracteristiques.name").toUpperCase()), rs.getInt("caracteristiques_race.value"));
 			}
-			client.getCompte().getCurrent_joueur().getPerso().getRace().setCarac(caracs_race);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -146,26 +166,22 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askClassCaracteristic(Client client)
+	public void askClassCaracteristic(Client client,String tag)
 	{
 		ResultSet rs;
 		try {
-			String sql = "SELECT caracteristiques.name, caracteristiques_classe.value " +
-					"FROM caracteristiques,caracteristiques_classe,personnage " +
-					"WHERE caracteristiques.id=caracteristiques_classe.id_caracteristique " +
-					"AND caracteristiques_classe.id_classe=personnage.classe " +
-					"AND personnage.joueur=" + client.getCompte().getClient_id();
+			String sql = "SELECT caracteristiques_classe.caracteristique, caracteristiques_classe.value " +
+					"FROM caracteristiques_classe,personnage " +
+					"WHERE caracteristiques_classe.classe=personnage.classe " +
+					"AND personnage.name='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
-			HashMap<Caracteristique,Integer> caracs_classe = new HashMap<Caracteristique,Integer>();
-			String rc = "";
+			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("caracteristiques.name") + ";";
+				rc += rs.getString("caracteristiques_classe.caracteristique") + ";";
 				rc += rs.getInt("caracteristiques_classe.value") + ";";
-				caracs_classe.put(Caracteristique.valueOf(rs.getString("caracteristiques.name").toUpperCase()), rs.getInt("caracteristiques_classe.value"));
 			}
-			client.getCompte().getCurrent_joueur().getPerso().getClasse().setCaracs(caracs_classe);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -174,25 +190,21 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askPlayerCaracteristic(Client client)
+	public void askPlayerCaracteristic(Client client,String tag)
 	{
 		ResultSet rs;
 		try {
-			String sql = "SELECT caracteristiques.name, caracteristiques_joueur.value " +
-					"FROM caracteristiques,caracteristiques_joueur " +
-					"WHERE caracteristiques.id=caracteristiques_joueur.id_caracteristique " +
-					"AND caracteristiques_joueur.id_joueur=" + client.getCompte().getClient_id();
+			String sql = "SELECT caracteristique, value " +
+					"FROM caracteristiques_joueur " +
+					"WHERE nom_joueur='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
-			HashMap<Caracteristique,Integer> caracs = new HashMap<Caracteristique,Integer>();
-			String rc = "";
+			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("caracteristiques.name") + ";";
-				rc += rs.getInt("caracteristiques_joueur.value") + ";";
-				caracs.put(Caracteristique.valueOf(rs.getString("caracteristiques.name").toUpperCase()), rs.getInt("caracteristiques_joueur.value"));
+				rc += rs.getString("caracteristique") + ";";
+				rc += rs.getInt("value") + ";";
 			}
-			client.getCompte().getCurrent_joueur().getPerso().setCaracs(caracs);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -201,26 +213,22 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askPlayerCaracteristicValue(Client client)
+	public void askPlayerCaracteristicValue(Client client,String tag)
 	{
 		ResultSet rs;
 		//Valeurs des caracteristiques du joueur
 		try {
-			String sql = "SELECT caracteristiques.name, caracteristiques_joueur.current_value " +
-					"FROM caracteristiques,caracteristiques_joueur " +
-					"WHERE caracteristiques.id=caracteristiques_joueur.id_caracteristique " +
-					"AND caracteristiques_joueur.id_joueur=" + client.getCompte().getClient_id();
+			String sql = "SELECT caracteristique, current_value " +
+					"FROM caracteristiques_joueur " +
+					"WHERE nom_joueur='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
-			HashMap<Caracteristique,Integer> caracs_value = new HashMap<Caracteristique,Integer>();
-			String rc = "";
+			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("caracteristiques.name") + ";";
-				rc += rs.getInt("caracteristiques_joueur.current_value") + ";";
-				caracs_value.put(Caracteristique.valueOf(rs.getString("caracteristiques.name").toUpperCase()), rs.getInt("caracteristiques_joueur.current_value"));
+				rc += rs.getString("caracteristique") + ";";
+				rc += rs.getInt("current_value") + ";";
 			}
-			client.getCompte().getCurrent_joueur().getPerso().setCaracs_values(caracs_value);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -229,34 +237,26 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askRaceSort(Client client)
+	public void askRaceSort(Client client,String tag)
 	{
 		ResultSet rs;
 		//sorts de race
 		try {
 			String sql = "SELECT sorts_race.nom, sorts_race.value_min, sorts_race.value_max, sorts_race.description" +
 					" FROM sorts_race,personnage,race_sort " +
-					"WHERE sorts_race.id=race_sort.id_sort " +
-					"AND race_sort.id_race=personnage.race " +
-					"AND personnage.joueur=" + client.getCompte().getClient_id();
+					"WHERE sorts_race.nom=race_sort.sort " +
+					"AND race_sort.race=personnage.race " +
+					"AND personnage.name='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
-			ArrayList<Sort> sorts_race = new ArrayList<Sort>();
-			String rc = "";
+			String rc = tag + ";";
 			while(rs.next())
 			{
 				rc += rs.getString("sorts_race.nom") + ";";
 				rc += rs.getInt("sorts_race.value_min") + ";";
 				rc += rs.getInt("sorts_race.value_max") + ";";
 				rc += rs.getString("sorts_race.description") + ";";
-				sorts_race.add(new Sort(rs.getString("sorts_race.nom"), rs.getString("sorts_race.description"), rs.getInt("sorts_race.value_min"), rs.getInt("sorts_race.value_max"), null));
 			}
-			client.
-			getCompte().
-			getCurrent_joueur().
-			getPerso().
-			getRace().
-			setSorts(sorts_race);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -265,29 +265,26 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askClassSort(Client client)
+	public void askClassSort(Client client,String tag)
 	{
 		ResultSet rs;
 		//sorts de classe
 		try {
 			String sql = "SELECT sorts_classe.nom, sorts_classe.value_min, sorts_classe.value_max, sorts_classe.description" +
 					" FROM sorts_classe,personnage,classe_sort " +
-					"WHERE sorts_classe.id=classe_sort.id_sort " +
-					"AND classe_sort.id_classe=personnage.classe " +
-					"AND personnage.joueur=" + client.getCompte().getClient_id();
+					"WHERE sorts_classe.nom=classe_sort.sort " +
+					"AND classe_sort.classe=personnage.classe " +
+					"AND personnage.name='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
-			ArrayList<Sort> sorts_classe = new ArrayList<Sort>();
-			String rc = "";
+			String rc = tag + ";";
 			while(rs.next())
 			{
 				rc += rs.getString("sorts_classe.nom") + ";";
 				rc += rs.getInt("sorts_classe.value_min") + ";";
 				rc += rs.getInt("sorts_classe.value_max") + ";";
 				rc += rs.getString("sorts_classe.Description") + ";";
-				sorts_classe.add(new Sort(rs.getString("sorts_classe.nom"), rs.getString("sorts_classe.description"), rs.getInt("sorts_classe.value_min"), rs.getInt("sorts_classe.value_max"), null));
 			}
-			client.getCompte().getCurrent_joueur().getPerso().getClasse().setSorts(sorts_classe);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -296,18 +293,17 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askInventory(Client client)
+	public void askInventory(Client client,String tag)
 	{
 		ResultSet rs;
 		try {
-			String sql = "SELECT item.id, item.nom, item.description, item.type, item.icone, item.apercu " +
+			String sql = "SELECT item.nom, item.description, item.type, item.icone, item.apercu " +
 					"FROM item,inventaire " +
-					"WHERE item.id=inventaire.id_objet " +
-					"AND inventaire.id_joueur=" + client.getCompte().getClient_id();
+					"WHERE item.nom=inventaire.objet " +
+					"AND inventaire.joueur='" + client.getCompte().getCurrent_joueur().getPerso().getNom()+"'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
-			ArrayList<SimpleItem> items = new ArrayList<SimpleItem>();
-			String rc = "";
+			String rc = tag + ";";
 			while(rs.next())
 			{
 				ResultSet rs2 = null;
@@ -316,40 +312,30 @@ public class LoadFunction implements Functionable
 				rc += rs.getString("item.type") + ";";
 				rc += rs.getString("item.icone") + ";";
 				rc += rs.getString("item.apercu") + ";";
-				sql = "SELECT caracteristiques_objet.value,caracteristiques.name " +
-						"FROM caracteristiques_objet, caracteristiques " +
-						"WHERE caracteristiques_objet.id_caracteristique=caracteristiques.id " +
-						"AND caracteristiques_objet.id_objet=" + rs.getString("item.id");
+				sql = "SELECT value,caracteristique " +
+						"FROM caracteristiques_objet " +
+						"WHERE objet='" + rs.getString("item.nom")+"'";
 				Statement stmt2 = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 				rs2 = stmt2.executeQuery(sql);
-				HashMap<Caracteristique, Integer> effets = new HashMap<Caracteristique, Integer>();
 				while(rs2.next())
 				{
-					rc += rs2.getString("caracteristiques.name") + ";";
-					rc += rs2.getString("caracteristiques_objet.value") + ";";
-					effets.put(Caracteristique.valueOf(rs2.getString("caracteristiques.name").toUpperCase()), rs2.getInt("caracteristiques_objet.value"));
+					rc += rs2.getString("caracteristique") + ";";
+					rc += rs2.getInt("value") + ";";
 				}
-				items.add(new SimpleItem(rs.getString("item.nom"), rs.getString("item.description"), rs.getString("item.icone"), rs.getString("item.apercu"), effets, 10));
 				rs2.close();
 				stmt2.close();
 			}
-			client.getCompte().getCurrent_joueur().getPerso().setInventaire(new Inventaire(items));
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException("Bag");
 		}
 	}
-
-	
-	
-	
-	
-	
 	
 	private void askEntities(Client client)
 	{
+		System.out.println("asking entities");
 		ArrayList<ArrayList<Tile>> grille = MapManager.instance.getTilesAutour(client.getCompte().getCurrent_joueur().getTile(), GlobalConstant.nbCaseNear);
 		ArrayList<Tile> tiles_to_test = new ArrayList<Tile>();
 		
@@ -384,6 +370,8 @@ public class LoadFunction implements Functionable
 		}
 	}
 	
+	
+	
 	private void loadPnj(Client client, PNJ pnj)
 	{
 		String rc = "lo;ent;pnj;";
@@ -410,40 +398,39 @@ public class LoadFunction implements Functionable
 	}
 
 
-	public void askTypeTiles(Client client, String name)
+	public void askTypeTiles(Client client, String name,String tag)
 	{
 		ResultSet rs;
 		//Chargement des informations d'une tile
 		try {
-			String sql = "SELECT tiles_map.nom, tiles_map.image, tiles_map.collidable, tiles_map.base_x, tiles_map.base_y " +
+			String sql = "SELECT nom, image, collidable, base_x, base_y " +
 					"FROM tiles_map " +
-					"WHERE tiles_map.nom='" + name + "'";
+					"WHERE nom='" + name + "'";
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
-			String rc = "";
+			String rc = tag + ";";
 			while(rs.next())
 			{
-				rc += rs.getString("tiles_map.nom") + ";";
-				rc += rs.getString("tiles_map.image") + ";";
-				rc += rs.getBoolean("tiles_map.collidable") + ";";
-				rc += rs.getInt("tiles_map.base_x") + ";";
-				rc += rs.getInt("tiles_map.base_y") + ";";
+				rc += rs.getString("nom") + ";";
+				rc += rs.getString("image") + ";";
+				rc += rs.getBoolean("collidable") + ";";
+				rc += rs.getInt("base_x") + ";";
+				rc += rs.getInt("base_y") + ";";
 				rc += "0";
 			}
-			if(rc.equals(""))
+			if(rc.equals(tag + ";"))
 			{
-				sql = "SELECT tiles_map_content.nom, tiles_map_content.image, tiles_map_content.collidable, tiles_map_content.base_x, tiles_map_content.base_y " +
+				sql = "SELECT nom, image, collidable, base_x, base_y " +
 						"FROM tiles_map_content " +
-						"WHERE tiles_map_content.nom='" + name + "'";
+						"WHERE nom='" + name + "'";
 				rs = stmt.executeQuery(sql);
-				rc = "";
 				while(rs.next())
 				{
-					rc += rs.getString("tiles_map_content.nom") + ";";
-					rc += rs.getString("tiles_map_content.image") + ";";
-					rc += rs.getBoolean("tiles_map_content.collidable") + ";";
-					rc += rs.getInt("tiles_map_content.base_x") + ";";
-					rc += rs.getInt("tiles_map_content.base_y") + ";";
+					rc += rs.getString("nom") + ";";
+					rc += rs.getString("image") + ";";
+					rc += rs.getBoolean("collidable") + ";";
+					rc += rs.getInt("base_x") + ";";
+					rc += rs.getInt("base_y") + ";";
 					rc += "1";
 				}
 			}
@@ -455,7 +442,7 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askMap(Client client)
+	public void askMap(Client client,String tag)
 	{
 		ResultSet rs;
 		//Chargement des informations de la map
@@ -464,20 +451,19 @@ public class LoadFunction implements Functionable
 			String sql = "SELECT MAX(map.x), MAX(map.y)" +
 					"FROM map ";
 			rs = stmt.executeQuery(sql);
-			String rc = "";
+			String rc = tag + ";";
 			rs.next();
 			rc += rs.getInt(1) + ";";
 			rc += rs.getInt(2) + ";";
-			sql = "SELECT map.x, map.y, map.monsterHolder, tiles_map.nom " +
-					"FROM tiles_map,map " +
-					"WHERE tiles_map.id=map.type";
+			sql = "SELECT x, y, monsterHolder, type " +
+					"FROM map ";
 			rs = stmt.executeQuery(sql);
 			while(rs.next())
 			{
-				rc += rs.getInt("map.x") + ";";
-				rc += rs.getInt("map.y") + ";";
-				rc += rs.getString("tiles_map.nom") + ";";
-				rc += rs.getBoolean("map.monsterHolder") + ";";
+				rc += rs.getInt("x") + ";";
+				rc += rs.getInt("y") + ";";
+				rc += rs.getString("type") + ";";
+				rc += rs.getBoolean("monsterHolder") + ";";
 			}
 			client.sendToClient(rc);
 			rs.close();
@@ -487,22 +473,21 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askMapContent(Client client)
+	public void askMapContent(Client client,String tag)
 	{
 		ResultSet rs;
 		//Chargement des informations de la map
 		try {
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			String rc = "";
-			String sql = "SELECT map_content.x, map_content.y, tiles_map_content.nom " +
-					"FROM tiles_map_content,map_content " +
-					"WHERE tiles_map_content.id=map_content.type";
+			String rc = tag + ";";
+			String sql = "SELECT x, y, type " +
+					"FROM map_content ";
 			rs = stmt.executeQuery(sql);
 			while(rs.next())
 			{
-				rc += rs.getInt("map_content.x") + ";";
-				rc += rs.getInt("map_content.y") + ";";
-				rc += rs.getString("tiles_map_content.nom") + ";";
+				rc += rs.getInt("x") + ";";
+				rc += rs.getInt("y") + ";";
+				rc += rs.getString("type") + ";";
 			}
 			client.sendToClient(rc);
 			rs.close();

@@ -16,9 +16,10 @@ public class Race
 		this.carac = carac;
 	}
 	
-	public Race()
+	public Race(String race)
 	{
-		
+		this.nom = race;
+		//TODO sorts , carac
 	}
 
 	public String getNom() {

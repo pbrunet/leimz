@@ -53,13 +53,13 @@ public class CombatFunction implements Functionable
 		
 		if(args[2].equals("y"))
 		{
-			receiver.sendToClient("co;an;y;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
+			receiver.sendToClient("fi;an;y;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
 			receiver.sendToClient("s;"+c.getCompte().getCurrent_joueur().getPerso().getNom()+";vie;"+c.getCompte().getCurrent_joueur().getPerso().getCaracs().get(Caracteristique.VIE));
 			c.sendToClient("s;"+receiver.getCompte().getCurrent_joueur().getPerso().getNom()+";vie;"+receiver.getCompte().getCurrent_joueur().getPerso().getCaracs().get(Caracteristique.VIE));
 		}
 		else if(args[2].equals("n"))
 		{
-			receiver.sendToClient("co;an;n;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
+			receiver.sendToClient("fi;an;n;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
 		}
 		
 	}
@@ -81,7 +81,7 @@ public class CombatFunction implements Functionable
 			}
 		}
 		
-		receiver.sendToClient("co;ask;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
+		receiver.sendToClient("fi;ask;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
 	}
 	
 	
@@ -102,7 +102,7 @@ public class CombatFunction implements Functionable
 			}
 		}
 		
-		receiver.sendToClient("co;can;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
+		receiver.sendToClient("fi;can;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
 	}
 
 }

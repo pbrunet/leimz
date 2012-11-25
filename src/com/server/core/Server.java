@@ -1,33 +1,20 @@
 package com.server.core;
 
-import com.map.Grille;
-
-import com.map.Map;
-import com.map.SimpleType_tile;
-import com.map.Tile;
-import com.map.Type_tile;
 import com.map.server.managers.MapManager;
 import com.server.db.DBConnection;
 import com.server.misc.Logging;
-
 import java.io.*;
-
 import java.net.ServerSocket;
 import java.net.Socket;
-
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
-
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
-import org.newdawn.slick.geom.Vector2f;
 
 /**
  * Classe du serveur! La connexion d'un client se passe ici
@@ -44,7 +31,9 @@ public class Server
 	private DBConnection dbConnexion;
 	private Logger l = Logging.getLogger(Server.class);
 
+	@SuppressWarnings("unused")
 	private Calculator calculator;
+	@SuppressWarnings("unused")
 	private MapManager mapManager;
 
 	/* private World world;
@@ -63,6 +52,7 @@ public class Server
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		@SuppressWarnings("unused")
 		Load load = new Load();
 		//On attend la connexion des joueurs*/
 		waitPlayers();
@@ -194,6 +184,14 @@ public class Server
 		cleanClient();
 		cleanList();
 		seeToServer("Joueur deconnecte! Actuellement il y a "+this.getNbclients()+" joueur");
+		
+		try {
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			String sql = "UPDATE account SET connected=false WHERE nom_de_compte='"+client.getCompte().getName()+"'";
+			stmt.executeUpdate(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void save() {

@@ -1,13 +1,13 @@
 package com.client.display.gui;
 
 import java.io.IOException;
+
 import java.net.URL;
 
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.GL11;
 import org.newdawn.slick.GameContainer;
 
-import de.matthiasmann.twl.Event;
 import de.matthiasmann.twl.GUI;
 import de.matthiasmann.twl.Widget;
 import de.matthiasmann.twl.renderer.lwjgl.LWJGLRenderer;

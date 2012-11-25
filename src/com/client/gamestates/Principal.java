@@ -1,46 +1,23 @@
 package com.client.gamestates;
 
-import java.io.File;
-
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
-import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
-
 import com.client.display.Camera;
 import com.client.display.DisplayManager;
 import com.client.display.gui.GUI_Manager;
-import com.client.entities.Joueur;
 import com.client.entities.MainJoueur;
-import com.client.entities.PNJ;
-import com.client.events.EventListener;
 import com.client.events.MainEventListener;
 import com.client.network.NetworkManager;
 import com.client.utils.Data;
-import com.client.utils.gui.ChatFrame;
-import com.client.utils.gui.InventairePanel;
-import com.client.utils.gui.InventaireUI;
-import com.client.utils.gui.PnjDialogFrame;
 import com.client.utils.gui.PrincipalGui;
 import com.client.utils.pathfinder.PathFinder;
 import com.game_entities.managers.EntitiesManager;
-import com.gameplay.Combat;
-import com.gameplay.Equipe;
-import com.gameplay.Combat.EtatCombat;
 import com.gameplay.managers.CombatManager;
-import com.map.Tile;
 import com.map.client.managers.MapManager;
-
-import de.matthiasmann.twl.Button;
-import de.matthiasmann.twl.DialogLayout;
-import de.matthiasmann.twl.ResizableFrame;
 
 public class Principal extends BasicGameState
 {
@@ -50,7 +27,8 @@ public class Principal extends BasicGameState
 	private DisplayManager disp;
 	
 	//------------------GUI----------------
-    private PrincipalGui maingui;
+    @SuppressWarnings("unused")
+	private PrincipalGui maingui;
     
     //EVENTS
     private MainEventListener event_listener;

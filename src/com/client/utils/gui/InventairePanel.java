@@ -1,12 +1,8 @@
 package com.client.utils.gui;
 
 import java.util.ArrayList;
-
-
 import com.gameplay.Inventaire;
 import com.gameplay.items.Item;
-import com.gameplay.items.SimpleItem;
-
 import de.matthiasmann.twl.Event;
 import de.matthiasmann.twl.ThemeInfo;
 import de.matthiasmann.twl.Widget;

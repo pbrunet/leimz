@@ -5,15 +5,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
-
-import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
-
-
 import com.map.Map;
 import com.map.SimpleType_tile;
 import com.map.Tile;
-import com.map.Type_tile;
 import com.server.core.ServerSingleton;
 
 public class MapManager 

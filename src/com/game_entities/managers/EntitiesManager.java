@@ -45,9 +45,9 @@ public class EntitiesManager implements NetworkListener
 	{
 		String[] temp = str.split(";");
 		
-		if(temp[2].contains("pnj"))
+		if(temp[1].equals("pnj"))
 		{
-			PNJ pnj = LoadPnj.loadPnj(str.substring(temp[0].length()+1+temp[1].length()+1+temp[2].length()+1, str.length()));
+			PNJ pnj = LoadPnj.loadPnj(str.substring(temp[0].length()+1+temp[1].length()+1, str.length()));
 			pnjs_manager.add(pnj);
 		}
 	}

@@ -1,37 +1,28 @@
 package com.client.load;
 
 import java.util.ArrayList;
-
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.loading.LoadingList;
-
 import com.client.network.NetworkManager;
 import com.map.Grille;
 import com.map.Tile;
-import com.map.Type_tile;
 import com.map.client.managers.MapManager;
 
 public class LoadMap implements Runnable
 {
 	private Grille grille;
-	private Thread looper;
+	private Thread t;
 	private int purcent;
-	private boolean running;
 
 	public LoadMap()
 	{
 		this.purcent = 0;
-		looper = new Thread(this);
-		looper.start();
-		running = true;
+		t = new Thread(this);
 	}
-
-	public Thread getLooper() {
-		return looper;
-	}
-
-	public void setLooper(Thread looper) {
-		this.looper = looper;
+	
+	public void start()
+	{
+		t.start();
 	}
 
 	public int getPurcent() {
@@ -41,27 +32,25 @@ public class LoadMap implements Runnable
 	public void setPurcent(int purcent) {
 		this.purcent = purcent;
 	}
-
-	public boolean isRunning() {
-		return running;
+	
+	public Thread getT() {
+		return t;
 	}
 
-	public void setRunning(boolean running) {
-		this.running = running;
+	public void setT(Thread t) {
+		this.t = t;
 	}
 
 	@Override
 	public void run()
 	{
-		if(running)
-		{
 			purcent+=2;
 
 			grille = new Grille();
 
 			NetworkManager.instance.sendToServer("lo;map"); //load map
-			NetworkManager.instance.waitForNewMessage();
-			String[] args_map = NetworkManager.instance.getMessage_recu_serveur().split(";");
+			NetworkManager.instance.waitForNewMessage("map");
+			String[] args_map = NetworkManager.instance.receiveFromServer("map").split(";");
 			if(args_map.length<3)
 				throw new RuntimeException("Map loading error");
 
@@ -90,8 +79,8 @@ public class LoadMap implements Runnable
 			}
 
 			NetworkManager.instance.sendToServer("lo;mapc"); //load map content
-			NetworkManager.instance.waitForNewMessage();
-			String[] args_mapc = NetworkManager.instance.getMessage_recu_serveur().split(";");
+			NetworkManager.instance.waitForNewMessage("mapc");
+			String[] args_mapc = NetworkManager.instance.receiveFromServer("mapc").split(";");
 
 			if(args_map.length>2)
 			{
@@ -111,8 +100,6 @@ public class LoadMap implements Runnable
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			running = false;
-		}
 	}
 
 	public Grille getGrille() {

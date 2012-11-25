@@ -1,19 +1,14 @@
 package com.client.load;
 
 import java.awt.Font;
-
 import com.client.entities.MainJoueur;
 import com.client.entities.Orientation;
 import com.client.gamestates.Base;
-import com.client.gamestates.Principal;
-
 import com.game_entities.managers.EntitiesManager;
 import com.game_entities.managers.PNJsManager;
 import com.game_entities.managers.PlayersManager;
-
 import com.map.Map;
 import com.map.client.managers.MapManager;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -34,7 +29,7 @@ public class Loading extends BasicGameState
 	private UnicodeFont label;
 	private float purcent = 0;
 
-	private boolean loadM =  false, loadJ = false;
+	private boolean loadMapFinished =  false, loadJoueurFinished = false;
 
 	@Override
 	public int getID() 
@@ -57,8 +52,11 @@ public class Loading extends BasicGameState
 
 		fond = new Image("data/Images/Loading/fond_v2.png");
 		barre = new Image("data/Images/Loading/Barre_remplie.png");
+		
+		load_joueur = new LoadJoueur();
+		load_map = new LoadMap();
 
-		loadJoueur();
+		loadMaps();
 			}
 
 
@@ -79,39 +77,31 @@ public class Loading extends BasicGameState
 			throws SlickException 
 			{
 
-		if(load_joueur != null && !load_joueur.isRunning() && !loadJ)
+		if(!load_map.getT().isAlive() && !loadMapFinished)
 		{
-			loadMaps();
-			loadJ=true;
-		}
-
-		/*if(load_map != null && !load_map.isRunning() && !loadMon)
-		{
-			loadMonsters();
-			loadMon=true;
-		}*/
-
-		if(load_map != null && !load_map.isRunning() && !loadM)
-		{			
 			new MapManager(new Map(load_map.getGrille(),null));
-
-			/*loadEntities();
-			loadM=true;*/
+			loadJoueur();
+			loadMapFinished=true;
+		}
+		
+		if(!load_joueur.getT().isAlive() && loadMapFinished)
+		{
+			loadJoueurFinished=true;
 		}
 
 		//purcent = (load_pnj != null)?load_pnj.getPurcent():0;
 
-		purcent = (load_map != null)?load_map.getPurcent():0;
+		purcent = load_map.getPurcent();
 
 		purcent += load_joueur.getPurcent();
 
-		if(load_joueur != null && !load_joueur.isRunning() && load_map != null && !load_map.isRunning())
+		if(loadJoueurFinished && loadMapFinished)
 		{
-			MainJoueur j = new MainJoueur(load_joueur.getPerso(), MapManager.instance.getEntire_map().getGrille().get((int) load_joueur.getPosj().x).get((int) load_joueur.getPosj().y), Orientation.DROITE);
+			MainJoueur j = new MainJoueur(load_joueur.getJoueur().getPerso(), MapManager.instance.getEntire_map().getGrille().get((int)load_joueur.getJoueur().getTile().getPos().x).get((int)load_joueur.getJoueur().getTile().getPos().y), load_joueur.getJoueur().getOrientation());
 
 			EntitiesManager e_m = new EntitiesManager();
 			e_m.setPnjs_manager(new PNJsManager());
-			e_m.setPlayers_manager(new PlayersManager(j));
+			e_m.setPlayers_manager(new PlayersManager(j,load_joueur.getPlayers()));
 
 			sbg.enterState(Base.PRINCIPAL);
 		}
@@ -124,21 +114,11 @@ public class Loading extends BasicGameState
 
 	private void loadJoueur()
 	{
-		load_joueur = new LoadJoueur();
+		load_joueur.start();
 	}
 
 	private void loadMaps()
 	{
-		load_map = new LoadMap();
+		load_map.start();
 	}
-
-	/*private void loadEntities()
-	{
-		load_pnj = new LoadPnj();
-	}
-
-	private void loadMonsters()
-	{
-		load_monster = new LoadMonster();
-	}*/
 }

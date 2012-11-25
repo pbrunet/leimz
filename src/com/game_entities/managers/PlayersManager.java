@@ -10,8 +10,9 @@ public class PlayersManager
 	private ArrayList<Joueur> joueurs;
 	private MainJoueur main_player;
 	
-	public PlayersManager(ArrayList<Joueur> joueurs)
+	public PlayersManager(MainJoueur main_player,ArrayList<Joueur> joueurs)
 	{
+		this.main_player = main_player;
 		this.joueurs = joueurs;
 	}
 	

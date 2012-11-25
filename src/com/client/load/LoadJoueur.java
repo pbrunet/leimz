@@ -3,16 +3,15 @@ package com.client.load;
 import java.util.ArrayList;
 
 import java.util.HashMap;
-
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.loading.LoadingList;
 
 import com.client.entities.Joueur;
+import com.client.entities.Orientation;
+import com.client.gamestates.Base;
 import com.client.network.NetworkManager;
-
-
 import com.gameplay.Caracteristique;
 import com.gameplay.Classe;
 import com.gameplay.Inventaire;
@@ -20,6 +19,8 @@ import com.gameplay.Race;
 import com.gameplay.Sort;
 import com.gameplay.entities.Personnage;
 import com.gameplay.items.Equipement;
+import com.map.Tile;
+import com.map.client.managers.MapManager;
 
 /**
  * 
@@ -28,40 +29,40 @@ import com.gameplay.items.Equipement;
  */
 public class LoadJoueur implements Runnable
 {
-	private Thread looper;
+	private Thread t;
 	private int purcent;
-	private boolean running;
-	private Personnage perso;
-	private Vector2f posj;
+	private Joueur joueur;
+	private ArrayList<Joueur> list_joueur;
 
 	public LoadJoueur()
 	{
+		this.list_joueur = new ArrayList<Joueur>();
 		this.purcent = 0;
-		looper = new Thread(this);
-		looper.start();
-		running = true;
+		t = new Thread(this);
+	}
+	
+	public void start()
+	{
+		t.start();
 	}
 
 	@Override
 	public void run() 
 	{
-		if(running)
-		{
-			NetworkManager.instance.waitForNewMessage();
+			NetworkManager.instance.waitForNewMessage("ci");
 
 			//On recupere la chaine avec les infos sur le perso
-			String[] args_perso = NetworkManager.instance.getMessage_recu_serveur().split(";");
-			if(args_perso.length<3)
+			String[] args_perso = NetworkManager.instance.receiveFromServer("ci").split(";");
+			if(args_perso.length<6)
 				throw new RuntimeException("Incorrect login message from server");
 
 			String nom_perso = args_perso[0];
 			String nom_race = args_perso[1];
 			String nom_classe = args_perso[2];
-			
-			NetworkManager.instance.sendToServer("lo;pos");
-			NetworkManager.instance.waitForNewMessage();
-			String[] str_pos = NetworkManager.instance.getMessage_recu_serveur().split(";");
-			posj = new Vector2f(Integer.parseInt(str_pos[0]), Integer.parseInt(str_pos[1]));
+			int posx = Integer.parseInt(args_perso[3]);
+			int posy = Integer.parseInt(args_perso[4]);
+			Orientation ori = Joueur.parseStringOrientation(args_perso[5]);
+			System.out.println("Pos : "+posx+","+posy);
 
 			//-------------------GESTION DE LA RACE-----------------------
 
@@ -73,7 +74,14 @@ public class LoadJoueur implements Runnable
 
 			//---------------GESTION DU PERSONNAGE------------------
 
-			perso = new Personnage(nom_perso, race, classe,getCaracteristic("lo;j;jcv"),getCaracteristic("lo;j;jc"));
+			joueur = new Joueur(new Personnage(
+					nom_perso, 
+					race, 
+					classe,
+					getCaracteristic("lo;j;jcv"),
+					getCaracteristic("lo;j;jc")), 
+					MapManager.instance.getEntire_map().getGrille().get(posx).get(posy), 
+					ori);
 
 			//----------------GESTION DE L'INVENTAIRE---------------------
 
@@ -82,8 +90,8 @@ public class LoadJoueur implements Runnable
 			Inventaire inventaire = new Inventaire();
 
 			NetworkManager.instance.sendToServer("lo;j;in"); //load joueur, joueur caracteristiques
-			NetworkManager.instance.waitForNewMessage();
-			String[] str_i = NetworkManager.instance.getMessage_recu_serveur().split(";");
+			NetworkManager.instance.waitForNewMessage("in");
+			String[] str_i = NetworkManager.instance.receiveFromServer("in").split(";");
 
 			//Do nothing if inventaire is empty
 			if(str_i.length>6)
@@ -95,34 +103,37 @@ public class LoadJoueur implements Runnable
 					try {
 						inventaire.addItem(new Equipement(str_i[i], str_i[i+2], str_i[i+1], new Image(str_i[i+3]), new Image(str_i[i+4]), h, 20));
 					} catch (SlickException e) {
-						System.out.println("E: SlickException : this Image doesn't exist");
+						System.out.println("E: SlickException : this Image doesn't existe");
 					}
 				}
 			}
 			LoadingList.setDeferredLoading(false);
 
-			perso.setInventaire(inventaire);
+			joueur.getPerso().setInventaire(inventaire);
 
 			purcent+=6;
 
+			//Chargement des autres joueurs sur la carte
+			NetworkManager.instance.sendToServer("lo;pj"); //load joueur, joueur caracteristiques
+			NetworkManager.instance.waitForNewMessage("pj");
+			String[] list_perso = NetworkManager.instance.receiveFromServer("pj").split("new;");
+			for( int i=1;i<list_perso.length;i++)
+			{
+				String[] perso = list_perso[i].split(";");
+				Joueur j = new Joueur(new Personnage(perso[0], new Race(perso[1]), new Classe(perso[2]),null,null),
+						MapManager.instance.getEntire_map().getGrille()
+						.get(Integer.parseInt(perso[3])/Base.Tile_x)
+						.get(Integer.parseInt(perso[4])/Base.Tile_y),
+						Joueur.parseStringOrientation(perso[5]));
+				list_joueur.add(j);
+				System.out.println("ok" + i + "/" + list_perso[i]);
+			}
 			try {
 				//TODO Pourquoi un sleep?
 				Thread.sleep(100);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			running = false;
-		}
-	}
-	
-	
-
-	public Vector2f getPosj() {
-		return posj;
-	}
-
-	public void setPosj(Vector2f posj) {
-		this.posj = posj;
 	}
 
 	public int getPurcent() {
@@ -133,28 +144,12 @@ public class LoadJoueur implements Runnable
 		this.purcent = purcent;
 	}
 
-	public boolean isRunning() {
-		return running;
-	}
-
-	public void setRunning(boolean running) {
-		this.running = running;
-	}
-
-	public Personnage getPerso() {
-		return perso;
-	}
-
-	public void setPerso(Personnage perso) {
-		this.perso = perso;
-	}
-
 	@SuppressWarnings("unchecked")
 	private HashMap<Caracteristique,Integer>getCaracteristic(String message)
 	{
 		NetworkManager.instance.sendToServer(message);
-		NetworkManager.instance.waitForNewMessage();
-		String[] caract = NetworkManager.instance.getMessage_recu_serveur().split(";");
+		NetworkManager.instance.waitForNewMessage(message.split(";",3)[2]);
+		String[] caract = NetworkManager.instance.receiveFromServer(message.split(";",3)[2]).split(";");
 		if(caract.length<2)
 			throw new RuntimeException("Incorrect caracteristic loading message from server");
 
@@ -169,8 +164,8 @@ public class LoadJoueur implements Runnable
 	{
 		ArrayList<Sort> sorts = new ArrayList<Sort>();
 		NetworkManager.instance.sendToServer(message);
-		NetworkManager.instance.waitForNewMessage();
-		String[] sort = NetworkManager.instance.getMessage_recu_serveur().split(";");
+		NetworkManager.instance.waitForNewMessage(message.split(";")[2]);
+		String[] sort = NetworkManager.instance.receiveFromServer(message.split(";")[2]).split(";");
 		if(sort.length<4)
 			throw new RuntimeException("Incorrect sorts loading message from server");
 
@@ -179,4 +174,27 @@ public class LoadJoueur implements Runnable
 
 		return (ArrayList<Sort>) sorts.clone();
 	}
+	
+	public Joueur getJoueur() {
+		return joueur;
+	}
+
+	public void setJoueur(Joueur joueur) {
+		this.joueur = joueur;
+	}
+	
+	public ArrayList<Joueur> getPlayers() {
+		return list_joueur;
+	}
+
+	public Thread getT() {
+		return t;
+	}
+
+	public void setT(Thread t) {
+		this.t = t;
+	}
+	
+	
+
 }

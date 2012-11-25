@@ -1,13 +1,10 @@
 package com.gameplay;
 
 import java.util.ArrayList;
-import java.util.Timer;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Font;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.geom.Vector2f;
-
 import com.client.entities.MainJoueur;
 import com.client.gamestates.Base;
 import com.client.utils.Chrono;

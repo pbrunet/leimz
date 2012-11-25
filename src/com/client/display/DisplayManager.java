@@ -156,6 +156,8 @@ public class DisplayManager
 				{
 					if(EntitiesManager.instance.getPlayers_manager().getJoueurs().get(k).getCurrent_img_repos() != null)
 						EntitiesManager.instance.getPlayers_manager().getJoueurs().get(k).draw();
+					else
+						EntitiesManager.instance.getPlayers_manager().getJoueurs().get(k).initImgs();
 				}
 
 				//Si le joueur n'a finalement pas ete affiche (dans le cas ou, par ex, il n'y a aucun objet la ou il est)

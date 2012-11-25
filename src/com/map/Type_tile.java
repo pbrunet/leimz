@@ -1,13 +1,7 @@
 package com.map;
 
-import java.util.HashMap;
-
 import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
-
-import com.client.network.NetworkManager;
-
 
 
 public class Type_tile extends SimpleType_tile

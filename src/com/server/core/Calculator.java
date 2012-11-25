@@ -1,14 +1,8 @@
 package com.server.core;
 
 import java.io.IOException;
-
-
-
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.List;
-
-
 import com.server.core.functions.AttackFunction;
 import com.server.core.functions.CombatFunction;
 import com.server.core.functions.ConnectFunction;
@@ -41,7 +35,7 @@ public class Calculator implements Runnable
 		dictfunctions.put("c",new ConnectFunction());
 		dictfunctions.put("sa",new SayFunction());
 		dictfunctions.put("lo",new LoadFunction());
-		dictfunctions.put("co",new CombatFunction());
+		dictfunctions.put("fi",new CombatFunction());
 		dictfunctions.put("a",new AttackFunction());
 
 		this.t = new Thread(this);

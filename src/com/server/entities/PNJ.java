@@ -1,17 +1,6 @@
 package com.server.entities;
 
-import java.io.File;
 import java.util.ArrayList;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
-import org.newdawn.slick.geom.Vector2f;
-
 import com.gameplay.PNJ_discours;
 import com.gameplay.Quete;
 import com.map.Tile;

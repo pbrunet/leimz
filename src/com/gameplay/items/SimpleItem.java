@@ -1,9 +1,6 @@
 package com.gameplay.items;
 
 import java.util.HashMap;
-
-import org.newdawn.slick.Image;
-
 import com.gameplay.Caracteristique;
 
 public class SimpleItem 

@@ -1,14 +1,9 @@
 package com.gameplay;
 
 import java.util.ArrayList;
-
-import org.jdom.Element;
 import org.newdawn.slick.geom.Vector2f;
-
-import com.client.display.gui.GUI_Manager;
 import com.client.entities.Joueur;
 import com.client.network.NetworkManager;
-
 import de.matthiasmann.twl.Alignment;
 import de.matthiasmann.twl.Button;
 import de.matthiasmann.twl.DialogLayout;
@@ -62,6 +57,7 @@ public class Quete
 			o_s.add(quete.getObjectifs().get(i).getDescription());
 		}
 		SimpleChangableListModel<String> lm = new SimpleChangableListModel<String>(o_s);
+		@SuppressWarnings("rawtypes")
 		ListBox lb = new ListBox<String>(lm);
 		lb.setTheme("/listbox");
 		

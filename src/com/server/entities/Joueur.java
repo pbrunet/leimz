@@ -1,25 +1,13 @@
 package com.server.entities;
 
-
-import java.io.File;
 import java.util.ArrayList;
 
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.newdawn.slick.Image;
-import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Rectangle;
-
-import org.newdawn.slick.geom.Vector2f;
-
-import com.gameplay.entities.Personnage;
+import com.server.entities.Personnage;
 import com.map.Tile;
 
 public class Joueur extends Entity
 {
 	protected Personnage perso;
-	protected Vector2f absolute;
 	
 	protected ArrayList<Tile> loaded_zone;
 	
@@ -28,7 +16,6 @@ public class Joueur extends Entity
 		super(orientation, tile);
 		this.perso = perso;
 
-		this.absolute = new Vector2f(0,0);
 		loaded_zone = new ArrayList<Tile>();
 	}
 	
@@ -95,14 +82,6 @@ public class Joueur extends Entity
 
 	public void setPerso(Personnage perso) {
 		this.perso = perso;
-	}
-	
-	public Vector2f getAbsolute() {
-		return absolute;
-	}
-
-	public void setAbsolute(Vector2f absolute) {
-		this.absolute = absolute;
 	}
 
 	public ArrayList<Tile> getLoaded_zone() {

@@ -1,20 +1,9 @@
 package com.client.entities;
 
-import java.io.File;
-
 import java.util.ArrayList;
-import java.util.HashMap;
-
-import org.jdom.Document;
-import org.jdom.Element;
-import org.jdom.input.SAXBuilder;
-import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
-import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
-
-import com.client.entities.Entity.Etat;
 import com.client.network.NetworkManager;
 import com.client.utils.pathfinder.Chemin;
 import com.client.utils.pathfinder.Noeud;

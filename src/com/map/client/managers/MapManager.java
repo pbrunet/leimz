@@ -3,22 +3,14 @@ package com.map.client.managers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-
 import org.newdawn.slick.Color;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
-
-import com.client.entities.Entity;
-import com.client.entities.Joueur;
 import com.client.gamestates.Base;
 import com.client.network.NetworkListener;
 import com.client.network.NetworkManager;
-import com.game_entities.managers.MonstersManager;
-import com.game_entities.managers.PNJsManager;
-import com.game_entities.managers.PlayersManager;
-import com.map.Grille;
 import com.map.Map;
 import com.map.Tile;
 import com.map.Type_tile;
@@ -43,12 +35,11 @@ public class MapManager implements NetworkListener
 
 		//Caracteristiques de race
 		NetworkManager.instance.sendToServer("lo;tt;" + name); //load joueur, type tile, name
-		NetworkManager.instance.waitForNewMessage();
-		String[] info_tile= NetworkManager.instance.getMessage_recu_serveur().split(";"); //nom, img adresse, collidable, x, y, calque
-		Type_tile t = null;
+		NetworkManager.instance.waitForNewMessage("tt");
+		String[] info_tile= NetworkManager.instance.receiveFromServer("tt").split(";"); //nom, img adresse, collidable, x, y, calque
 		try {
-			t= new Type_tile(info_tile[0], new Image(info_tile[1]),new Rectangle(Integer.parseInt(info_tile[3]),Integer.parseInt(info_tile[4]),80,40),Boolean.parseBoolean(info_tile[2]),Integer.parseInt(info_tile[5]));
-			types.put(info_tile[0], t);
+			Type_tile t = new Type_tile(info_tile[0], new Image(info_tile[1]),new Rectangle(Integer.parseInt(info_tile[3]),Integer.parseInt(info_tile[4]),80,40),Boolean.parseBoolean(info_tile[2]),Integer.parseInt(info_tile[5]));
+			types.put(name, t);
 			return t;
 		} catch (NumberFormatException e) {
 			e.printStackTrace();

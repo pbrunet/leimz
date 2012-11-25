@@ -1,25 +1,20 @@
 package com.client.utils.gui;
 
 import org.lwjgl.Sys;
-
 import org.newdawn.slick.geom.Vector2f;
-
 import com.client.display.gui.GUI_Manager;
 import com.client.entities.Joueur;
 import com.client.entities.MainJoueur;
 import com.client.network.NetworkListener;
 import com.client.network.NetworkManager;
 import com.game_entities.managers.EntitiesManager;
-
 import de.matthiasmann.twl.DialogLayout;
 import de.matthiasmann.twl.EditField;
 import de.matthiasmann.twl.Event;
 import de.matthiasmann.twl.ResizableFrame;
 import de.matthiasmann.twl.ScrollPane;
 import de.matthiasmann.twl.TextArea;
-import de.matthiasmann.twl.Widget;
 import de.matthiasmann.twl.textarea.HTMLTextAreaModel;
-import de.matthiasmann.twl.textarea.SimpleTextAreaModel;
 
 
 public class ChatFrame extends ResizableFrame implements NetworkListener
@@ -136,7 +131,8 @@ public class ChatFrame extends ResizableFrame implements NetworkListener
 
         textAreaModel.setHtml(sb.toString());
 
-        if(isAtEnd) {
+        if(isAtEnd) 
+        {
             scrollPane.validateLayout();
             scrollPane.setScrollPositionY(scrollPane.getMaxScrollPosY());
         }
@@ -181,12 +177,9 @@ public class ChatFrame extends ResizableFrame implements NetworkListener
 	public void receiveMessage(String str) 
 	{
 		String[] temp = str.split(";");
-		
-		if(temp[0].matches("sa"))
-    	{
-    		appendRow("default", temp[1] + " : " + temp[2]);
-    		createBulle(temp[1], temp[2]);
-    	}
+    	appendRow("default", temp[0] + " : " + temp[1]);
+    	createBulle(temp[0], temp[1]);
+    	
 	}
 	
 	private void createBulle(String nom_perso, String text)
@@ -194,7 +187,7 @@ public class ChatFrame extends ResizableFrame implements NetworkListener
 		Joueur joueur = EntitiesManager.instance.getPlayers_manager().getJoueur(nom_perso);
 
 		ResizableFrame container = new ResizableFrame();
-		container.setTheme("/resizableframe");
+		container.setTheme("/bullewidget");
 		
 		HTMLTextAreaModel model = new HTMLTextAreaModel();
 		TextArea bulle = new TextArea(model);

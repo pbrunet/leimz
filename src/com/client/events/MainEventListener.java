@@ -1,6 +1,7 @@
 package com.client.events;
 
 import org.newdawn.slick.Input;
+
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Vector2f;
 
@@ -14,17 +15,13 @@ import com.client.utils.gui.PnjDialogFrame;
 import com.client.utils.gui.PrincipalGui;
 import com.client.utils.pathfinder.PathFinder;
 import com.game_entities.managers.EntitiesManager;
-import com.gameplay.Combat.EtatCombat;
 import com.gameplay.managers.CombatManager;
 import com.map.Tile;
 import com.map.client.managers.MapManager;
-
 import de.matthiasmann.twl.CallbackWithReason;
-import de.matthiasmann.twl.ComboBox;
 import de.matthiasmann.twl.ListBox;
 import de.matthiasmann.twl.ListBox.CallbackReason;
 import de.matthiasmann.twl.model.SimpleChangableListModel;
-import de.matthiasmann.twl.model.SimpleListModel;
 
 public class MainEventListener extends EventListener
 {
@@ -76,12 +73,11 @@ public class MainEventListener extends EventListener
 					entity_pressed = true;
 					if((EntitiesManager.instance.getEntities().get(i)) instanceof PNJ)
 					{
-						final PNJ pnj = EntitiesManager.instance.getPnjs_manager().getPnjs().get(i);
+						final PNJ pnj = (PNJ) (EntitiesManager.instance.getEntities().get(i));
 						final SimpleChangableListModel<String> l = new SimpleChangableListModel<String>(
 								"Parler", "Défier");
 						final ListBox<String> combobox = new ListBox<String>(l);
 						combobox.setTheme("/popuplistbox");
-						combobox.adjustSize();
 						combobox.addCallback(new CallbackWithReason<ListBox.CallbackReason>() { 
 						
 							@Override
@@ -107,6 +103,7 @@ public class MainEventListener extends EventListener
 							}
 						});
 						GUI_Manager.instance.getRoot().add(combobox);
+						combobox.adjustSize();
 						combobox.setPosition(input.getMouseX(), input.getMouseY());
 					}
 					
