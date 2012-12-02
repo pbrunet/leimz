@@ -86,8 +86,6 @@ public class Loading extends BasicGameState
 			loadJoueurFinished=true;
 		}
 
-		//purcent = (load_pnj != null)?load_pnj.getPurcent():0;
-
 		purcent = load_map.getPurcent();
 
 		purcent += load_joueur.getPurcent();
