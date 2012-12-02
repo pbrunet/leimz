@@ -1,7 +1,5 @@
 package com.server.core;
 
-import com.map.server.managers.MapManager;
-
 import com.server.db.DBConnection;
 import com.server.misc.Logging;
 import java.io.*;
@@ -31,13 +29,6 @@ public class Server
 	private DBConnection dbConnexion;
 	private Logger l = Logging.getLogger(Server.class);
 
-	@SuppressWarnings("unused")
-	private Calculator calculator;
-	@SuppressWarnings("unused")
-	private MapManager mapManager;
-
-	/* private World world;
-    private EntitiesManager entities_manager;*/
 
 	public void start()
 	{
@@ -85,7 +76,7 @@ public class Server
 		}
 		//world = new World(entire_map);
 
-		calculator = new Calculator();
+		new Calculator();
 	}
 
 
