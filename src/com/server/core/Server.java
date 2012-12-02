@@ -1,12 +1,12 @@
 package com.server.core;
 
 import com.map.server.managers.MapManager;
+
 import com.server.db.DBConnection;
 import com.server.misc.Logging;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.Collections;

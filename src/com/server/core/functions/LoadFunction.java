@@ -1,16 +1,12 @@
 package com.server.core.functions;
 
 import java.sql.ResultSet;
+
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
-import java.util.HashMap;
 import com.server.entities.PNJ;
-import com.gameplay.Caracteristique;
-import com.gameplay.Inventaire;
 import com.gameplay.PNJ_discours;
-import com.gameplay.Sort;
-import com.gameplay.items.SimpleItem;
 import com.map.Tile;
 import com.map.server.managers.MapManager;
 import com.server.core.Client;

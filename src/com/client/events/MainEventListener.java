@@ -59,7 +59,6 @@ public class MainEventListener extends EventListener
 		if(input.isMousePressed(0))
 		{
 			boolean entity_pressed = false;
-			//System.out.println(input.getMouseX()+":"+input.getMouseY()+ "      "+map_manager.getEntire_map().getGrille().get(21).get(20).getPos_screen().x+":"+map_manager.getEntire_map().getGrille().get(21).get(20).getPos_screen().y);
 			for(int i = 0; i < EntitiesManager.instance.getEntities().size(); i++)
 			{
 				Rectangle c = new Rectangle(
@@ -114,7 +113,6 @@ public class MainEventListener extends EventListener
 							String nom_receveur = ((Joueur)(EntitiesManager.instance.getEntities().get(i))).getPerso().getNom();
 							String nom_sort = MainJoueur.instance.getPerso().getCurrent_sort().getNom();
 							NetworkManager.instance.sendToServer("a;"+nom_receveur+";"+nom_sort);
-							System.out.println("attaque envoyée !");
 						}
 						else
 						{

@@ -1,13 +1,10 @@
 package com.client.load;
 
 import java.util.ArrayList;
-
 import java.util.HashMap;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.loading.LoadingList;
-
 import com.client.entities.Joueur;
 import com.client.entities.Orientation;
 import com.client.gamestates.Base;
@@ -19,7 +16,6 @@ import com.gameplay.Race;
 import com.gameplay.Sort;
 import com.gameplay.entities.Personnage;
 import com.gameplay.items.Equipement;
-import com.map.Tile;
 import com.map.client.managers.MapManager;
 
 /**
@@ -126,7 +122,6 @@ public class LoadJoueur implements Runnable
 						.get(Integer.parseInt(perso[4])/Base.Tile_y),
 						Joueur.parseStringOrientation(perso[5]));
 				list_joueur.add(j);
-				System.out.println("ok" + i + "/" + list_perso[i]);
 			}
 			try {
 				//TODO Pourquoi un sleep?

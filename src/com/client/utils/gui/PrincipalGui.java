@@ -39,8 +39,6 @@ public class PrincipalGui implements NetworkListener
         inventaireUI.setTheme("/resizableframe");
         GUI_Manager.instance.getRoot().add(inventaireUI);
         inventaireUI.adjustSize();
-        System.out.println("Size : w;"+inventaireUI.getPreferredInnerWidth()+"       h;"+inventaireUI.getPreferredInnerHeight());
-        System.out.println("Border : l;"+inventaireUI.getBorderLeft()+"     r;"+inventaireUI.getBorderRight()+"       t;"+inventaireUI.getBorderTop()+"      b;"+inventaireUI.getBorderBottom());
         inventaireUI.setPosition((Base.sizeOfScreen_x-(inventaireUI.getWidth()))/2, (Base.sizeOfScreen_y-(inventaireUI.getHeight()))/2);
         
         

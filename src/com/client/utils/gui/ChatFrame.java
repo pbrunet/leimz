@@ -14,6 +14,7 @@ import de.matthiasmann.twl.Event;
 import de.matthiasmann.twl.ResizableFrame;
 import de.matthiasmann.twl.ScrollPane;
 import de.matthiasmann.twl.TextArea;
+import de.matthiasmann.twl.Widget;
 import de.matthiasmann.twl.textarea.HTMLTextAreaModel;
 
 
@@ -133,7 +134,7 @@ public class ChatFrame extends ResizableFrame implements NetworkListener
 
         if(isAtEnd) 
         {
-            scrollPane.validateLayout();
+            //scrollPane.validateLayout();
             scrollPane.setScrollPositionY(scrollPane.getMaxScrollPosY());
         }
     }
@@ -185,23 +186,18 @@ public class ChatFrame extends ResizableFrame implements NetworkListener
 	private void createBulle(String nom_perso, String text)
 	{
 		Joueur joueur = EntitiesManager.instance.getPlayers_manager().getJoueur(nom_perso);
-
-		ResizableFrame container = new ResizableFrame();
+		
+		Widget container = new Widget();
 		container.setTheme("/bullewidget");
 		
 		HTMLTextAreaModel model = new HTMLTextAreaModel();
 		TextArea bulle = new TextArea(model);
 		bulle.setTheme("/textarea");
-		model.setHtml("<div style=\"word-wrap: break-word; font-family: default; \">"+text+"</div>");
-		/*ScrollPane scroll = new ScrollPane(bulle);
-		scroll.setTheme("/scrollpane");*/
-
+		model.setHtml("<div style=\"font-family: default; \">"+"caca"+"</div>");
 		container.add(bulle);
+		GUI_Manager.instance.getRoot().add(bulle);
 		container.adjustSize();
-		GUI_Manager.instance.getRoot().add(container);
-		
-		
-	
+		container.setPosition(50,50);
 		container.setPosition((int)(joueur.getPos_real_on_screen().x-
 				bulle.getWidth())+28, (int)(joueur.getPos_real_on_screen().y-
 						bulle.getHeight()));

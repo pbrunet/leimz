@@ -2,7 +2,6 @@ package com.client.load;
 
 import java.awt.Font;
 import com.client.entities.MainJoueur;
-import com.client.entities.Orientation;
 import com.client.gamestates.Base;
 import com.game_entities.managers.EntitiesManager;
 import com.game_entities.managers.PNJsManager;
@@ -23,8 +22,6 @@ public class Loading extends BasicGameState
 {
 	private LoadMap load_map;
 	private LoadJoueur load_joueur;
-	/*private LoadPnj load_pnj;
-	private LoadMonster load_monster;*/
 	private Image fond, barre;
 	private UnicodeFont label;
 	private float purcent = 0;
