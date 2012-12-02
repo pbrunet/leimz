@@ -109,35 +109,10 @@ public class LoadFunction implements Functionable
 			rs.close();
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
 			throw new RuntimeException("Other players");
 		}
 	}
 	
-	/*private void askPos(Client client) 
-	{
-		ResultSet rs = null;
-		try {
-			String sql = "SELECT Personnage.pos_x, Personnage.pos_y " +
-					"FROM Personnage " +
-					"WHERE personnage.joueur=" + client.getCompte().getClient_id();
-			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			rs = stmt.executeQuery(sql);
-			int pos_x = 0, pos_y = 0;
-			while(rs.next())
-			{
-				pos_x= rs.getInt("Personnage.pos_x");
-				pos_y = rs.getInt("Personnage.pos_y");
-			}
-			client.getCompte().getCurrent_joueur().setTile(MapManager.instance.getEntire_map().getGrille().get(pos_x).get(pos_y));
-			client.sendToClient(pos_x+";"+pos_y);
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException("Race caracteristic");
-		}
-	}*/
-
 	public void askRaceCaracteristic(Client client,String tag)
 	{
 		ResultSet rs = null;

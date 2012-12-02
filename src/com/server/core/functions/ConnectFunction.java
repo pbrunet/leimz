@@ -72,7 +72,7 @@ public class ConnectFunction implements Functionable
 			rsp.close();
 			stmt.close();
 		} catch (SQLException e) {
-			e.printStackTrace();
+			throw new RuntimeException("Connection");
 		}
 	}
 }

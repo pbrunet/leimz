@@ -102,18 +102,6 @@ public class MapManager implements NetworkListener
 		}		
 	}
 	
-	
-	
-	/*public void refreshCollisionManager()
-	{
-		ArrayList<Entity> entities = new ArrayList<Entity>();
-		for(int i = 0; i < players_manager.getJoueurs().size();i++)5
-			entities.add(players_manager.getJoueurs().get(i).getEntity());
-		for(int i = 0; i < pnjs_manager.getPnjs().size();i++)
-			entities.add(pnjs_manager.getPnjs().get(i));
-		this.collision_manager.setEntities(entities);
-	}*/
-	
 	public void init()
 	{		
 			//On parcourt alors les lignes et les colonnes
@@ -254,6 +242,4 @@ public class MapManager implements NetworkListener
 	public void setAbsolute(Vector2f absolute) {
 		this.absolute = absolute;
 	}
-
-
 }

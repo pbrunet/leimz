@@ -84,20 +84,16 @@ public class MainEventListener extends EventListener
 							{
 								if(cbreason == CallbackReason.MOUSE_CLICK) 
 								{
-								 int id = combobox.getSelected();
+									int id = combobox.getSelected();
 								 
-								 if(l.getEntry(id).equals("Parler"))
-								 {
-									PnjDialogFrame dialog = new PnjDialogFrame(pnj);
+									if(l.getEntry(id).equals("Parler"))
+									{
+										PnjDialogFrame dialog = new PnjDialogFrame(pnj);
 										
-									GUI_Manager.instance.getRoot().add(dialog);
-									dialog.setSize(400, 400);
-									dialog.setPosition((Base.sizeOfScreen_x/2)-(dialog.getWidth()/2), (Base.sizeOfScreen_y/2)-(dialog.getHeight()/2));
-								 }
-								 else if(l.getEntry(id).equals("Défier"))
-								 {
-									 
-								 }
+										GUI_Manager.instance.getRoot().add(dialog);
+										dialog.setSize(400, 400);
+										dialog.setPosition((Base.sizeOfScreen_x/2)-(dialog.getWidth()/2), (Base.sizeOfScreen_y/2)-(dialog.getHeight()/2));
+									}
 								}
 							}
 						});

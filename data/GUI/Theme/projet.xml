@@ -733,7 +733,9 @@
     <theme name="tooltipwindow" ref="-defaults">
         <param name="fadeInTime"><int>1000</int></param>
     </theme>
-    <images file="/C:/Users/Greg/workspace/Leimz-SVN/data/Images/bulle.png">
+   
+
+ <images file="../Images/bulle.png">
         <grid name="bullewidget.background" weightsX="0,1,0" weightsY="0,1,0">
             <area xywh="16,35,21,21"/>
             <area xywh="37,35,21,21"/>

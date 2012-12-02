@@ -186,10 +186,4 @@ public class Personnage
 	public void setCurrent_combat(Combat current_combat) {
 		this.current_combat = current_combat;
 	}
-	
-	
-	
-	
-	
-	
 }

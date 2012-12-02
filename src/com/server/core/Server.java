@@ -251,4 +251,27 @@ public class Server
 			}
 		}
 	}
+	
+
+	public Client getClient(String nompersonnage) {
+		Client cli = null ;
+		for(int i =0; i<this.cl.size() && cli == null;i++)
+		{
+			for(int j = 0;j<this.cl.get(i).getClients().size() && cli == null ;j++)
+			{
+				if(this.cl.get(i).getClients().get(j).getCompte().getCurrent_joueur().getPerso().getNom().equals(nompersonnage))
+				{
+					cli = this.cl.get(i).getClients().get(j);
+				}
+
+			}
+		}
+		return cli;	
+	}
+
+	public List<Client> getClientnear(double posx, double posy) {
+		//ArrayList<Client> listCli = new ArrayList<Client>();
+
+		return null;
+	}
 }

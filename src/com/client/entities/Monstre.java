@@ -33,11 +33,6 @@ public class Monstre
 	private boolean onCollision = false;
 	
 	private float speed = 1.0f;
-	public enum Orientation
-	{
-		DROITE, GAUCHE, BAS, HAUT,
-		HAUT_DROITE, HAUT_GAUCHE, BAS_GAUCHE, BAS_DROITE
-	};
 	private Orientation orientation;
 	private Image current_img;
 	private Image[] states_img;
@@ -65,23 +60,6 @@ public class Monstre
 	    }
 	    catch(Exception e){}
 	    racine = doc.getRootElement();
-	    
-	    //A remettre
-	   /* for(int i = 0; i < racine.getChild("caracs").getChildren().size(); i++)
-	    {
-	    	caracs.add(new Caracteristique(
-	    			((Element)racine.getChild("caracs").getChildren().get(i)).getName()
-	    			, Integer.parseInt(((Element)racine.getChild("caracs").getChildren().get(i)).getText())));
-	    }*/
-	    
-	   /* for(int i = 0; i < racine.getChild("sorts").getChildren().size(); i++)
-	    {
-	    	 sorts.add(new Sort(
-	    			 ((Element)racine.getChild("sorts").getChildren().get(i)).getChild("nom").getText()
-	    			 , Integer.parseInt(((Element)racine.getChild("sorts").getChildren().get(i)).getChild("values").getText().substring(0, ((Element)racine.getChild("sorts").getChildren().get(i)).getChild("values").getText().indexOf('-')))
-	    			 ,  Integer.parseInt(((Element)racine.getChild("sorts").getChildren().get(i)).getChild("values").getText().substring(((Element)racine.getChild("sorts").getChildren().get(i)).getChild("values").getText().indexOf('-')
-	    			 ,((Element)racine.getChild("sorts").getChildren().get(i)).getChild("values").getText().length())), null));
-	    }*/
 	    
 	    states_img = new Image[racine.getChild("imgs_fixe").getChildren().size()];
 		

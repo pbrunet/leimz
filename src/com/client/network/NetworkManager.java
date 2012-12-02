@@ -131,7 +131,7 @@ public class NetworkManager
 								}
 							}
 
-							if(contains == false)
+							if(!contains)
 							{
 								sendToServer("i;"+temp[1]);
 							}
