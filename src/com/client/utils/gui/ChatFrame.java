@@ -1,22 +1,24 @@
 package com.client.utils.gui;
 
 import org.lwjgl.Sys;
-
 import org.newdawn.slick.geom.Vector2f;
-
+import com.client.display.gui.GUI_Manager;
+import com.client.entities.Joueur;
+import com.client.entities.MainJoueur;
+import com.client.network.NetworkListener;
 import com.client.network.NetworkManager;
-import com.game_entities.Joueur;
-
+import com.game_entities.managers.EntitiesManager;
 import de.matthiasmann.twl.DialogLayout;
 import de.matthiasmann.twl.EditField;
 import de.matthiasmann.twl.Event;
 import de.matthiasmann.twl.ResizableFrame;
 import de.matthiasmann.twl.ScrollPane;
 import de.matthiasmann.twl.TextArea;
+import de.matthiasmann.twl.Widget;
 import de.matthiasmann.twl.textarea.HTMLTextAreaModel;
 
 
-public class ChatFrame extends ResizableFrame
+public class ChatFrame extends ResizableFrame implements NetworkListener
 {
 	private final StringBuilder sb;
 	private final HTMLTextAreaModel textAreaModel;
@@ -24,124 +26,122 @@ public class ChatFrame extends ResizableFrame
 
 
 	private final EditField editField;
-	private final ScrollPane scrollPane;
-	private String curColor = "black";
+    private final ScrollPane scrollPane;
+    private String curColor = "black";
+    
+    
 
-	private Joueur main_player;
+    public ChatFrame(Vector2f size) {
 
+        
+        this.sb = new StringBuilder();
+        this.textAreaModel = new HTMLTextAreaModel();
+        this.textArea = new TextArea(textAreaModel);
+        this.textArea.setTheme("/textarea");
+        this.editField = new EditField();
+        this.editField.setTheme("/editfield");
+        
 
-	public ChatFrame(Vector2f size, Joueur main_player) {
+        editField.addCallback(new EditField.Callback() {
+            public void callback(int key) {
+                if(key == Event.KEY_RETURN) {
+                    // cycle through 3 different colors/font styles
+                	String path = null;
+                	if(curColor.equals("black"))
+                	{
+                		path = "default";
+                	}
+                	else
+                	{
+                		path = "font_"+curColor;                    	
+                	}
+                	
+                	appendWhenCallBack(path);
+                    
+                    editField.setText("");
+                    curColor = "black";
+                }
+            }
+        });
 
-		this.main_player = main_player;
+        textArea.addCallback(new TextArea.Callback() {
+            public void handleLinkClicked(String href) {
+                Sys.openURL(href);
+            }
+        });
 
-		this.sb = new StringBuilder();
-		this.textAreaModel = new HTMLTextAreaModel();
-		this.textArea = new TextArea(textAreaModel);
-		this.textArea.setTheme("/textarea");
-		this.editField = new EditField();
-		this.editField.setTheme("/editfield");
+        scrollPane = new ScrollPane(textArea);
+        scrollPane.setTheme("/scrollpane");
+        scrollPane.setFixed(ScrollPane.Fixed.HORIZONTAL);
+        scrollPane.setPosition(70, 20);
 
+        DialogLayout l = new DialogLayout();
+        l.setTheme("/dialoglayout");
+        l.setHorizontalGroup(l.createParallelGroup(scrollPane, editField));
+        l.setVerticalGroup(l.createSequentialGroup(scrollPane, editField));
 
-		editField.addCallback(new EditField.Callback() {
-			public void callback(int key) {
-				if(key == Event.KEY_RETURN) {
-					// cycle through 3 different colors/font styles
-					String path = null;
-					if(curColor.equals("black"))
-					{
-						path = "default";
-					}
-					else
-					{
-						path = "font_"+curColor;                    	
-					}
+        this.add(l);
 
-					appendWhenCallBack(path);
+    }
 
-					editField.setText("");
-					curColor = "black";
-				}
-			}
-		});
+    public void appendRow(String font, String text) {
+        sb.append("<div style=\"word-wrap: break-word; font-family: ").append(font).append("; \">");
+        // not efficient but simple
+        for(int i=0,l=text.length() ; i<l ; i++) {
+            char ch = text.charAt(i);
+            switch(ch) {
+                case '<': sb.append("&lt;"); break;
+                case '>': sb.append("&gt;"); break;
+                case '&': sb.append("&amp;"); break;
+                case '"': sb.append("&quot;"); break;
+                case ':':
+                    if(text.startsWith(":)", i)) {
+                        sb.append("<img src=\"smiley\" alt=\":)\"/>");
+                        i += 1; // skip one less because of i++ in the for loop
+                        break;
+                    }
+                    sb.append(ch);
+                    break;
+                case 'h':
+                    if(text.startsWith("http://", i)) {
+                        int end = i + 7;
+                        while(end < l && isURLChar(text.charAt(end))) {
+                            end++;
+                        }
+                        String href = text.substring(i, end);
+                        sb.append("<a style=\"font: link\" href=\"").append(href)
+                                .append("\" >").append(href)
+                                .append("</a>");
+                        i = end - 1; // skip one less because of i++ in the for loop
+                        break;
+                    }
+                case '/':
+                    if(text.startsWith("/n", i)) {
+                        sb.append("<br/>");
+                        i+=1;
+                        break;
+                    }
+                    // fall through:
+                default:
+                    sb.append(ch);
+            }
+        }
+        sb.append("</div>");
 
-		textArea.addCallback(new TextArea.Callback() {
-			public void handleLinkClicked(String href) {
-				Sys.openURL(href);
-			}
-		});
+        boolean isAtEnd = scrollPane.getMaxScrollPosY() == scrollPane.getScrollPositionY();
 
-		scrollPane = new ScrollPane(textArea);
-		scrollPane.setTheme("/scrollpane");
-		scrollPane.setFixed(ScrollPane.Fixed.HORIZONTAL);
-		scrollPane.setPosition(70, 20);
+        textAreaModel.setHtml(sb.toString());
 
-		DialogLayout l = new DialogLayout();
-		l.setTheme("/dialoglayout");
-		l.setHorizontalGroup(l.createParallelGroup(scrollPane, editField));
-		l.setVerticalGroup(l.createSequentialGroup(scrollPane, editField));
-
-		this.add(l);
-
-	}
-
-	public void appendRow(String font, String text) {
-		sb.append("<div style=\"word-wrap: break-word; font-family: ").append(font).append("; \">");
-		// not efficient but simple
-		for(int i=0,l=text.length() ; i<l ; i++) {
-			char ch = text.charAt(i);
-			switch(ch) {
-			case '<': sb.append("&lt;"); break;
-			case '>': sb.append("&gt;"); break;
-			case '&': sb.append("&amp;"); break;
-			case '"': sb.append("&quot;"); break;
-			case ':':
-				if(text.startsWith(":)", i)) {
-					sb.append("<img src=\"smiley\" alt=\":)\"/>");
-					i += 1; // skip one less because of i++ in the for loop
-					break;
-				}
-				sb.append(ch);
-				break;
-			case 'h':
-				if(text.startsWith("http://", i)) {
-					int end = i + 7;
-					while(end < l && isURLChar(text.charAt(end))) {
-						end++;
-					}
-					String href = text.substring(i, end);
-					sb.append("<a style=\"font: link\" href=\"").append(href)
-					.append("\" >").append(href)
-					.append("</a>");
-					i = end - 1; // skip one less because of i++ in the for loop
-					break;
-				}
-			case '/':
-				if(text.startsWith("/n", i)) {
-					sb.append("<br/>");
-					i+=1;
-					break;
-				}
-				// fall through:
-			default:
-				sb.append(ch);
-			}
-		}
-		sb.append("</div>");
-
-		boolean isAtEnd = scrollPane.getMaxScrollPosY() == scrollPane.getScrollPositionY();
-
-		textAreaModel.setHtml(sb.toString());
-
-		if(isAtEnd) {
-			scrollPane.validateLayout();
-			scrollPane.setScrollPositionY(scrollPane.getMaxScrollPosY());
-		}
-	}
-
-	public void appendWhenCallBack(String path)
-	{
-		System.out.println("Texte de l'�ditfield : " + editField.getText());
-		/*if(editField.getText().contains("\\i"))
+        if(isAtEnd) 
+        {
+            //scrollPane.validateLayout();
+            scrollPane.setScrollPositionY(scrollPane.getMaxScrollPosY());
+        }
+    }
+    
+    public void appendWhenCallBack(String path)
+    {
+    	/*if(editField.getText().contains("\\i"))
     	{
     		appendRow("font_red", "/nInventaire");
     		appendRow(path, "---------------------------");
@@ -162,50 +162,67 @@ public class ChatFrame extends ResizableFrame
 			}
 			appendRow(path, "-----------------------------");
     	}*/
-		if(editField.getText().contains("\\pos"))
-		{
-			appendRow("font_red","/n/nPosition : " + "[" + main_player.getTile().getPos().x + "][" + main_player.getTile().getPos().y + "]");
-			appendRow(path, "/n/n");
-		}
-		else
-		{
-			System.out.println("envoi !!");
-			NetworkManager.instance.sendToServer("sa;"+"fazega;"+editField.getText());
-		}
-	}
-
-
-	public void refresh(Joueur main_player)
-	{
-		this.main_player = main_player;
-
-		String receive = NetworkManager.instance.receiveFromServer("sa");
-		if(receive != null)
-		{
-			String[] temp = receive.split(";");
-			appendRow("normal", temp[1] + " : " + temp[2]);
-		}
-	}
-
-	private boolean isURLChar(char ch) {
-		return (ch == '.') || (ch == '/') || (ch == '%') ||
-				(ch >= '0' && ch <= '9') ||
-				(ch >= 'a' && ch <= 'z') ||
-				(ch >= 'A' && ch <= 'Z');
-	}
+       if(editField.getText().contains("\\pos"))
+    	{
+    		appendRow("font_red","/n/nPosition : " + "[" + MainJoueur.instance.getTile().getPos().x + "][" + MainJoueur.instance.getTile().getPos().y + "]");
+    		appendRow(path, "/n/n");
+    	}
+    	else
+    	{
+    		NetworkManager.instance.sendToServer("sa;"+MainJoueur.instance.getPerso().getNom()+";"+editField.getText());
+    	}
+    }
+    
 
 	@Override
-	protected void layout() {
-		super.layout();
+	public void receiveMessage(String str) 
+	{
+		String[] temp = str.split(";");
+    	appendRow("default", temp[0] + " : " + temp[1]);
+    	createBulle(temp[0], temp[1]);
+    	
+	}
+	
+	private void createBulle(String nom_perso, String text)
+	{
+		Joueur joueur = EntitiesManager.instance.getPlayers_manager().getJoueur(nom_perso);
+		
+		Widget container = new Widget();
+		container.setTheme("/bullewidget");
+		
+		HTMLTextAreaModel model = new HTMLTextAreaModel();
+		TextArea bulle = new TextArea(model);
+		bulle.setTheme("/textarea");
+		model.setHtml("<div style=\"font-family: default; \">"+"caca"+"</div>");
+		container.add(bulle);
+		GUI_Manager.instance.getRoot().add(bulle);
+		container.adjustSize();
+		container.setPosition(50,50);
+		container.setPosition((int)(joueur.getPos_real_on_screen().x-
+				bulle.getWidth())+28, (int)(joueur.getPos_real_on_screen().y-
+						bulle.getHeight()));
 	}
 
+    private boolean isURLChar(char ch) {
+        return (ch == '.') || (ch == '/') || (ch == '%') ||
+                (ch >= '0' && ch <= '9') ||
+                (ch >= 'a' && ch <= 'z') ||
+                (ch >= 'A' && ch <= 'Z');
+    }
+    
+    @Override
+    protected void layout() {
+        super.layout();
+    }
 
-	public String getCurColor() {
+    
+    public String getCurColor() {
 		return curColor;
 	}
 
 	public void setCurColor(String curColor) {
 		this.curColor = curColor;
 	}
+
 
 }

@@ -1,6 +1,6 @@
 package com.client.utils.gui;
 
-import com.game_entities.Joueur;
+import com.client.entities.Joueur;
 
 import de.matthiasmann.twl.DialogLayout;
 import de.matthiasmann.twl.GUI;

@@ -4,24 +4,19 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
-
 import java.net.Socket;
 import java.net.UnknownHostException;
-
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
-
 import org.newdawn.slick.geom.Vector2f;
-
-import com.client.gamestates.Base;
-import com.game_entities.Joueur;
-import com.game_entities.Orientation;
+import com.client.entities.Joueur;
+import com.client.entities.MainJoueur;
+import com.client.entities.Orientation;
+import com.client.utils.gui.PrincipalGui;
 import com.game_entities.managers.EntitiesManager;
-import com.gameplay.Classe;
-import com.gameplay.Race;
+import com.gameplay.Caracteristique;
 import com.gameplay.entities.Personnage;
-import com.map.client.managers.MapManager;
+import com.gameplay.managers.CombatManager;
 
 /**
  * @author Kratisto
@@ -40,19 +35,14 @@ public class NetworkManager
 	private PrintWriter pw; 
 	private Socket s;
 
-	private ArrayList<NetworkListener> listeners;
-
 	private HashMap<String,String> message_recu_serveur;
 	private Timer t;
 
-	private EntitiesManager visible_entities_manager;
-	private MapManager mapManager;
 
-	private Thread checkListenersSending, handleServerMessages;
+	private Thread handleServerMessages;
 
 	private static long timeout = 10000;
 
-	public boolean modifManager = false;
 	public static NetworkManager instance;
 
 	public NetworkManager(String ip, int port) throws UnknownHostException, IOException
@@ -113,32 +103,8 @@ public class NetworkManager
 		}
 	}
 
-	public void init(MapManager mapManager2, EntitiesManager ent, ArrayList<NetworkListener> listeners2)
+	public void init()
 	{
-		this.listeners = listeners2;
-		this.mapManager = mapManager2;
-		this.visible_entities_manager = ent;
-
-		checkListenersSending = new Thread(new Runnable() {
-
-			@Override
-			public void run() 
-			{
-				while(true)
-				{
-					for(int i = 0; i < listeners.size(); i++)
-					{
-						if(listeners.get(i).wantSending())
-						{
-							sendToServer(listeners.get(i).messageToSend());
-							listeners.get(i).setSentOk();
-						}
-					}
-				}
-			}
-		});
-		checkListenersSending.start();
-
 		handleServerMessages = new Thread(new Runnable() {
 
 			@Override
@@ -147,54 +113,98 @@ public class NetworkManager
 				while(true)
 				{
 					receiveFromServerPossible();
-					modifManager = false;
-					String message = receiveFromServer("s"); 
-					if(message != null && false)
+					
+					String state_message = receiveFromServer("s"); 
+					if(state_message != null && false)
 					{
-						String[] temp = message.split(";");
-						if(!visible_entities_manager.getPlayers_manager().getMain_player().getPerso().getNom().equals(temp[0]))
+						String[] temp = state_message.split(";");
+						if(!EntitiesManager.instance.getPlayers_manager().getMain_player().getPerso().getNom().equals(temp[1]))
 						{
-							modifManager = true;
 							boolean contains = false;
 							int index = 0;
-							for(int i = 0; i < visible_entities_manager.getPlayers_manager().getJoueurs().size(); i++)
+							for(int i = 0; i < EntitiesManager.instance.getPlayers_manager().getJoueurs().size(); i++)
 							{
-								if(visible_entities_manager.getPlayers_manager().getJoueurs().get(i).getPerso().getNom().equals(temp[0]))
+								if(EntitiesManager.instance.getPlayers_manager().getJoueurs().get(i).getPerso().getNom().equals(temp[1]))
 								{
 									contains = true;
 									index = i;
 								}
 							}
 
-							if(contains == false)
+							if(!contains)
 							{
-								sendToServer("i;s");
+								sendToServer("i;"+temp[1]);
+							}
+								else
+								{
+									if(temp[2].equals("pos"))
+									{
+										EntitiesManager.instance.getPlayers_manager().getJoueurs().get(index).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
+										EntitiesManager.instance.getPlayers_manager().getJoueurs().get(index).setOrientation(Joueur.parseStringOrientation(temp[5]));				
+									}
+									
+									else if(temp[2].equals("vie"))
+									{
+										int vie = Integer.parseInt(temp[3]);
+										System.out.println("Vie : "+vie);
+										EntitiesManager.instance.getPlayers_manager().getJoueur(temp[1]).getPerso().getCaracs().put(Caracteristique.VIE, vie);
+									}
+								}
 							}
 							else
 							{
-								visible_entities_manager.getPlayers_manager().getJoueurs().get(index).setPos_real(new Vector2f(Float.parseFloat(temp[2]), Float.parseFloat(temp[3])));
-								visible_entities_manager.getPlayers_manager().getJoueurs().get(index).setOrientation(Joueur.parseStringOrientation(temp[4]));				
+								if(temp[2].equals("vie"))
+								{
+									int vie = Integer.parseInt(temp[3]);
+									System.out.println("Vie : "+vie);
+									MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, vie);
+								}
 							}
-						}
 					}
-
-					message = receiveFromServer("aj"); 
+				
+					String message = receiveFromServer("i"); 
 					if(message != null)
 					{
 						String[] temp = message.split(";");
-						String name = temp[0];
-						String race = temp[1];
-						String classe = temp[2];
-						int posx = Integer.parseInt(temp[3]);
-						int posy = Integer.parseInt(temp[4]);
-						Orientation ori = Orientation.valueOf(temp[5]);
-
-						System.out.println("infos : "+message);
-						System.out.println("infos recues !");
-						if(!visible_entities_manager.getPlayers_manager().getMain_player().getPerso().getNom().equals(name))
+							System.out.println("infos : "+message);
+							EntitiesManager.instance.getPlayers_manager().addNewPlayer(new Joueur(new Personnage(temp[0], temp[1], temp[2]), null, Orientation.BAS));
+							EntitiesManager.instance.getPlayers_manager().getJoueurs().get(EntitiesManager.instance.getPlayers_manager().getJoueurs().size()-1).initImgs();
+						
+					}
+						
+					String combat_message = receiveFromServer("co"); 
+					if(combat_message != null)
+					{
+						CombatManager.instance.receiveMessage(message);
+					}
+					
+					String attack_message = receiveFromServer("a"); 
+					if(attack_message != null)
+					{
+						String[] temp = attack_message.split(";");
+						MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)-Integer.parseInt(temp[1]));
+						NetworkManager.instance.sendToServer("s;vie;"+MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)+";"+temp[0]);
+					}
+					
+					String say_message = receiveFromServer("sa");
+					if(say_message != null)
+					{
+						PrincipalGui.instance.getChat_frame().receiveMessage(say_message);
+					}
+					
+					String load_message = receiveFromServer("lo");
+					if(load_message != null)
+					{
+						String[] temp = load_message.split(";");
+						//Loading dynamique
+						if(temp[0].equals("map"))
 						{
-							visible_entities_manager.getPlayers_manager().addNewPlayer(new Joueur(new Personnage(name, new Race(race), new Classe(classe), null, null), MapManager.instance.getEntire_map().getGrille().get(posx/Base.Tile_x).get(posy/Base.Tile_y), ori));
-							visible_entities_manager.getPlayers_manager().getJoueurs().get(visible_entities_manager.getPlayers_manager().getJoueurs().size()-1).initImgs();
+							
+						}
+						else if(temp[0].equals("ent"))
+						{
+							System.out.println("message transmitted to entities manager");
+							EntitiesManager.instance.receiveMessage(load_message);
 						}
 					}
 				}
@@ -202,21 +212,5 @@ public class NetworkManager
 		});
 		handleServerMessages.start();
 
-	}
-
-	public EntitiesManager getVisible_entities_manager() {
-		return visible_entities_manager;
-	}
-
-	public void setVisible_entities_manager(EntitiesManager visibleEntitiesManager) {
-		visible_entities_manager = visibleEntitiesManager;
-	}
-
-	public MapManager getMapManager() {
-		return mapManager;
-	}
-
-	public void setMapManager(MapManager mapManager) {
-		this.mapManager = mapManager;
 	}
 }

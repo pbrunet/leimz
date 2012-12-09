@@ -1,19 +1,14 @@
 package com.client.load;
 
 import java.util.ArrayList;
-
 import java.util.HashMap;
-
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.loading.LoadingList;
-
+import com.client.entities.Joueur;
+import com.client.entities.Orientation;
 import com.client.gamestates.Base;
 import com.client.network.NetworkManager;
-
-import com.game_entities.Joueur;
-import com.game_entities.Orientation;
-
 import com.gameplay.Caracteristique;
 import com.gameplay.Classe;
 import com.gameplay.Inventaire;
@@ -21,7 +16,6 @@ import com.gameplay.Race;
 import com.gameplay.Sort;
 import com.gameplay.entities.Personnage;
 import com.gameplay.items.Equipement;
-import com.map.Tile;
 import com.map.client.managers.MapManager;
 
 /**
@@ -31,26 +25,26 @@ import com.map.client.managers.MapManager;
  */
 public class LoadJoueur implements Runnable
 {
-	private Thread looper;
+	private Thread t;
 	private int purcent;
-	private boolean running;
 	private Joueur joueur;
 	private ArrayList<Joueur> list_joueur;
 
 	public LoadJoueur()
 	{
+		this.list_joueur = new ArrayList<Joueur>();
 		this.purcent = 0;
-		looper = new Thread(this);
-		looper.start();
-		running = true;
-		list_joueur = new ArrayList<Joueur>();
+		t = new Thread(this);
+	}
+	
+	public void start()
+	{
+		t.start();
 	}
 
 	@Override
 	public void run() 
 	{
-		if(running)
-		{
 			NetworkManager.instance.waitForNewMessage("ci");
 
 			//On recupere la chaine avec les infos sur le perso
@@ -63,19 +57,27 @@ public class LoadJoueur implements Runnable
 			String nom_classe = args_perso[2];
 			int posx = Integer.parseInt(args_perso[3]);
 			int posy = Integer.parseInt(args_perso[4]);
-			Orientation ori = Orientation.valueOf(args_perso[5]);
+			Orientation ori = Joueur.parseStringOrientation(args_perso[5]);
+			System.out.println("Pos : "+posx+","+posy);
 
 			//-------------------GESTION DE LA RACE-----------------------
 
-			Race race = new Race(nom_race, getSorts("lo;rs"), getCaracteristic("lo;rc"));
+			Race race = new Race(nom_race, getSorts("lo;j;rs"), getCaracteristic("lo;j;rc"));
 
 			//-------------------GESTION DE LA CLASSE-----------------------
 
-			Classe classe = new Classe(nom_classe, getSorts("lo;cs"), getCaracteristic("lo;cc"));
+			Classe classe = new Classe(nom_classe, getSorts("lo;j;cs"), getCaracteristic("lo;j;cc"));
 
 			//---------------GESTION DU PERSONNAGE------------------
 
-			joueur = new Joueur(new Personnage(nom_perso, race, classe,getCaracteristic("lo;jcv"),getCaracteristic("lo;jc")), new Tile(posx/Base.Tile_x, posy/Base.Tile_y), ori);
+			joueur = new Joueur(new Personnage(
+					nom_perso, 
+					race, 
+					classe,
+					getCaracteristic("lo;j;jcv"),
+					getCaracteristic("lo;j;jc")), 
+					MapManager.instance.getEntire_map().getGrille().get(posx).get(posy), 
+					ori);
 
 			//----------------GESTION DE L'INVENTAIRE---------------------
 
@@ -83,7 +85,7 @@ public class LoadJoueur implements Runnable
 
 			Inventaire inventaire = new Inventaire();
 
-			NetworkManager.instance.sendToServer("lo;in"); //load joueur, joueur caracteristiques
+			NetworkManager.instance.sendToServer("lo;j;in"); //load joueur, joueur caracteristiques
 			NetworkManager.instance.waitForNewMessage("in");
 			String[] str_i = NetworkManager.instance.receiveFromServer("in").split(";");
 
@@ -118,9 +120,8 @@ public class LoadJoueur implements Runnable
 						MapManager.instance.getEntire_map().getGrille()
 						.get(Integer.parseInt(perso[3])/Base.Tile_x)
 						.get(Integer.parseInt(perso[4])/Base.Tile_y),
-						Orientation.valueOf(perso[5]));
+						Joueur.parseStringOrientation(perso[5]));
 				list_joueur.add(j);
-				System.out.println("ok" + i + "/" + list_perso[i]);
 			}
 			try {
 				//TODO Pourquoi un sleep?
@@ -128,16 +129,6 @@ public class LoadJoueur implements Runnable
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			running = false;
-		}
-	}
-
-	public Joueur getJoueur() {
-		return joueur;
-	}
-
-	public void setJoueur(Joueur joueur) {
-		this.joueur = joueur;
 	}
 
 	public int getPurcent() {
@@ -148,20 +139,12 @@ public class LoadJoueur implements Runnable
 		this.purcent = purcent;
 	}
 
-	public boolean isRunning() {
-		return running;
-	}
-
-	public void setRunning(boolean running) {
-		this.running = running;
-	}
-
 	@SuppressWarnings("unchecked")
 	private HashMap<Caracteristique,Integer>getCaracteristic(String message)
 	{
 		NetworkManager.instance.sendToServer(message);
-		NetworkManager.instance.waitForNewMessage(message.split(";",3)[1]);
-		String[] caract = NetworkManager.instance.receiveFromServer(message.split(";",3)[1]).split(";");
+		NetworkManager.instance.waitForNewMessage(message.split(";",3)[2]);
+		String[] caract = NetworkManager.instance.receiveFromServer(message.split(";",3)[2]).split(";");
 		if(caract.length<2)
 			throw new RuntimeException("Incorrect caracteristic loading message from server");
 
@@ -176,8 +159,8 @@ public class LoadJoueur implements Runnable
 	{
 		ArrayList<Sort> sorts = new ArrayList<Sort>();
 		NetworkManager.instance.sendToServer(message);
-		NetworkManager.instance.waitForNewMessage(message.split(";")[1]);
-		String[] sort = NetworkManager.instance.receiveFromServer(message.split(";")[1]).split(";");
+		NetworkManager.instance.waitForNewMessage(message.split(";")[2]);
+		String[] sort = NetworkManager.instance.receiveFromServer(message.split(";")[2]).split(";");
 		if(sort.length<4)
 			throw new RuntimeException("Incorrect sorts loading message from server");
 
@@ -186,8 +169,27 @@ public class LoadJoueur implements Runnable
 
 		return (ArrayList<Sort>) sorts.clone();
 	}
+	
+	public Joueur getJoueur() {
+		return joueur;
+	}
 
+	public void setJoueur(Joueur joueur) {
+		this.joueur = joueur;
+	}
+	
 	public ArrayList<Joueur> getPlayers() {
 		return list_joueur;
 	}
+
+	public Thread getT() {
+		return t;
+	}
+
+	public void setT(Thread t) {
+		this.t = t;
+	}
+	
+	
+
 }

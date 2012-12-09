@@ -15,6 +15,12 @@ public class Race
 		this.sorts = sorts;
 		this.carac = carac;
 	}
+	
+	public Race(String race)
+	{
+		this.nom = race;
+		//TODO sorts , carac
+	}
 
 	public Race(String race2) {
 		this.nom = race2;

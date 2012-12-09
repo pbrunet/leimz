@@ -1,11 +1,13 @@
 package com.client.utils.gui;
 
 
+import com.client.display.gui.GUI_Manager;
 import com.gameplay.items.Item;
 
 import de.matthiasmann.twl.AnimationState;
 import de.matthiasmann.twl.Event;
 import de.matthiasmann.twl.GUI;
+import de.matthiasmann.twl.ResizableFrame;
 import de.matthiasmann.twl.ThemeInfo;
 import de.matthiasmann.twl.Widget;
 import de.matthiasmann.twl.renderer.AnimationState.StateKey;
@@ -70,7 +72,12 @@ public class ItemSlot extends Widget
         	{
         		if(evt.getMouseClickCount() == 2)
             	{
-        			fenOk = true;
+        			ResizableFrame panInfo = InventaireUI.panInfo(this.getItem());
+					
+					GUI_Manager.instance.getRoot().add(panInfo);
+                    
+                    panInfo.setSize(300, 250);
+                    panInfo.setPosition((PrincipalGui.instance.getInventaireUI().getInventory_panel().getX()+(PrincipalGui.instance.getInventaireUI().getInventory_panel().getWidth()/2))-(panInfo.getWidth()/2), (PrincipalGui.instance.getInventaireUI().getInventory_panel().getY()+(PrincipalGui.instance.getInventaireUI().getInventory_panel().getHeight()/2))-(panInfo.getHeight()/2));
             	}
         	}
         	

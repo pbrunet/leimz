@@ -2,7 +2,7 @@ package com.client.utils.gui;
 
 import java.util.ArrayList;
 
-import com.game_entities.PNJ;
+import com.client.entities.PNJ;
 import com.gameplay.PNJ_discours;
 
 import de.matthiasmann.twl.Alignment;

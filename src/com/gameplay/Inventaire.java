@@ -1,34 +1,33 @@
 package com.gameplay;
 
 import java.util.ArrayList;
-
-import com.gameplay.items.Item;
+import com.gameplay.items.SimpleItem;
 
 
 public class Inventaire
 {
-	public ArrayList<Item> items;
+	public ArrayList<SimpleItem> items;
 	
-	public Inventaire(ArrayList<Item> items)
+	public Inventaire(ArrayList<SimpleItem> items)
 	{
 		this.items = items;
 	}
 	
 	public Inventaire()
 	{
-		this.items = new ArrayList<Item>();
+		this.items = new ArrayList<SimpleItem>();
 	}
 	
-	public void addItem(Item obj)
+	public void addItem(SimpleItem obj)
 	{
 		this.items.add(obj);
 	}
 
-	public ArrayList<Item> getItems() {
+	public ArrayList<SimpleItem> getItems() {
 		return items;
 	}
 
-	public void setObjets(ArrayList<Item> items) {
+	public void setObjets(ArrayList<SimpleItem> items) {
 		this.items = items;
 	}
 }
