@@ -7,11 +7,12 @@ import com.server.core.functions.AttackFunction;
 import com.server.core.functions.CombatFunction;
 import com.server.core.functions.ConnectFunction;
 import com.server.core.functions.Functionable;
+import com.server.core.functions.InfoFunction;
 import com.server.core.functions.LoadFunction;
 import com.server.core.functions.SayFunction;
 import com.server.core.functions.StateFunction;
 
-public class Calculator implements Callable<Void>
+public class Calculator implements Runnable
 {
 	public static HashMap <String,Functionable> dictfunctions = new HashMap<String,Functionable>();
 	private Thread t;
@@ -19,8 +20,6 @@ public class Calculator implements Callable<Void>
 	public Calculator()
 	{
 
-		cli = c;
-		mess = receiveFromClient;
 		//On ajoute les fonctions
 		/*
       dictfunctions.put("a",new AttackFunction());
@@ -32,32 +31,34 @@ public class Calculator implements Callable<Void>
       dictfunctions.put("gl",new ListInvitFunction());*/
 
 		dictfunctions.put("s",new StateFunction());
+		dictfunctions.put("i",new InfoFunction());
 		dictfunctions.put("c",new ConnectFunction());
 		dictfunctions.put("sa",new SayFunction());
 		dictfunctions.put("lo",new LoadFunction());
 		dictfunctions.put("fi",new CombatFunction());
 		dictfunctions.put("a",new AttackFunction());
 
-	
+		this.t = new Thread(this);
+		t.start();
 	}
 
-	public Void call()
+	public void submit(Client source, String mess)
 	{
 
 		if(mess!=null && !mess.equals("none") && !mess.isEmpty())
 		{
+			System.out.println("Reception du message :" + mess);
 			String[] temp = mess.split(";");
 			Functionable f = dictfunctions.get(temp[0]);
 			try{
-				f.doSomething(temp,cli);
+				f.doSomething(temp,source);
 			}
-			catch(Exception e){
-				cli.sendToClient("REQUEST_FAIL");
+			catch(RuntimeException e){
+				source.sendToClient("REQUEST_FAIL");
 				System.out.println("W : " + e.getMessage() + " request failed");
-				ServerSingleton.getInstance().deconnexion(cli);
+				ServerSingleton.getInstance().deconnexion(source);
 			}
 		}
-		return null;
 	}
 
 	@Override

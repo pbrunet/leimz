@@ -21,11 +21,11 @@ import com.map.client.managers.MapManager;
 
 public class Principal extends BasicGameState
 {
-
+	
 	//----------------------------Map-----------------------------------
 	private MapManager map_manager;
 	private DisplayManager disp;
-
+	
 	//------------------GUI----------------
     @SuppressWarnings("unused")
 	private PrincipalGui maingui;
@@ -56,7 +56,7 @@ public class Principal extends BasicGameState
 	{
 		return 3;
 	}
-
+	
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg)
 			throws SlickException 
@@ -68,12 +68,12 @@ public class Principal extends BasicGameState
 		map_manager = MapManager.instance;
 		main_player = entities_manager.getPlayers_manager().getMain_player();
 		main_player.initImgs();
-
+		
 		for(int i = 0; i < entities_manager.getPnjs_manager().getPnjs().size(); i++)
 		{
 			entities_manager.getPnjs_manager().getPnjs().get(i).initImgs();
 		}
-
+		
 		camera = new Camera();
 		disp = new DisplayManager(camera);
 		
@@ -99,7 +99,7 @@ public class Principal extends BasicGameState
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg)
 			throws SlickException 
-			{
+	{
 		Data.loadData();
 	}
 
@@ -116,7 +116,7 @@ public class Principal extends BasicGameState
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta)
 			throws SlickException 
-			{		
+	{		
 		gc.setMinimumLogicUpdateInterval(10);
 		gc.setMaximumLogicUpdateInterval(10);
 
@@ -128,7 +128,7 @@ public class Principal extends BasicGameState
 						entities_manager.getPlayers_manager().getJoueurs().get(i).getPos_real()));
 				entities_manager.getPlayers_manager().getJoueurs().get(i).setAbsolute(map_manager.getAbsolute());
 			}
-
+			
 		}
 		for(int i = 0; i < entities_manager.getPnjs_manager().getPnjs().size(); i++)
 		{
@@ -139,11 +139,11 @@ public class Principal extends BasicGameState
 				map_manager.getTileReal(main_player.getPos_real())
 				);
 		main_player.setAbsolute(map_manager.getAbsolute());
-		main_player.movePath();
-
+		main_player.move();
+		
 		camera.focusOn(main_player.getTile(), main_player.getTile().getPos_real().copy().sub(main_player.getPos_real()));
 		camera.zoom(current_scale);
-
+		
 		main_player.refresh();
 		for(int i = 0; i < entities_manager.getPlayers_manager().getJoueurs().size(); i++)
 		{

@@ -88,7 +88,7 @@ public class Loading extends BasicGameState
 
 		purcent = load_map.getPurcent();
 
-		purcent += load_map.getPurcent();
+		purcent += load_joueur.getPurcent();
 
 		if(loadJoueurFinished && loadMapFinished)
 		{

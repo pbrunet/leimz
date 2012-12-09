@@ -1,24 +1,14 @@
 package com.server.core;
 
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.ConcurrentModificationException;
 import java.util.concurrent.Callable;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-
-import org.apache.log4j.Logger;
-
-import com.server.misc.Logging;
 /**
  * Classe représentant une liste de client. La liste est de taille variable
  * @author kratisto
  */
 public class ClientList implements Callable<Void> 
 {
-	private ExecutorService pool = Executors.newFixedThreadPool(5);
 	private ArrayList<Client> clients;
-	private Logger l = Logging.getLogger(ClientList.class);
 	/**
 	 * Constructeur de la classe
 	 **/
@@ -51,7 +41,7 @@ public class ClientList implements Callable<Void>
 	/**
 	 * fonction principale du thread
 	 */
-
+	/*
     @Override
     public Void call() throws IOException
     {
@@ -66,7 +56,7 @@ public class ClientList implements Callable<Void>
                 for(int i = 0; i < clients.size(); i++)
                 {
                     Client c = clients.get(i);
-                    Calculator ca = new Calculator(c.receiveFromClient(), c);
+                    Calcul ca = new Calcul(c.receiveFromClient(), c, s);
                     pool.submit(ca);
                 }
             }
@@ -75,7 +65,7 @@ public class ClientList implements Callable<Void>
             {
                 /*On eteint le serveur si on a une erreur de modification concurrente.
 	 *Car ca voudra dire que j'ai du boulot
-	 */
+	 *//*
                 ServerSingleton.getInstance().seeToServer(e.getMessage());
                 l.fatal(e.getMessage());
 
@@ -84,7 +74,7 @@ public class ClientList implements Callable<Void>
 
 
 
-    }
+    }*/
 
 	/**
 	 * Envoie un message à tous les clients connectés.
@@ -104,6 +94,8 @@ public class ClientList implements Callable<Void>
 	public ArrayList<Client> getClients() {
 		return clients;
 	}
-
-
+	@Override
+	public Void call() throws Exception {
+		return null;
+	}
 }

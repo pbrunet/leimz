@@ -21,9 +21,9 @@ import de.matthiasmann.twl.textarea.HTMLTextAreaModel;
 public class ChatFrame extends ResizableFrame implements NetworkListener
 {
 	private final StringBuilder sb;
-	private final HTMLTextAreaModel textAreaModel;
-	private final TextArea textArea;
-
+    private final HTMLTextAreaModel textAreaModel;
+    private final TextArea textArea;
+    
 
 	private final EditField editField;
     private final ScrollPane scrollPane;
@@ -152,10 +152,10 @@ public class ChatFrame extends ResizableFrame implements NetworkListener
 				appendRow(path, "--> NOM : " + main_player.getPerso().getInventaire().getObjets().get(i).getNom());
 				appendRow(path, "--> DESCRIPTION : " + main_player.getPerso().getInventaire().getObjets().get(i).getDescription());
 				appendRow(path, "--> TYPE : " + main_player.getPerso().getInventaire().getObjets().get(i).getType());
-
+				
 				if(main_player.getPerso().getInventaire().getObjets().get(i).getEffet() != null)
 					appendRow(path, "--> EFFET : " + main_player.getPerso().getInventaire().getObjets().get(i).getEffet().get(0).toString() + ", " + main_player.getPerso().getInventaire().getObjets().get(i).getEffet().get(0));
-
+				
 				else
 					appendRow(path, "--> EFFET : Aucun effet");
 				appendRow(path, "/n");

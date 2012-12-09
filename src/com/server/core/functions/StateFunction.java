@@ -29,7 +29,6 @@ public class StateFunction implements Functionable
 	@Override
 	public void doSomething(String[] args, Client client)
 	{
-		
 		if(args[1].equals("pos"))
 		{
 			try {
