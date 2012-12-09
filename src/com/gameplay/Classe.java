@@ -22,11 +22,6 @@ public class Classe
 		//TODO : Carac et sort;
 	}
 
-	public Classe(String classe2) {
-		this.nom = classe2;
-		//TODO : Carac et sort;
-	}
-
 	public ArrayList<Sort> getSorts() {
 		return sorts;
 	}

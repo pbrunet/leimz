@@ -468,19 +468,19 @@ public class LoadFunction implements Functionable
 		}
 	}
 
-	public void askMonster(Client client,String tag)
+	public void askMonster(Client client)
 	{
 		ResultSet rs;
 		//Chargement des informations des monstres
 		try {
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			String rc = tag + ";";
-			String sql = "SELECT name " +
+			String rc = "";
+			String sql = "SELECT monster.name " +
 					"FROM monster ";
 			rs = stmt.executeQuery(sql);
 			while(rs.next())
 			{
-				rc += rs.getString("name") + ";";
+				rc += rs.getString("monster.name") + ";";
 			}
 			client.sendToClient(rc);
 			rs.close();

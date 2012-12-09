@@ -1,8 +1,9 @@
-package com.server.db;
 
+package com.server.db;
 import java.sql.*;
 
 /**
+ *
  * @author FaZeGa
  */
 public class DBConnection 

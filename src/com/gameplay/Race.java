@@ -22,11 +22,6 @@ public class Race
 		//TODO sorts , carac
 	}
 
-	public Race(String race2) {
-		this.nom = race2;
-		//TODO sorts , carac
-	}
-
 	public String getNom() {
 		return nom;
 	}

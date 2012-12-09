@@ -16,10 +16,10 @@ public class PlayersManager
 		this.joueurs = joueurs;
 	}
 	
-	public PlayersManager(MainJoueur main_player,ArrayList<Joueur> list_joueur)
+	public PlayersManager(MainJoueur main_player)
 	{
 		this.main_player = main_player;
-		this.joueurs = list_joueur;
+		this.joueurs = new ArrayList<Joueur>();
 	}
 	
 	public PlayersManager()
@@ -74,5 +74,9 @@ public class PlayersManager
 
 	public void setMain_player(MainJoueur mainPlayer) {
 		main_player = mainPlayer;
-	}	
+	}
+	
+	
+	
+	
 }

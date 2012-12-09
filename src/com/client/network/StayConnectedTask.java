@@ -9,7 +9,7 @@ import java.util.TimerTask;
 
 /**
  *
- * @author kratisto
+ * @author 9104172P
  */
 public class StayConnectedTask extends TimerTask
 {

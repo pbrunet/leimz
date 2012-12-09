@@ -172,14 +172,6 @@ public class Server
 	public void deconnexion(Client client) 
 	{
 		nbclients --;
-		Statement stmt;
-		try {
-			stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			stmt.executeUpdate("UPDATE Account SET connected=0 WHERE nom_de_compte='"+client.getCompte().getName()+"'");
-			stmt.close();
-		} catch (SQLException e) {
-			System.err.println("W: Bad deconnection for user " + client.getCompte().getName());
-		}
 		cleanClient();
 		cleanList();
 		seeToServer("Joueur deconnecte! Actuellement il y a "+this.getNbclients()+" joueur");
