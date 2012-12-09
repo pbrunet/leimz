@@ -1,36 +1,28 @@
 package com.client.load;
 
 import java.util.ArrayList;
-
 import org.newdawn.slick.geom.Vector2f;
 import org.newdawn.slick.loading.LoadingList;
-
 import com.client.network.NetworkManager;
 import com.map.Grille;
 import com.map.Tile;
-import com.map.Type_tile;
+import com.map.client.managers.MapManager;
 
 public class LoadMap implements Runnable
 {
 	private Grille grille;
-	private Thread looper;
+	private Thread t;
 	private int purcent;
-	private boolean running;
 
 	public LoadMap()
 	{
 		this.purcent = 0;
-		looper = new Thread(this);
-		looper.start();
-		running = true;
+		t = new Thread(this);
 	}
-
-	public Thread getLooper() {
-		return looper;
-	}
-
-	public void setLooper(Thread looper) {
-		this.looper = looper;
+	
+	public void start()
+	{
+		t.start();
 	}
 
 	public int getPurcent() {
@@ -40,20 +32,18 @@ public class LoadMap implements Runnable
 	public void setPurcent(int purcent) {
 		this.purcent = purcent;
 	}
-
-	public boolean isRunning() {
-		return running;
+	
+	public Thread getT() {
+		return t;
 	}
 
-	public void setRunning(boolean running) {
-		this.running = running;
+	public void setT(Thread t) {
+		this.t = t;
 	}
 
 	@Override
 	public void run()
 	{
-		if(running)
-		{
 			purcent+=2;
 
 			grille = new Grille();
@@ -84,7 +74,7 @@ public class LoadMap implements Runnable
 
 				int id_x=Integer.parseInt(args_map[u+2]);
 				int id_y=Integer.parseInt(args_map[u+3]);
-				grille.get(id_x).get(id_y).addTypes(Type_tile.getTypesTile(args_map[u+4]));
+				grille.get(id_x).get(id_y).addTypes(MapManager.getTypesTile(args_map[u+4]));
 				grille.get(id_x).get(id_y).setMonsterHolder( Boolean.parseBoolean(args_map[u+5]));
 			}
 
@@ -98,7 +88,7 @@ public class LoadMap implements Runnable
 				{
 					grille.get(Integer.parseInt(args_mapc[u]))
 					.get(Integer.parseInt(args_mapc[u+1]))
-					.addTypes(Type_tile.getTypesTile(args_mapc[u+2]));
+					.addTypes(MapManager.getTypesTile(args_mapc[u+2]));
 				}
 			}
 			LoadingList.setDeferredLoading(false);
@@ -110,8 +100,6 @@ public class LoadMap implements Runnable
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			running = false;
-		}
 	}
 
 	public Grille getGrille() {

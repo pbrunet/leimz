@@ -21,7 +21,7 @@ public class Data
 	{
 		font = new ArrayList<UnicodeFont>();
 		
-		for(int i = 10; i < 20; i++)
+		for(int i = 10; i < 35; i++)
 		{
 			java.awt.Font f = new java.awt.Font("Trebuchet MS", 25, java.awt.Font.BOLD);
 			UnicodeFont label = null;

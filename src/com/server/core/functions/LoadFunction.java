@@ -1,11 +1,18 @@
 package com.server.core.functions;
 
 import java.sql.ResultSet;
+
 import java.sql.SQLException;
 import java.sql.Statement;
-
+import java.util.ArrayList;
+import com.server.entities.PNJ;
+import com.gameplay.PNJ_discours;
+import com.map.Tile;
+import com.map.server.managers.MapManager;
 import com.server.core.Client;
+import com.server.core.GlobalConstant;
 import com.server.core.ServerSingleton;
+import com.server.entities.managers.EntitiesManager;
 
 /**
  * classe envoyant les informations de chargement d'informations
@@ -22,29 +29,11 @@ public class LoadFunction implements Functionable
 	{
 		switch(args[1])
 		{
-		case "rc":
-			askRaceCaracteristic(client,args[1]);
+		case "j":
+			askJoueur(client, args);
 			break;
-		case "cc":
-			askClassCaracteristic(client,args[1]);
-			break;
-		case "jc":
-			askPlayerCaracteristic(client,args[1]);
-			break;
-		case "jcv":
-			askPlayerCaracteristicValue(client,args[1]);
-			break;
-		case "rs":
-			askRaceSort(client,args[1]);
-			break;
-		case "cs":
-			askClassSort(client,args[1]);
-			break;
-		case "in":
-			askInventory(client,args[1]);
-			break;
-		case "pnj":
-			askPnj(client,args[1]);
+		case "ent":
+			askEntities(client);
 			break;
 		case "tt":
 			askTypeTiles(client,args[2],args[1]);
@@ -56,7 +45,7 @@ public class LoadFunction implements Functionable
 			askMapContent(client,args[1]);
 			break;
 		case "mon":
-			askMonster(client,args[1]);
+			askMonster(client);
 			break;
 		case "pj":
 			askPerso(client,args[1]);
@@ -66,6 +55,64 @@ public class LoadFunction implements Functionable
 		}
 	}
 
+	private void askJoueur(Client client, String[] args)
+	{
+		switch(args[2])
+		{
+		case "rc":
+			askRaceCaracteristic(client, args[2]);
+			break;
+		case "cc":
+			askClassCaracteristic(client, args[2]);
+			break;
+		case "jc":
+			askPlayerCaracteristic(client, args[2]);
+			break;
+		case "jcv":
+			askPlayerCaracteristicValue(client, args[2]);
+			break;
+		case "rs":
+			askRaceSort(client, args[2]);
+			break;
+		case "cs":
+			askClassSort(client, args[2]);
+			break;
+		case "in":
+			askInventory(client, args[2]);
+			break;
+		}
+	}
+	
+	public void askPerso(Client client,String tag)
+	{
+		ResultSet rs;
+		try {
+			String sql = "SELECT name,race,classe,posx,posy,orientation " +
+					"FROM personnage,Account " +
+					"WHERE personnage.name=Account.currjoueur " +
+					"AND Account.connected=1";
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			rs = stmt.executeQuery(sql);
+			String rc = tag + ";";
+			while(rs.next())
+			{
+				rc += "new;";
+				rc += rs.getString("name") + ";";
+				rc += rs.getString("race") + ";";
+				rc += rs.getString("classe") + ";";
+				rc += rs.getInt("posx") + ";";
+				rc += rs.getInt("posy") + ";";
+				rc += rs.getString("orientation") + ";";
+			}
+
+			client.sendToClient(rc);
+			rs.close();
+			stmt.close();
+		} catch (SQLException e) {
+			throw new RuntimeException("Other players");
+		}
+	}
+	
 	public void askRaceCaracteristic(Client client,String tag)
 	{
 		ResultSet rs = null;
@@ -256,85 +303,71 @@ public class LoadFunction implements Functionable
 			throw new RuntimeException("Bag");
 		}
 	}
-
-	public void askPerso(Client client,String tag)
+	
+	private void askEntities(Client client)
 	{
-		ResultSet rs;
-		try {
-			String sql = "SELECT name,race,classe,posx,posy,orientation " +
-					"FROM personnage,Account " +
-					"WHERE personnage.name=Account.currjoueur " +
-					"AND Account.connected=1";
-			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			rs = stmt.executeQuery(sql);
-			String rc = tag + ";";
-			while(rs.next())
+		System.out.println("asking entities");
+		ArrayList<ArrayList<Tile>> grille = MapManager.instance.getTilesAutour(client.getCompte().getCurrent_joueur().getTile(), GlobalConstant.nbCaseNear);
+		ArrayList<Tile> tiles_to_test = new ArrayList<Tile>();
+		
+		//Un peu gore, à améliorer
+		for(int i = 0; i < grille.size(); i++)
+		{
+			for(int j = 0; j < grille.get(i).size(); j++)
 			{
-				rc += "new;";
-				rc += rs.getString("name") + ";";
-				rc += rs.getString("race") + ";";
-				rc += rs.getString("classe") + ";";
-				rc += rs.getInt("posx") + ";";
-				rc += rs.getInt("posy") + ";";
-				rc += rs.getString("orientation") + ";";
+				tiles_to_test.add(grille.get(i).get(j));
+				for(int u = 0; u < client.getCompte().getCurrent_joueur().getLoaded_zone().size(); u++)
+				{
+					if(grille.get(i).get(j).equals(client.getCompte().getCurrent_joueur().getLoaded_zone().get(u)))
+					{
+						tiles_to_test.remove(grille.get(i).get(j));
+					}
+				}
 			}
-
-			client.sendToClient(rc);
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			e.printStackTrace();
-			throw new RuntimeException("Other players");
+		}
+		
+		
+		//Idem
+		for(int i = 0; i < EntitiesManager.instance.getPnjs_manager().getPnjs().size(); i++)
+		{
+			for(int k = 0; k < tiles_to_test.size(); k++)
+			{
+				if(tiles_to_test.get(k).equals(EntitiesManager.instance.getPnjs_manager().getPnjs().get(i).getTile()))
+				{
+					loadPnj(client, EntitiesManager.instance.getPnjs_manager().getPnjs().get(i));
+				}
+				client.getCompte().getCurrent_joueur().getLoaded_zone().add(tiles_to_test.get(k));
+			}
 		}
 	}
-
-	public void askPnj(Client client,String tag)
+	
+	
+	
+	private void loadPnj(Client client, PNJ pnj)
 	{
-		ResultSet rs;
-		try {
-			String sql = "SELECT pnj.pos_x, pnj.pos_y, pnj.nom, pnj_discours.discours, pnj_discours.id " +
-					"FROM pnj, pnj_discours " +
-					"WHERE pnj.nom=pnj_discours.nom_pnj " +
-					"AND pnj_discours.after_answer IS NULL";
-			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			rs = stmt.executeQuery(sql);
-			String rc = tag + ";";
-			while(rs.next())
-			{
-				rc += "new;";
-				rc += rs.getInt("pnj.pos_x") + ";";
-				rc += rs.getInt("pnj.pos_y") + ";";
-				rc += rs.getString("pnj.nom") + ";";
-				rc += rs.getString("pnj_discours.discours") + ";";
-				rc += getPnjAnswer(rs.getInt("pnj_discours.id"),0);
-			}
-
-			client.sendToClient(rc);
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException("PNJ Informations");
-		}
+		String rc = "lo;ent;pnj;";
+		rc += (int)pnj.getTile().getPos().x + ";";
+		rc += (int)pnj.getTile().getPos().y + ";";
+		rc += pnj.getNom() + ";";
+		rc += pnj.getPnjDiscours().getDiscours() + ";";
+		rc += getPnjAnswer(pnj.getPnjDiscours(), 0);
+		System.out.println(rc);
+		client.sendToClient(rc);
 	}
-
-	private String getPnjAnswer(int id_discour, int depth) throws SQLException {
+	
+	private String getPnjAnswer(PNJ_discours pnj_discours, int depth)
+	{
 		String rc = "";
-		ResultSet rs;
-		String sql = "SELECT discours, id " +
-				"FROM pnj_discours " +
-				"WHERE after_answer=" + id_discour;
-		Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-		rs = stmt.executeQuery(sql);
 		depth++;
-		while(rs.next())
+		for(int i = 0; i < pnj_discours.getReponses().size(); i++)
 		{
 			rc += depth + ";";
-			rc += rs.getString("discours") + ";";
-			rc += getPnjAnswer(rs.getInt("id"),depth);
+			rc += pnj_discours.getReponses().get(i).getDiscours() + ";";
+			rc += getPnjAnswer(pnj_discours.getReponses().get(i),depth);
 		}
-
 		return rc;
 	}
+
 
 	public void askTypeTiles(Client client, String name,String tag)
 	{

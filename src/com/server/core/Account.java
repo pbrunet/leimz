@@ -2,18 +2,18 @@ package com.server.core;
 
 import java.util.ArrayList;
 
-import com.game_entities.Joueur_server;
+import com.server.entities.Joueur;
 
 public class Account 
 {
 	private String name;
 	private String passwd;
-	private ArrayList<Joueur_server> joueurs;
-	private Joueur_server current_joueur;
-	
+	private ArrayList<Joueur> joueurs;
+	private Joueur current_joueur;
+
 	public Account()
 	{
-		
+
 	}
 	public Account(String ndc,String mpd)
 	{
@@ -24,23 +24,23 @@ public class Account
 	{
 		passwd = mdp;
 	}
-	
-	public ArrayList<Joueur_server> getJoueurs() {
+
+	public ArrayList<Joueur> getJoueurs() {
 		return joueurs;
 	}
-	
-	public void setJoueurs(ArrayList<Joueur_server> joueurs) {
+
+	public void setJoueurs(ArrayList<Joueur> joueurs) {
 		this.joueurs = joueurs;
 	}
-	
-	public Joueur_server getCurrent_joueur() {
+
+	public Joueur getCurrent_joueur() {
 		return current_joueur;
 	}
-	
-	public void setCurrent_joueur(Joueur_server currentJoueur) {
+
+	public void setCurrent_joueur(Joueur currentJoueur) {
 		current_joueur = currentJoueur;
 	}
-	
+
 	public String getMdp() {
 		return passwd;
 	}

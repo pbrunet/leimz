@@ -2,21 +2,16 @@ package com.server.core;
 
 import com.server.db.DBConnection;
 import com.server.misc.Logging;
-
 import java.io.*;
-
 import java.net.ServerSocket;
 import java.net.Socket;
-
 import java.sql.SQLException;
 import java.sql.Statement;
-
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-
 import org.apache.log4j.Logger;
 
 /**
@@ -35,9 +30,6 @@ public class Server
 	private Logger l = Logging.getLogger(Server.class);
 
 
-	/* private World world;
-    private EntitiesManager entities_manager;*/
-
 	public void start()
 	{
 		//   ess = new IHM(this);
@@ -51,6 +43,8 @@ public class Server
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		@SuppressWarnings("unused")
+		Load load = new Load();
 		//On attend la connexion des joueurs*/
 		waitPlayers();
 	}
@@ -81,6 +75,8 @@ public class Server
 			System.exit(0);
 		}
 		//world = new World(entire_map);
+
+		new Calculator();
 	}
 
 
@@ -187,6 +183,14 @@ public class Server
 		cleanClient();
 		cleanList();
 		seeToServer("Joueur deconnecte! Actuellement il y a "+this.getNbclients()+" joueur");
+		
+		try {
+			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
+			String sql = "UPDATE account SET connected=false WHERE nom_de_compte='"+client.getCompte().getName()+"'";
+			stmt.executeUpdate(sql);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void save() {
@@ -246,8 +250,7 @@ public class Server
 			}
 		}
 	}
-
-
+	
 
 	public Client getClient(String nompersonnage) {
 		Client cli = null ;
@@ -270,5 +273,4 @@ public class Server
 
 		return null;
 	}
-
 }

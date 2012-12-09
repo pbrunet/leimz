@@ -5,7 +5,7 @@ import org.newdawn.slick.geom.Polygon;
 import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.geom.Shape;
 
-import com.game_entities.Entity;
+import com.client.entities.Entity;
 import com.map.Grille;
 import com.map.Tile;
 

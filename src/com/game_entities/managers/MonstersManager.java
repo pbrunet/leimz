@@ -2,7 +2,7 @@ package com.game_entities.managers;
 
 import java.util.ArrayList;
 
-import com.game_entities.Monstre;
+import com.client.entities.Monstre;
 
 public class MonstersManager
 {

@@ -1,6 +1,7 @@
 package com.client.display.gui;
 
 import java.io.IOException;
+
 import java.net.URL;
 
 import org.lwjgl.LWJGLException;
@@ -19,9 +20,15 @@ public class GUI_Manager {
 	private GUI gui;
 	private Widget root;
 	private TWLInputAdapter twlInputAdapter;
+	
+	public static GUI_Manager instance;
 
 	public GUI_Manager(URL url, GameContainer gc) 
 	{
+		if(instance == null)
+		{
+			instance = this;
+		}
 		
 		root = new Widget();
 		root.setTheme("");
@@ -77,4 +84,5 @@ public class GUI_Manager {
 	public void setTwlInputAdapter(TWLInputAdapter twlInputAdapter) {
 		this.twlInputAdapter = twlInputAdapter;
 	}
+
 }

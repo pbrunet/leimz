@@ -2,7 +2,7 @@ package com.game_entities.managers;
 
 import java.util.ArrayList;
 
-import com.game_entities.PNJ;
+import com.client.entities.PNJ;
 
 
 public class PNJsManager 

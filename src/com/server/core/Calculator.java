@@ -1,8 +1,10 @@
 package com.server.core;
 
+import java.io.IOException;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
-import java.util.concurrent.Callable;
-
+import com.server.core.functions.AttackFunction;
+import com.server.core.functions.CombatFunction;
 import com.server.core.functions.ConnectFunction;
 import com.server.core.functions.Functionable;
 import com.server.core.functions.LoadFunction;
@@ -11,12 +13,11 @@ import com.server.core.functions.StateFunction;
 
 public class Calculator implements Callable<Void>
 {
-	private static HashMap <String,Functionable> dictfunctions = new HashMap<String,Functionable>();
-	private Client cli;
-	private String mess;
+	public static HashMap <String,Functionable> dictfunctions = new HashMap<String,Functionable>();
+	private Thread t;
 
-	public Calculator(String receiveFromClient, Client c) {
-	
+	public Calculator()
+	{
 
 		cli = c;
 		mess = receiveFromClient;
@@ -34,6 +35,8 @@ public class Calculator implements Callable<Void>
 		dictfunctions.put("c",new ConnectFunction());
 		dictfunctions.put("sa",new SayFunction());
 		dictfunctions.put("lo",new LoadFunction());
+		dictfunctions.put("fi",new CombatFunction());
+		dictfunctions.put("a",new AttackFunction());
 
 	
 	}
@@ -57,5 +60,35 @@ public class Calculator implements Callable<Void>
 		return null;
 	}
 
-
+	@Override
+	public void run() 
+	{
+		while(true)
+		{
+			try
+			{
+				// Pour chaque client connecte
+				for(int i = 0; i < ServerSingleton.getInstance().getCl().size(); i++)
+				{
+					for(int j = 0; j < ServerSingleton.getInstance().getCl().get(i).getClients().size(); j++)
+					{
+						Client c = ServerSingleton.getInstance().getCl().get(i).getClients().get(j);
+						try {
+							this.submit(c,c.receiveFromClient());
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			catch (ConcurrentModificationException e)
+			{
+				/*On eteint le serveur si on a une erreur de modification concurrente.
+				 *Car ca voudra dire que j'ai du boulot
+				 */
+				ServerSingleton.getInstance().seeToServer(e.getMessage());
+				//l.fatal(e.getMessage());
+			}
+		}
+	}
 }

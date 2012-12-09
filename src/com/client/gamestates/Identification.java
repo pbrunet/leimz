@@ -67,15 +67,15 @@ public class Identification extends BasicGameState
 		test_gc = gc;
 
 		music = new Music("data/Musics/musique1.wav");
-			}
+	}
 
 	@Override
 	public void enter(GameContainer gc, StateBasedGame sbg)
 			throws SlickException 
 	{
-		music.loop();
 		log();
-			}
+		music.loop();
+	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g)

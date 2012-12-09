@@ -10,7 +10,7 @@ public class Tile
 	private Vector2f pos_real;
 
 
-	private ArrayList<Type_tile> types;
+	private ArrayList<SimpleType_tile> types;
 	private int state; //On definit son etat (peu utilise)
 	public static int NONE = 0, OVER = 1, CLICKED = 2;
 	private boolean monsterHolder = false;
@@ -26,9 +26,9 @@ public class Tile
 	 * @param pos_y Position en Y de la tyle dans le tableau (ex: 3)
 	 * @param type Type de la tyle
 	 */
-	public Tile(Vector2f pos, Type_tile type)
+	public Tile(Vector2f pos, SimpleType_tile type)
 	{
-		this.types = new ArrayList<Type_tile>();
+		this.types = new ArrayList<SimpleType_tile>();
 
 		this.pos = pos;
 
@@ -36,10 +36,10 @@ public class Tile
 			this.types.add(type);
 	}
 
-	public Tile(Vector2f pos, Type_tile type, boolean monsterHolder)
+	public Tile(Vector2f pos, SimpleType_tile type, boolean monsterHolder)
 	{
 
-		this.types = new ArrayList<Type_tile>();
+		this.types = new ArrayList<SimpleType_tile>();
 
 		this.pos = pos;
 
@@ -54,9 +54,9 @@ public class Tile
 	 * forger une map. Ici, pas besoin de preciser la position car le Tyle n'est pas dans la map.
 	 * @param type Type de la tyle
 	 */
-	public Tile(Type_tile type)
+	public Tile(SimpleType_tile type)
 	{
-		this.types = new ArrayList<Type_tile>();
+		this.types = new ArrayList<SimpleType_tile>();
 
 		this.pos = new Vector2f(-1, -1);
 
@@ -167,16 +167,16 @@ public class Tile
 		pos_real = posReal;
 	}
 
-	public ArrayList<Type_tile> getTypes() {
+	public ArrayList<SimpleType_tile> getTypes() {
 		return types;
 	}
 	
-	public void addTypes(Type_tile t)
+	public void addTypes(SimpleType_tile t)
 	{
 		types.add(t);
 	}
 
-	public void setTypes(ArrayList<Type_tile> types) {
+	public void setTypes(ArrayList<SimpleType_tile> types) {
 		this.types = types;
 	}
 

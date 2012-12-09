@@ -1,5 +1,6 @@
 package com.server.core;
 
-public final class GlobalConstant {
-	public final int nbCaseNear = 10;
+public class GlobalConstant 
+{
+	public static int nbCaseNear = 15;
 }

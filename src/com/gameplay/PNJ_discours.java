@@ -54,7 +54,7 @@ public class PNJ_discours
 	public void addReponses(PNJ_discours reponse){
 		this.reponses.add(reponse);
 	}
-
+	
 	public void fillTree(int pos, String[] pnj){
 		if(pos<pnj.length)
 		{

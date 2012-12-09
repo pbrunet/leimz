@@ -1,10 +1,15 @@
+
 package com.server.core.functions;
 
-import com.game_entities.Joueur_server;
-import com.gameplay.entities.Personnage_serveur;
+import com.server.entities.Joueur;
+
+import com.server.entities.Personnage;
+import com.map.server.managers.MapManager;
 import com.server.core.Account;
 import com.server.core.Client;
 import com.server.core.ServerSingleton;
+import com.server.entities.Orientation;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -17,7 +22,8 @@ import java.sql.Statement;
 public class ConnectFunction implements Functionable
 {
 	public ConnectFunction()
-	{    
+	{
+		
 	}
 
 	@Override
@@ -46,7 +52,7 @@ public class ConnectFunction implements Functionable
 				throw new RuntimeException("Searching player");
 
 			rsj.close();
-			stmt.executeUpdate("UPDATE Account SET connected=1 WHERE nom_de_compte='"+ndc+"'");
+			stmt.executeUpdate("UPDATE Account SET connected=true WHERE nom_de_compte='"+ndc+"'");
 			ResultSet rsp = stmt.executeQuery("SELECT race,classe,posx,posy,orientation " +
 					"FROM personnage " +
 					"WHERE name='"+name+"'");
@@ -59,7 +65,7 @@ public class ConnectFunction implements Functionable
 
 			c.sendToClient("c;CONNECT_SUCCEED");
 			c.setCompte(new Account(ndc,mdp));
-			c.getCompte().setCurrent_joueur(new Joueur_server(new Personnage_serveur(name), posx,posy));
+			c.getCompte().setCurrent_joueur(new Joueur(new Personnage(name), MapManager.instance.getEntire_map().getGrille().get((int)posx).get((int)posy), Orientation.BAS));
 			c.sendToClient("ci;"+name+";"+race+";"+classe+";"+posx+";"+posy+";"+ori);
 			ServerSingleton.getInstance().sendAllClient("aj;"+name+";"+race+";"+classe+";"+posx+";"+posy+";"+ori);
 			rsp.close();

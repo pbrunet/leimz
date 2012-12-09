@@ -7,13 +7,19 @@ public class Classe
 {
 	private String nom;
 	private ArrayList<Sort> sorts;
-	private HashMap<Caracteristique,Integer> carac;
+	private HashMap<Caracteristique,Integer> caracs;
 	
-	public Classe(String nom, ArrayList<Sort> sorts, HashMap<Caracteristique,Integer> carac)
+	public Classe(String nom, ArrayList<Sort> sorts, HashMap<Caracteristique,Integer> caracs)
 	{
 		this.nom = nom;
 		this.sorts = sorts;
-		this.carac = carac;
+		this.caracs = caracs;
+	}
+	
+	public Classe(String classe) 
+	{
+		this.nom = classe;
+		//TODO : Carac et sort;
 	}
 
 	public Classe(String classe2) {
@@ -37,11 +43,11 @@ public class Classe
 		this.nom = nom;
 	}
 
-	public HashMap<Caracteristique,Integer> getCarac() {
-		return carac;
+	public HashMap<Caracteristique,Integer> getCaracs() {
+		return caracs;
 	}
 
-	public void setCarac(HashMap<Caracteristique,Integer> carac) {
-		this.carac = carac;
+	public void setCaracs(HashMap<Caracteristique,Integer> caracs) {
+		this.caracs = caracs;
 	}
 }

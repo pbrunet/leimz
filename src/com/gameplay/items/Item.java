@@ -7,37 +7,15 @@ import org.newdawn.slick.Image;
 import com.gameplay.Caracteristique;
 
 
-public class Item
+public class Item extends SimpleItem
 {
-	private String nom, description;
 	private Image icon, apercu;
-	private int poids;
-	private HashMap<Caracteristique,Integer> effets;
 	
 	public Item(String nom, String description, Image icon, Image desc, HashMap<Caracteristique,Integer> effets, int poids)
 	{
-		this.nom = nom;
-		this.description = description;
+		super(nom, description, icon.getResourceReference(), desc.getResourceReference(), effets, poids);
 		this.icon = icon;
 		this.apercu = desc;
-		this.effets = effets;
-		this.poids = poids;
-	}
-	
-	public String getNom() {
-		return nom;
-	}
-
-	public void setNom(String nom) {
-		this.nom = nom;
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
 	}
 
 	public Image getIcon() {
@@ -55,20 +33,6 @@ public class Item
 	public void setApercu(Image apercu) {
 		this.apercu = apercu;
 	}
-
-	public HashMap<Caracteristique, Integer> getEffets() {
-		return effets;
-	}
-
-	public void setEffets(HashMap<Caracteristique, Integer> effets) {
-		this.effets = effets;
-	}
-
-	public int getPoids() {
-		return poids;
-	}
-
-	public void setPoids(int poids) {
-		this.poids = poids;
-	}
+	
+	
 }
