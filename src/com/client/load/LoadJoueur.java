@@ -108,27 +108,6 @@ public class LoadJoueur implements Runnable
 			joueur.getPerso().setInventaire(inventaire);
 
 			purcent+=6;
-
-			//Chargement des autres joueurs sur la carte
-			NetworkManager.instance.sendToServer("lo;pj"); //load joueur, joueur caracteristiques
-			NetworkManager.instance.waitForNewMessage("pj");
-			String[] list_perso = NetworkManager.instance.receiveFromServer("pj").split("new;");
-			for( int i=1;i<list_perso.length;i++)
-			{
-				String[] perso = list_perso[i].split(";");
-				Joueur j = new Joueur(new Personnage(perso[0], new Race(perso[1]), new Classe(perso[2]),null,null),
-						MapManager.instance.getEntire_map().getGrille()
-						.get(Integer.parseInt(perso[3])/Base.Tile_x)
-						.get(Integer.parseInt(perso[4])/Base.Tile_y),
-						Joueur.parseStringOrientation(perso[5]));
-				list_joueur.add(j);
-			}
-			try {
-				//TODO Pourquoi un sleep?
-				Thread.sleep(100);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}
 	}
 
 	public int getPurcent() {

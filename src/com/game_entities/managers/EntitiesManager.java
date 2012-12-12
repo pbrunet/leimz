@@ -3,9 +3,14 @@ package com.game_entities.managers;
 import java.util.ArrayList;
 
 import com.client.entities.Entity;
+import com.client.entities.Joueur;
+import com.client.entities.Orientation;
 import com.client.entities.PNJ;
+import com.client.gamestates.Base;
 import com.client.load.LoadPnj;
 import com.client.network.NetworkListener;
+import com.gameplay.entities.Personnage;
+import com.map.client.managers.MapManager;
 
 public class EntitiesManager implements NetworkListener
 {
@@ -29,10 +34,6 @@ public class EntitiesManager implements NetworkListener
 		{
 			this.entities.add(players_manager.getJoueurs().get(i));
 		}
-		/*for(int i = 0; i < monsters_manager.getMonsters().size(); i++)
-		{
-			this.entities.add(monsters_manager.getMonsters().get(i));
-		}*/
 		for(int i = 0; i < pnjs_manager.getPnjs().size(); i++)
 		{
 			this.entities.add(pnjs_manager.getPnjs().get(i));
@@ -49,6 +50,15 @@ public class EntitiesManager implements NetworkListener
 		{
 			PNJ pnj = LoadPnj.loadPnj(str.substring(temp[0].length()+1+temp[1].length()+1, str.length()));
 			pnjs_manager.add(pnj);
+		}
+		
+		else if(temp[1].equals("j"))
+		{
+			Joueur j = new Joueur(new Personnage(temp[2], temp[3], temp[4]),
+					MapManager.instance.getEntire_map().getGrille().get(Integer.parseInt(temp[5])).get(Integer.parseInt(temp[6])),
+					Joueur.parseStringOrientation(temp[7]));
+			EntitiesManager.instance.getPlayers_manager().addNewPlayer(j);
+			EntitiesManager.instance.getPlayers_manager().getJoueurs().get(EntitiesManager.instance.getPlayers_manager().getJoueurs().size()-1).initImgs();
 		}
 	}
 	

@@ -10,6 +10,7 @@ public class EntitiesManager
 	public EntitiesManager()
 	{
 		instance = this;
+		clients_manager = new ClientsManager();
 	}
 
 	public MonstersManager getMonsters_manager() {

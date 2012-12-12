@@ -13,13 +13,10 @@ public class ClientsManager
 		this.clients = clients;
 	}
 	
-	/*public void refresh()
+	public ClientsManager()
 	{
-		for(int i = 0; i < clients.size(); i++)
-		{
-			joueurs.get(i).refresh();
-		}
-	}*/
+		this.clients = new ArrayList<>();
+	}
 
 	public void addNewClient(Client client)
 	{

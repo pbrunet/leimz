@@ -161,21 +161,11 @@ public class NetworkManager
 								}
 							}
 					}
-				
-					String message = receiveFromServer("i"); 
-					if(message != null)
-					{
-						String[] temp = message.split(";");
-							System.out.println("infos : "+message);
-							EntitiesManager.instance.getPlayers_manager().addNewPlayer(new Joueur(new Personnage(temp[0], temp[1], temp[2]), null, Orientation.BAS));
-							EntitiesManager.instance.getPlayers_manager().getJoueurs().get(EntitiesManager.instance.getPlayers_manager().getJoueurs().size()-1).initImgs();
-						
-					}
 						
 					String combat_message = receiveFromServer("co"); 
 					if(combat_message != null)
 					{
-						CombatManager.instance.receiveMessage(message);
+						CombatManager.instance.receiveMessage(combat_message);
 					}
 					
 					String attack_message = receiveFromServer("a"); 
