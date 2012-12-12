@@ -19,7 +19,7 @@ public class Joueur extends Entity
 		loaded_zone = new ArrayList<Tile>();
 	}
 	
-	protected String stringOrientation()
+	public String stringOrientation()
 	{
 		String o_m = null;
 		switch(orientation)

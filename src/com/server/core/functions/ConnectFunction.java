@@ -9,6 +9,7 @@ import com.server.core.Account;
 import com.server.core.Client;
 import com.server.core.ServerSingleton;
 import com.server.entities.Orientation;
+import com.server.entities.managers.EntitiesManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -67,8 +68,13 @@ public class ConnectFunction implements Functionable
 			c.sendToClient("c;CONNECT_SUCCEED");
 			c.setCompte(new Account(ndc,mdp));
 			c.getCompte().setCurrent_joueur(new Joueur(new Personnage(name), MapManager.instance.getEntire_map().getGrille().get((int)posx).get((int)posy), Orientation.BAS));
+			c.getCompte().getCurrent_joueur().getPerso().getRace().setNom(race);
+			c.getCompte().getCurrent_joueur().getPerso().getClasse().setNom(classe);
+			
 			c.sendToClient("ci;"+name+";"+race+";"+classe+";"+posx+";"+posy+";"+ori);
-			ServerSingleton.getInstance().sendAllClient("aj;"+name+";"+race+";"+classe+";"+posx+";"+posy+";"+ori);
+			ServerSingleton.getInstance().sendAllClient("lo;ent;j"+name+";"+race+";"+classe+";"+posx+";"+posy+";"+ori);
+			
+			EntitiesManager.instance.getClients_manager().addNewClient(c);
 			rsp.close();
 			stmt.close();
 		} catch (SQLException e) {

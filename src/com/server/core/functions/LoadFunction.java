@@ -5,8 +5,13 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
+
+import com.server.entities.Joueur;
 import com.server.entities.PNJ;
+import com.gameplay.Caracteristique;
 import com.gameplay.PNJ_discours;
+import com.gameplay.Race;
 import com.map.Tile;
 import com.map.server.managers.MapManager;
 import com.server.core.Client;
@@ -47,9 +52,6 @@ public class LoadFunction implements Functionable
 		case "mon":
 			askMonster(client);
 			break;
-		case "pj":
-			askPerso(client,args[1]);
-			break;
 		default:
 			throw new RuntimeException("Unimplemented");
 		}
@@ -83,40 +85,11 @@ public class LoadFunction implements Functionable
 		}
 	}
 	
-	public void askPerso(Client client,String tag)
-	{
-		ResultSet rs;
-		try {
-			String sql = "SELECT name,race,classe,posx,posy,orientation " +
-					"FROM personnage,Account " +
-					"WHERE personnage.name=Account.currjoueur " +
-					"AND Account.connected=1";
-			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			rs = stmt.executeQuery(sql);
-			String rc = tag + ";";
-			while(rs.next())
-			{
-				rc += "new;";
-				rc += rs.getString("name") + ";";
-				rc += rs.getString("race") + ";";
-				rc += rs.getString("classe") + ";";
-				rc += rs.getInt("posx") + ";";
-				rc += rs.getInt("posy") + ";";
-				rc += rs.getString("orientation") + ";";
-			}
-
-			client.sendToClient(rc);
-			rs.close();
-			stmt.close();
-		} catch (SQLException e) {
-			throw new RuntimeException("Other players");
-		}
-	}
-	
 	public void askRaceCaracteristic(Client client,String tag)
 	{
 		ResultSet rs = null;
 		try {
+			Race race = client.getCompte().getCurrent_joueur().getPerso().getRace();
 			String sql = "SELECT caracteristiques_race.caracteristique, caracteristiques_race.value " +
 					"FROM caracteristiques_race,personnage " +
 					"WHERE caracteristiques_race.race=personnage.race " +
@@ -124,11 +97,14 @@ public class LoadFunction implements Functionable
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
+			HashMap<Caracteristique, Integer> caracs = new HashMap<>();
 			while(rs.next())
 			{
 				rc += rs.getString("caracteristiques_race.caracteristique") + ";";
 				rc += rs.getInt("caracteristiques_race.value") + ";";
+				caracs.put(Caracteristique.valueOf(rs.getString("caracteristiques_race.caracteristique").toUpperCase()), rs.getInt("caracteristiques_race.value"));
 			}
+			race.setCarac(caracs);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -308,8 +284,9 @@ public class LoadFunction implements Functionable
 	{
 		System.out.println("asking entities");
 		ArrayList<ArrayList<Tile>> grille = MapManager.instance.getTilesAutour(client.getCompte().getCurrent_joueur().getTile(), GlobalConstant.nbCaseNear);
-		ArrayList<Tile> tiles_to_test = new ArrayList<Tile>();
 		
+		
+		ArrayList<Tile> tiles_to_test = new ArrayList<Tile>();
 		//Un peu gore, à améliorer
 		for(int i = 0; i < grille.size(); i++)
 		{
@@ -328,19 +305,44 @@ public class LoadFunction implements Functionable
 		
 		
 		//Idem
-		for(int i = 0; i < EntitiesManager.instance.getPnjs_manager().getPnjs().size(); i++)
+		for(int k = 0; k < tiles_to_test.size(); k++)
 		{
-			for(int k = 0; k < tiles_to_test.size(); k++)
+			for(int i = 0; i < EntitiesManager.instance.getPnjs_manager().getPnjs().size(); i++)
 			{
 				if(tiles_to_test.get(k).equals(EntitiesManager.instance.getPnjs_manager().getPnjs().get(i).getTile()))
 				{
 					loadPnj(client, EntitiesManager.instance.getPnjs_manager().getPnjs().get(i));
 				}
-				client.getCompte().getCurrent_joueur().getLoaded_zone().add(tiles_to_test.get(k));
 			}
+			for(int i = 0; i < EntitiesManager.instance.getClients_manager().getClients().size(); i++)
+			{
+				if(tiles_to_test.get(k).equals(EntitiesManager.instance.getClients_manager().getClients().get(i).getCompte().getCurrent_joueur().getTile()))
+				{
+					//Si le client détecté n'est pas celui qui fait la demande
+					if(EntitiesManager.instance.getClients_manager().getClients().get(i) != client)
+					{
+						loadPerso(client, EntitiesManager.instance.getClients_manager().getClients().get(i).getCompte().getCurrent_joueur());
+					}
+				}
+			}		
+			client.getCompte().getCurrent_joueur().getLoaded_zone().add(tiles_to_test.get(k));
 		}
+		
+		
 	}
 	
+	private void loadPerso(Client client, Joueur joueur)
+	{
+		String rc = "lo;ent;j;";
+		rc+= joueur.getPerso().getNom() +";";
+		rc+= joueur.getPerso().getRace().getNom() +";";
+		rc+= joueur.getPerso().getClasse().getNom() +";";
+		rc += (int)joueur.getTile().getPos().x + ";";
+		rc += (int)joueur.getTile().getPos().y + ";";
+		rc += joueur.stringOrientation() +";";
+		System.out.println(rc);
+		client.sendToClient(rc);
+	}
 	
 	
 	private void loadPnj(Client client, PNJ pnj)

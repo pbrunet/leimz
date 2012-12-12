@@ -19,7 +19,8 @@ public class Race
 	public Race(String race)
 	{
 		this.nom = race;
-		//TODO sorts , carac
+		this.sorts = new ArrayList<>();
+		this.carac = new HashMap<>();
 	}
 
 	public String getNom() {
