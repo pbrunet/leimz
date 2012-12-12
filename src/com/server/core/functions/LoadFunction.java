@@ -284,8 +284,9 @@ public class LoadFunction implements Functionable
 	{
 		System.out.println("asking entities");
 		ArrayList<ArrayList<Tile>> grille = MapManager.instance.getTilesAutour(client.getCompte().getCurrent_joueur().getTile(), GlobalConstant.nbCaseNear);
-		ArrayList<Tile> tiles_to_test = new ArrayList<Tile>();
 		
+		
+		ArrayList<Tile> tiles_to_test = new ArrayList<Tile>();
 		//Un peu gore, à améliorer
 		for(int i = 0; i < grille.size(); i++)
 		{
