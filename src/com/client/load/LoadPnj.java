@@ -25,7 +25,6 @@ public class LoadPnj
 					pnj_discours,
 					Orientation.BAS, 
 					MapManager.instance.getEntire_map().getGrille().get(Integer.parseInt(args_pnj[0])).get(Integer.parseInt(args_pnj[1])));
-		System.out.println(str);
 		return pnj;
 	}
 }

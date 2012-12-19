@@ -48,14 +48,6 @@ public class StateFunction implements Functionable
 				client.getCompte().getCurrent_joueur().setTile(MapManager.instance.getTileReal(new Vector2f(Float.parseFloat(args[2]), Float.parseFloat(args[3]))));
 				client.getCompte().getCurrent_joueur().setOrientation(Joueur.parseStringOrientation(args[4]));
 				
-				String toSend = "s;";
-				toSend += client.getCompte().getCurrent_joueur().getPerso().getNom()+";";
-				toSend += ("pos;");
-				toSend += args[2]+";";
-				toSend += args[3]+";";
-				toSend += (args[4]+";");
-				
-				ServerSingleton.getInstance().sendAllClient(toSend);
 			} catch (SQLException e) {
 				e.printStackTrace();
 			}

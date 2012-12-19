@@ -1,6 +1,7 @@
 package com.client.network;
 
 import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -8,14 +9,12 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Timer;
-import org.newdawn.slick.geom.Vector2f;
-import com.client.entities.Joueur;
+import java.util.TimerTask;
+
 import com.client.entities.MainJoueur;
-import com.client.entities.Orientation;
 import com.client.utils.gui.PrincipalGui;
 import com.game_entities.managers.EntitiesManager;
 import com.gameplay.Caracteristique;
-import com.gameplay.entities.Personnage;
 import com.gameplay.managers.CombatManager;
 
 /**
@@ -52,8 +51,7 @@ public class NetworkManager
 		s.setSoTimeout(10);
 		br = new BufferedReader(new InputStreamReader(s.getInputStream()));
 		pw = new PrintWriter(s.getOutputStream());
-		t = new Timer();
-		t.scheduleAtFixedRate(new StayConnectedTask(pw),0,800);
+		
 		instance = this;
 	}
 
@@ -97,14 +95,30 @@ public class NetworkManager
 		try
 		{
 			String res[] = br.readLine().split(";", 2);
+			System.out.println(res[0]+";"+res[1]);
 			message_recu_serveur.put(res[0],res[1]);
 		}
 		catch(Exception e){
 		}
 	}
+	
+	public void startRefreshMessages()
+	{
+		t.scheduleAtFixedRate(new TimerTask() {
+			
+			@Override
+			public void run() {
+				 pw.println("re;");
+			     pw.flush();
+			}
+		}, 0, 50);
+	}
 
 	public void init()
 	{
+		t = new Timer();
+		t.scheduleAtFixedRate(new StayConnectedTask(pw),0,800);
+
 		handleServerMessages = new Thread(new Runnable() {
 
 			@Override
@@ -115,9 +129,9 @@ public class NetworkManager
 					receiveFromServerPossible();
 					
 					String state_message = receiveFromServer("s"); 
-					if(state_message != null && false)
+					if(state_message != null)
 					{
-						String[] temp = state_message.split(";");
+						/*String[] temp = state_message.split(";");
 						if(!EntitiesManager.instance.getPlayers_manager().getMain_player().getPerso().getNom().equals(temp[1]))
 						{
 							boolean contains = false;
@@ -159,7 +173,8 @@ public class NetworkManager
 									System.out.println("Vie : "+vie);
 									MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, vie);
 								}
-							}
+							}*/
+						EntitiesManager.instance.receiveMessage("s;"+state_message);
 					}
 						
 					String combat_message = receiveFromServer("co"); 
@@ -193,8 +208,7 @@ public class NetworkManager
 						}
 						else if(temp[0].equals("ent"))
 						{
-							System.out.println("message transmitted to entities manager");
-							EntitiesManager.instance.receiveMessage(load_message);
+							EntitiesManager.instance.receiveMessage("lo;"+load_message);
 						}
 					}
 				}
