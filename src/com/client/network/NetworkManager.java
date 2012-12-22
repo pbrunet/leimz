@@ -95,7 +95,6 @@ public class NetworkManager
 		try
 		{
 			String res[] = br.readLine().split(";", 2);
-			System.out.println(res[0]+";"+res[1]);
 			message_recu_serveur.put(res[0],res[1]);
 		}
 		catch(Exception e){
@@ -131,49 +130,6 @@ public class NetworkManager
 					String state_message = receiveFromServer("s"); 
 					if(state_message != null)
 					{
-						/*String[] temp = state_message.split(";");
-						if(!EntitiesManager.instance.getPlayers_manager().getMain_player().getPerso().getNom().equals(temp[1]))
-						{
-							boolean contains = false;
-							int index = 0;
-							for(int i = 0; i < EntitiesManager.instance.getPlayers_manager().getJoueurs().size(); i++)
-							{
-								if(EntitiesManager.instance.getPlayers_manager().getJoueurs().get(i).getPerso().getNom().equals(temp[1]))
-								{
-									contains = true;
-									index = i;
-								}
-							}
-
-							if(!contains)
-							{
-								sendToServer("i;"+temp[1]);
-							}
-								else
-								{
-									if(temp[2].equals("pos"))
-									{
-										EntitiesManager.instance.getPlayers_manager().getJoueurs().get(index).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
-										EntitiesManager.instance.getPlayers_manager().getJoueurs().get(index).setOrientation(Joueur.parseStringOrientation(temp[5]));				
-									}
-									
-									else if(temp[2].equals("vie"))
-									{
-										int vie = Integer.parseInt(temp[3]);
-										System.out.println("Vie : "+vie);
-										EntitiesManager.instance.getPlayers_manager().getJoueur(temp[1]).getPerso().getCaracs().put(Caracteristique.VIE, vie);
-									}
-								}
-							}
-							else
-							{
-								if(temp[2].equals("vie"))
-								{
-									int vie = Integer.parseInt(temp[3]);
-									System.out.println("Vie : "+vie);
-									MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, vie);
-								}
-							}*/
 						EntitiesManager.instance.receiveMessage("s;"+state_message);
 					}
 						

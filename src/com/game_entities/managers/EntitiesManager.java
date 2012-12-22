@@ -66,13 +66,11 @@ public class EntitiesManager implements NetworkListener
 			{
 				EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
 				EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).setOrientation(Joueur.parseStringOrientation(temp[5]));
-				System.out.println("Pos du pnj "+temp[2]+" refreshée (nouvelle pos : "+EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).getPos_real().x+","+EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).getPos_real().y+" )");
 			}
 			else if(temp[1].equals("j"))
 			{
 				EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
 				EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).setOrientation(Joueur.parseStringOrientation(temp[5]));
-				System.out.println("Pos du joueur "+temp[2]+" refreshée (nouvelle pos : "+EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).getPos_real().x+","+EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).getPos_real().y+" )");
 			}
 		}
 
