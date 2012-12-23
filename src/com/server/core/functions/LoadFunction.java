@@ -7,6 +7,7 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import com.server.entities.Entity;
 import com.server.entities.Joueur;
 import com.server.entities.PNJ;
 import com.gameplay.Caracteristique;
@@ -285,53 +286,74 @@ public class LoadFunction implements Functionable
 		System.out.println("asking entities");
 		ArrayList<ArrayList<Tile>> grille = MapManager.instance.getTilesAutour(client.getCompte().getCurrent_joueur().getTile(), GlobalConstant.nbCaseNear);
 		
+		ArrayList<Tile> tiles_to_load = new ArrayList<Tile>();
+		for(int i = 0; i < grille.size(); i++)
+		{
+			for(int j = 0; j < grille.get(i).size(); j++)
+			{
+				for(int u = 0; u < client.getCompte().getCurrent_joueur().getBefore_loaded().size(); u++)
+				{
+					if(grille.get(i).get(j) != client.getCompte().getCurrent_joueur().getBefore_loaded().get(u))
+					{
+						tiles_to_load.add(grille.get(i).get(j));
+					}
+					client.getCompte().getCurrent_joueur().getBefore_loaded().set(u,grille.get(i).get(j));
+				}
+			}
+		}
 		
-		ArrayList<Tile> tiles_to_test = new ArrayList<Tile>();
+		ArrayList<Entity> entities_to_load = new ArrayList<Entity>();
 		//Un peu gore, à améliorer
 		for(int i = 0; i < grille.size(); i++)
 		{
 			for(int j = 0; j < grille.get(i).size(); j++)
 			{
-				tiles_to_test.add(grille.get(i).get(j));
-				for(int u = 0; u < client.getCompte().getCurrent_joueur().getLoaded_zone().size(); u++)
+				for(int k = 0; k < EntitiesManager.instance.getEntities().size(); k++)
 				{
-					if(grille.get(i).get(j).equals(client.getCompte().getCurrent_joueur().getLoaded_zone().get(u)))
+					if(EntitiesManager.instance.getEntities().get(k).getTile().equals(grille.get(i).get(j)))
 					{
-						tiles_to_test.remove(grille.get(i).get(j));
+						entities_to_load.add(EntitiesManager.instance.getEntities().get(k));
 					}
 				}
 			}
 		}
 		
 		
+     	ArrayList<Entity> already_loaded = client.getCompte().getCurrent_joueur().getLoaded_entities();
 		//Idem
-		for(int k = 0; k < tiles_to_test.size(); k++)
+		for(int k = 0; k < already_loaded.size(); k++)
 		{
-			for(int i = 0; i < EntitiesManager.instance.getPnjs_manager().getPnjs().size(); i++)
+			for(int i = 0; i < entities_to_load.size(); i++)
 			{
-				if(tiles_to_test.get(k).equals(EntitiesManager.instance.getPnjs_manager().getPnjs().get(i).getTile()))
+				for(int u = 0; u < tiles_to_load.size(); u++)
 				{
-					loadPnj(client, EntitiesManager.instance.getPnjs_manager().getPnjs().get(i));
-				}
-			}
-			for(int i = 0; i < EntitiesManager.instance.getClients_manager().getClients().size(); i++)
-			{
-				if(tiles_to_test.get(k).equals(EntitiesManager.instance.getClients_manager().getClients().get(i).getCompte().getCurrent_joueur().getTile()))
-				{
-					//Si le client détecté n'est pas celui qui fait la demande
-					if(EntitiesManager.instance.getClients_manager().getClients().get(i) != client)
+					if(entities_to_load.get(i).getTile().equals(tiles_to_load.get(u)))
 					{
-						loadPerso(client, EntitiesManager.instance.getClients_manager().getClients().get(i).getCompte().getCurrent_joueur());
+						if(!already_loaded.get(k).equals(entities_to_load.get(i)))
+						{
+							already_loaded.add(entities_to_load.get(i));
+							if(entities_to_load.get(i) instanceof PNJ)
+							{
+								loadPnj(client, (PNJ) entities_to_load.get(i));
+							}
+							else if(entities_to_load.get(i) instanceof Joueur)
+							{
+								//Si le client détecté n'est pas celui qui fait la demande
+								if(entities_to_load.get(i) != client.getCompte().getCurrent_joueur())
+								{
+									loadPerso(client, (Joueur) entities_to_load.get(i));
+								}
+							}
+						}
 					}
+
 				}
-			}		
-			client.getCompte().getCurrent_joueur().getLoaded_zone().add(tiles_to_test.get(k));
-		}
-		
-		
+				
+			}	
+		}	
 	}
 	
-	private void loadPerso(Client client, Joueur joueur)
+	public void loadPerso(Client client, Joueur joueur)
 	{
 		String rc = "lo;ent;j;";
 		rc+= joueur.getPerso().getNom() +";";
@@ -345,7 +367,7 @@ public class LoadFunction implements Functionable
 	}
 	
 	
-	private void loadPnj(Client client, PNJ pnj)
+	public void loadPnj(Client client, PNJ pnj)
 	{
 		String rc = "lo;ent;pnj;";
 		rc += (int)pnj.getTile().getPos().x + ";";

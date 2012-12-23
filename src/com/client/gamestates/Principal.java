@@ -80,6 +80,7 @@ public class Principal extends BasicGameState
 		combatManager = new CombatManager();
 		
 		NetworkManager.instance.init();
+		NetworkManager.instance.startRefreshMessages();
 		
 		pathfinder = new PathFinder(map_manager.getEntire_map());
 		

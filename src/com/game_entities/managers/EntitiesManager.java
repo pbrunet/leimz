@@ -1,12 +1,10 @@
 package com.game_entities.managers;
 
 import java.util.ArrayList;
-
+import org.newdawn.slick.geom.Vector2f;
 import com.client.entities.Entity;
 import com.client.entities.Joueur;
-import com.client.entities.Orientation;
 import com.client.entities.PNJ;
-import com.client.gamestates.Base;
 import com.client.load.LoadPnj;
 import com.client.network.NetworkListener;
 import com.gameplay.entities.Personnage;
@@ -45,21 +43,37 @@ public class EntitiesManager implements NetworkListener
 	public void receiveMessage(String str) 
 	{
 		String[] temp = str.split(";");
-		
-		if(temp[1].equals("pnj"))
+		if(temp[0].equals("lo"))
 		{
-			PNJ pnj = LoadPnj.loadPnj(str.substring(temp[0].length()+1+temp[1].length()+1, str.length()));
-			pnjs_manager.add(pnj);
+			if(temp[2].equals("pnj"))
+			{
+				PNJ pnj = LoadPnj.loadPnj(str.substring(temp[0].length()+1+temp[1].length()+1+temp[2].length()+1, str.length()));
+				pnjs_manager.add(pnj);
+			}
+			
+			else if(temp[2].equals("j"))
+			{
+				Joueur j = new Joueur(new Personnage(temp[3], temp[4], temp[5]),
+						MapManager.instance.getEntire_map().getGrille().get(Integer.parseInt(temp[6])).get(Integer.parseInt(temp[7])),
+						Joueur.parseStringOrientation(temp[8]));
+				EntitiesManager.instance.getPlayers_manager().addNewPlayer(j);
+				EntitiesManager.instance.getPlayers_manager().getJoueurs().get(EntitiesManager.instance.getPlayers_manager().getJoueurs().size()-1).initImgs();
+			}
 		}
-		
-		else if(temp[1].equals("j"))
+		else if(temp[0].equals("s"))
 		{
-			Joueur j = new Joueur(new Personnage(temp[2], temp[3], temp[4]),
-					MapManager.instance.getEntire_map().getGrille().get(Integer.parseInt(temp[5])).get(Integer.parseInt(temp[6])),
-					Joueur.parseStringOrientation(temp[7]));
-			EntitiesManager.instance.getPlayers_manager().addNewPlayer(j);
-			EntitiesManager.instance.getPlayers_manager().getJoueurs().get(EntitiesManager.instance.getPlayers_manager().getJoueurs().size()-1).initImgs();
+			if(temp[1].equals("pnj"))
+			{
+				EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
+				EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).setOrientation(Joueur.parseStringOrientation(temp[5]));
+			}
+			else if(temp[1].equals("j"))
+			{
+				EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
+				EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).setOrientation(Joueur.parseStringOrientation(temp[5]));
+			}
 		}
+
 	}
 	
 	public MonstersManager getMonsters_manager() {

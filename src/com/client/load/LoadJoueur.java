@@ -1,13 +1,13 @@
 package com.client.load;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
 import org.newdawn.slick.Image;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.loading.LoadingList;
 import com.client.entities.Joueur;
 import com.client.entities.Orientation;
-import com.client.gamestates.Base;
 import com.client.network.NetworkManager;
 import com.gameplay.Caracteristique;
 import com.gameplay.Classe;

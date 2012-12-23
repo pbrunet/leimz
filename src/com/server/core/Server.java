@@ -1,6 +1,7 @@
 package com.server.core;
 
 import com.server.db.DBConnection;
+import com.server.entities.managers.EntitiesManager;
 import com.server.misc.Logging;
 import java.io.*;
 import java.net.ServerSocket;
@@ -171,10 +172,6 @@ public class Server
 
 	public void deconnexion(Client client) 
 	{
-		nbclients --;
-		cleanClient();
-		cleanList();
-		seeToServer("Joueur deconnecte! Actuellement il y a "+this.getNbclients()+" joueur");
 		
 		try {
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
@@ -183,6 +180,11 @@ public class Server
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		EntitiesManager.instance.getClients_manager().getClients().remove(client);
+		nbclients --;
+		cleanClient();
+		cleanList();
+		seeToServer("Joueur deconnecte! Actuellement il y a "+this.getNbclients()+" joueur");
 	}
 
 	public void save() {

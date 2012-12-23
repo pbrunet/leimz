@@ -9,6 +9,7 @@ import com.server.core.functions.ConnectFunction;
 import com.server.core.functions.Functionable;
 import com.server.core.functions.InfoFunction;
 import com.server.core.functions.LoadFunction;
+import com.server.core.functions.RefreshFunction;
 import com.server.core.functions.SayFunction;
 import com.server.core.functions.StateFunction;
 
@@ -37,7 +38,8 @@ public class Calculator implements Runnable
 		dictfunctions.put("lo",new LoadFunction());
 		dictfunctions.put("fi",new CombatFunction());
 		dictfunctions.put("a",new AttackFunction());
-
+		dictfunctions.put("re",new RefreshFunction());
+		
 		this.t = new Thread(this);
 		t.start();
 	}
