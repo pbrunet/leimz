@@ -1,8 +1,7 @@
 package com.server.core.functions;
 
-import java.util.List;
-
 import com.server.core.Client;
+import com.server.core.ClientsManager;
 import com.server.core.ServerSingleton;
 
 /**
@@ -30,18 +29,18 @@ public class SayFunction implements Functionable
     	  else
     		  //ON chuchotte
     		  if(args[2].equals("w"))
-    			  ServerSingleton.getInstance().getClient(args[2]).sendToClient("sa"+args[0]+";"+args[1]+";"+client.getCompte().getCurrent_joueur().getPerso().getNom()+";"+args[2]);
+    			  ClientsManager.instance.getClient(args[2]).sendToClient("sa"+args[0]+";"+args[1]+";"+client.getCompte().getCurrent_joueur().getPerso().getNom()+";"+args[2]);
     		  else
     			  ServerSingleton.getInstance().sendAllClient("sa"+args[0]+";"+client.getCompte().getCurrent_joueur().getPerso().getNom()+";"+args[2]);
     	  //TODO a finir
     	  //On parle a proximité
     	  if(args[1].equals("p"))
     	  {
-    		  List<Client> listCli = ServerSingleton.getInstance().getClientnear(client.getCompte().getCurrent_joueur().getTile().getPos().x,client.getCompte().getCurrent_joueur().getTile().getPos().y);
+    		  /*List<Client> listCli = ServerSingleton.getInstance().getClientnear(client.getCompte().getCurrent_joueur().getTile().getPos().x,client.getCompte().getCurrent_joueur().getTile().getPos().y);
     			  for(Client c : listCli)
     			  {
     				  c.sendToClient("sa"+args[0]+";"+args[1]+";"+client.getCompte().getCurrent_joueur().getPerso().getNom()+";"+args[2]);
-    			  }
+    			  }*/
     	  }
     }
 }

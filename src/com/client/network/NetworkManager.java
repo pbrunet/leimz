@@ -17,20 +17,9 @@ import com.game_entities.managers.EntitiesManager;
 import com.gameplay.Caracteristique;
 import com.gameplay.managers.CombatManager;
 
-/**
- * @author Kratisto
- */
 public class NetworkManager 
 {
-	/**
-	 *Objet permettant de lire ce que le serveur envoie
-	 *@see BufferedReader
-	 */
 	private BufferedReader br;
-	/**
-	 * Objet permettant d'ecrire au server
-	 * @see PrintWriter
-	 */
 	private PrintWriter pw; 
 	private Socket s;
 
@@ -133,7 +122,7 @@ public class NetworkManager
 						EntitiesManager.instance.receiveMessage("s;"+state_message);
 					}
 						
-					String combat_message = receiveFromServer("co"); 
+					String combat_message = receiveFromServer("fi"); 
 					if(combat_message != null)
 					{
 						CombatManager.instance.receiveMessage(combat_message);
@@ -143,8 +132,11 @@ public class NetworkManager
 					if(attack_message != null)
 					{
 						String[] temp = attack_message.split(";");
-						MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)-Integer.parseInt(temp[1]));
-						NetworkManager.instance.sendToServer("s;vie;"+MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)+";"+temp[0]);
+						String sender = temp[0];
+						String nom_sort = temp[1];
+						int degats = Integer.parseInt(temp[2]);
+						
+						MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)-degats);
 					}
 					
 					String say_message = receiveFromServer("sa");

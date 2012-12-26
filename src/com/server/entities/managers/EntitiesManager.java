@@ -1,31 +1,31 @@
 package com.server.entities.managers;
 
 import java.util.ArrayList;
-
-
 import com.server.entities.Entity;
 
 public class EntitiesManager 
 {
 	private MonstersManager monsters_manager;
-	private ClientsManager clients_manager;
 	private PNJsManager pnjs_manager;
+	private PlayersManager players_manager;
+	
+	
 	private ArrayList<Entity> entities;
 	public static EntitiesManager instance;
 	
 	public EntitiesManager()
 	{
 		instance = this;
-		clients_manager = new ClientsManager();
 		entities = new ArrayList<Entity>();
+		players_manager = new PlayersManager();
 	}
 
 	private void refreshEntities()
 	{
 		this.entities.removeAll(entities);
-		for(int i = 0; i < clients_manager.getClients().size(); i++)
+		for(int i = 0; i < players_manager.getJoueurs().size(); i++)
 		{
-			this.entities.add(clients_manager.getClients().get(i).getCompte().getCurrent_joueur());
+			this.entities.add(players_manager.getJoueurs().get(i));
 		}
 		for(int i = 0; i < pnjs_manager.getPnjs().size(); i++)
 		{
@@ -41,12 +41,12 @@ public class EntitiesManager
 		monsters_manager = monstersManager;
 	}
 	
-	public ClientsManager getClients_manager() {
-		return clients_manager;
+	public PlayersManager getPlayers_manager() {
+		return players_manager;
 	}
 
-	public void setClients_manager(ClientsManager clientsManager) {
-		clients_manager = clientsManager;
+	public void setPlayers_manager(PlayersManager players_manager) {
+		this.players_manager = players_manager;
 	}
 
 	public PNJsManager getPnjs_manager() {

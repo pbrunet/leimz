@@ -2,7 +2,7 @@ package com.server.core.functions;
 
 import com.gameplay.Caracteristique;
 import com.server.core.Client;
-import com.server.core.ServerSingleton;
+import com.server.core.ClientsManager;
 
 public class CombatFunction implements Functionable
 {
@@ -37,25 +37,13 @@ public class CombatFunction implements Functionable
 	private void answerAskingFunction(Client c, String[] args) 
 	{
 		System.out.println("answer asking");
-		Client receiver = null;
-		for(int i = 0; i < ServerSingleton.getInstance().getCl().size(); i++)
-		{
-			for(int j = 0; j < ServerSingleton.getInstance().getCl().get(i).getClients().size(); j++)
-			{
-				System.out.println(ServerSingleton.getInstance().getCl().get(i).getClients().get(j).getCompte().getCurrent_joueur().getPerso().getNom());
-				if(ServerSingleton.getInstance().getCl().get(i).getClients().get(j).getCompte().getCurrent_joueur().getPerso().getNom().equals(args[3]))
-				{
-					receiver = ServerSingleton.getInstance().getCl().get(i).getClients().get(j);
-					System.out.println("Client trouvé !");
-				}
-			}
-		}
+		Client receiver = ClientsManager.instance.getClient(args[3]);
 		
 		if(args[2].equals("y"))
 		{
+			receiver.sendToClient("s;j;"+c.getCompte().getCurrent_joueur().getPerso().getNom()+";vie;"+c.getCompte().getCurrent_joueur().getPerso().getCaracs_values().get(Caracteristique.VIE));
+			c.sendToClient("s;j;"+receiver.getCompte().getCurrent_joueur().getPerso().getNom()+";vie;"+receiver.getCompte().getCurrent_joueur().getPerso().getCaracs_values().get(Caracteristique.VIE));
 			receiver.sendToClient("fi;an;y;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
-			receiver.sendToClient("s;"+c.getCompte().getCurrent_joueur().getPerso().getNom()+";vie;"+c.getCompte().getCurrent_joueur().getPerso().getCaracs().get(Caracteristique.VIE));
-			c.sendToClient("s;"+receiver.getCompte().getCurrent_joueur().getPerso().getNom()+";vie;"+receiver.getCompte().getCurrent_joueur().getPerso().getCaracs().get(Caracteristique.VIE));
 		}
 		else if(args[2].equals("n"))
 		{
@@ -67,19 +55,7 @@ public class CombatFunction implements Functionable
 	private void askingFunction(Client c, String[] args)
 	{
 		System.out.println("asking");
-		Client receiver = null;
-		for(int i = 0; i < ServerSingleton.getInstance().getCl().size(); i++)
-		{
-			for(int j = 0; j < ServerSingleton.getInstance().getCl().get(i).getClients().size(); j++)
-			{
-				System.out.println(ServerSingleton.getInstance().getCl().get(i).getClients().get(j).getCompte().getCurrent_joueur().getPerso().getNom());
-				if(ServerSingleton.getInstance().getCl().get(i).getClients().get(j).getCompte().getCurrent_joueur().getPerso().getNom().equals(args[2]))
-				{
-					receiver = ServerSingleton.getInstance().getCl().get(i).getClients().get(j);
-					System.out.println("Client trouvé !");
-				}
-			}
-		}
+		Client receiver = ClientsManager.instance.getClient(args[2]);
 		
 		receiver.sendToClient("fi;ask;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
 	}
@@ -89,16 +65,12 @@ public class CombatFunction implements Functionable
 	{
 		System.out.println("cancel asking");
 		Client receiver = null;
-		for(int i = 0; i < ServerSingleton.getInstance().getCl().size(); i++)
+		for(int i = 0; i < ClientsManager.instance.getClients().size(); i++)
 		{
-			for(int j = 0; j < ServerSingleton.getInstance().getCl().get(i).getClients().size(); j++)
+			if(ClientsManager.instance.getClients().get(i).getCompte().getCurrent_joueur().getPerso().getNom().equals(args[2]))
 			{
-				System.out.println(ServerSingleton.getInstance().getCl().get(i).getClients().get(j).getCompte().getCurrent_joueur().getPerso().getNom());
-				if(ServerSingleton.getInstance().getCl().get(i).getClients().get(j).getCompte().getCurrent_joueur().getPerso().getNom().equals(args[2]))
-				{
-					receiver = ServerSingleton.getInstance().getCl().get(i).getClients().get(j);
-					System.out.println("Client trouvé !");
-				}
+				receiver = ClientsManager.instance.getClients().get(i);
+				System.out.println("Client trouvé !");
 			}
 		}
 		

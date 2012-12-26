@@ -14,9 +14,7 @@ public class ClientList implements Callable<Void>
 	 **/
 	public ClientList()
 	{
-		super();
 		clients = new ArrayList<Client>();
-
 	}
 	/**
 	 * Ajout d'un client

@@ -7,6 +7,7 @@ import com.client.entities.Joueur;
 import com.client.entities.PNJ;
 import com.client.load.LoadPnj;
 import com.client.network.NetworkListener;
+import com.gameplay.Caracteristique;
 import com.gameplay.entities.Personnage;
 import com.map.client.managers.MapManager;
 
@@ -64,13 +65,23 @@ public class EntitiesManager implements NetworkListener
 		{
 			if(temp[1].equals("pnj"))
 			{
-				EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
-				EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).setOrientation(Joueur.parseStringOrientation(temp[5]));
+				if(temp[3].equals("pos"))
+				{
+					EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).setPos_real(new Vector2f(Float.parseFloat(temp[4]), Float.parseFloat(temp[5])));
+					EntitiesManager.instance.getPnjs_manager().getPnj(temp[2]).setOrientation(Joueur.parseStringOrientation(temp[6]));
+				}
 			}
 			else if(temp[1].equals("j"))
 			{
-				EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).setPos_real(new Vector2f(Float.parseFloat(temp[3]), Float.parseFloat(temp[4])));
-				EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).setOrientation(Joueur.parseStringOrientation(temp[5]));
+				if(temp[3].equals("pos"))
+				{
+					EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).setPos_real(new Vector2f(Float.parseFloat(temp[4]), Float.parseFloat(temp[5])));
+					EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).setOrientation(Joueur.parseStringOrientation(temp[6]));
+				}
+				else if(temp[3].equals("vie"))
+				{
+					EntitiesManager.instance.getPlayers_manager().getJoueur(temp[2]).getPerso().getCaracs().put(Caracteristique.VIE, Integer.parseInt(temp[4]));
+				}
 			}
 		}
 

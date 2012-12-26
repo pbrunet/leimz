@@ -27,8 +27,6 @@ public class MainJoueur extends Joueur
 	{
 		super(perso, tile, orientation);
 		
-
-
 		this.pos_real.x += 40;
 		this.pos_real.y += 20;
 
@@ -41,12 +39,8 @@ public class MainJoueur extends Joueur
 		{
 			instance = this;
 		}
-		
 	}
 
-	
-	
-	
 	public void pollEvents(Input input)
 	{
 		/**

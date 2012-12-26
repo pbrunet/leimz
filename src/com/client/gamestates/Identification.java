@@ -215,7 +215,9 @@ public class Identification extends BasicGameState
 			test_sbg.enterState(Base.LOADING);
 		}
 		else 
+		{
 			openPopup("Nom de compte ou mot de passe incorrect. Veuillez reessayer :p");
+		}
 	}
 
 	private void openPopup(String text)

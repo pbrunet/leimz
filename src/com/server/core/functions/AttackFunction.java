@@ -7,6 +7,7 @@ import java.util.Random;
 
 import com.gameplay.Caracteristique;
 import com.server.core.Client;
+import com.server.core.ClientsManager;
 import com.server.core.ServerSingleton;
 import com.server.core.functions.Functionable;
 
@@ -48,12 +49,16 @@ public class AttackFunction implements Functionable
 			int degats = value_min+random.nextInt(value_max-value_min);
 			System.out.println("Degats : "+degats);
 			
-			int vie = c.getCompte().getCurrent_joueur().getPerso().getCaracs().get(Caracteristique.VIE)-degats;
-			c.getCompte().getCurrent_joueur().getPerso().getCaracs().put(Caracteristique.VIE, vie);
+			Client cible = ClientsManager.instance.getClient(args[1]);
+			int vie = cible.getCompte().getCurrent_joueur().getPerso().getCaracs_values().get(Caracteristique.VIE)-degats;
+			cible.getCompte().getCurrent_joueur().getPerso().getCaracs_values().put(Caracteristique.VIE, vie);
 			
 			rsp.close();
-			c.sendToClient("a;"+args[2]+";"+degats);
-			ServerSingleton.getInstance().sendAllClient("s;"+c.getCompte().getCurrent_joueur().getPerso().getNom()+";"+"vie;"+vie);
+			String toSendToSender = "s;j;"+cible.getCompte().getCurrent_joueur().getPerso().getNom()+";vie;"+cible.getCompte().getCurrent_joueur().getPerso().getCaracs_values().get(Caracteristique.VIE);
+			c.sendToClient(toSendToSender);
+			
+			String toSendToReceiver = "a;j;"+c.getCompte().getCurrent_joueur().getPerso().getNom()+";"+args[2]+";"+degats;
+			cible.sendToClient(toSendToReceiver);
 
 			stmt.close();
 		} catch (SQLException e) {

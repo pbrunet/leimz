@@ -79,8 +79,8 @@ CREATE TABLE `caracteristiques_classe` (
   `value` int(11) NOT NULL,
   PRIMARY KEY (`classe`,`caracteristique`),
   KEY `id_caracteristique` (`caracteristique`),
-  CONSTRAINT `caracteristiques_classe_ibfk_2` FOREIGN KEY (`classe`) REFERENCES `classe` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `caracteristiques_classe_ibfk_1` FOREIGN KEY (`caracteristique`) REFERENCES `caracteristiques` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `caracteristiques_classe_ibfk_1` FOREIGN KEY (`caracteristique`) REFERENCES `caracteristiques` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `caracteristiques_classe_ibfk_2` FOREIGN KEY (`classe`) REFERENCES `classe` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -108,8 +108,8 @@ CREATE TABLE `caracteristiques_joueur` (
   `current_value` int(11) DEFAULT NULL,
   PRIMARY KEY (`nom_joueur`,`caracteristique`),
   KEY `caracteristique` (`caracteristique`),
-  CONSTRAINT `caracteristiques_joueur_ibfk_2` FOREIGN KEY (`nom_joueur`) REFERENCES `personnage` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `caracteristiques_joueur_ibfk_1` FOREIGN KEY (`caracteristique`) REFERENCES `caracteristiques` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `caracteristiques_joueur_ibfk_1` FOREIGN KEY (`caracteristique`) REFERENCES `caracteristiques` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `caracteristiques_joueur_ibfk_2` FOREIGN KEY (`nom_joueur`) REFERENCES `personnage` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -119,7 +119,7 @@ CREATE TABLE `caracteristiques_joueur` (
 
 LOCK TABLES `caracteristiques_joueur` WRITE;
 /*!40000 ALTER TABLE `caracteristiques_joueur` DISABLE KEYS */;
-INSERT INTO `caracteristiques_joueur` VALUES ('Choco','deplacement',8000,0),('Choco','dommages_cac',6,0),('Choco','dommages_magie',10,0),('Choco','endurance',10,0),('Choco','energie',150,0),('Choco','precision',60,0),('Choco','vie',20,0),('FaZeGa','deplacement',8000,0),('FaZeGa','dommages_cac',10,0),('FaZeGa','dommages_magie',6,0),('FaZeGa','endurance',20,0),('FaZeGa','energie',150,0),('FaZeGa','precision',60,0),('FaZeGa','vie',10,0);
+INSERT INTO `caracteristiques_joueur` VALUES ('Choco','deplacement',10,10),('Choco','dommages_cac',10,10),('Choco','dommages_magie',10,10),('Choco','endurance',2500,2500),('Choco','energie',8000,8000),('Choco','precision',60,0),('Choco','vie',150,150),('FaZeGa','deplacement',10,10),('FaZeGa','dommages_cac',10,10),('FaZeGa','dommages_magie',10,10),('FaZeGa','endurance',2500,2500),('FaZeGa','energie',8000,8000),('FaZeGa','precision',60,0),('FaZeGa','vie',150,150);
 /*!40000 ALTER TABLE `caracteristiques_joueur` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -136,8 +136,8 @@ CREATE TABLE `caracteristiques_objet` (
   `value` int(11) NOT NULL,
   PRIMARY KEY (`objet`,`caracteristique`),
   KEY `id_caracteristique` (`caracteristique`),
-  CONSTRAINT `caracteristiques_objet_ibfk_2` FOREIGN KEY (`objet`) REFERENCES `item` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `caracteristiques_objet_ibfk_1` FOREIGN KEY (`caracteristique`) REFERENCES `caracteristiques` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `caracteristiques_objet_ibfk_1` FOREIGN KEY (`caracteristique`) REFERENCES `caracteristiques` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `caracteristiques_objet_ibfk_2` FOREIGN KEY (`objet`) REFERENCES `item` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -164,8 +164,8 @@ CREATE TABLE `caracteristiques_race` (
   `value` int(11) NOT NULL,
   PRIMARY KEY (`race`,`caracteristique`),
   KEY `id_caracteristique` (`caracteristique`),
-  CONSTRAINT `caracteristiques_race_ibfk_2` FOREIGN KEY (`race`) REFERENCES `race` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `caracteristiques_race_ibfk_1` FOREIGN KEY (`caracteristique`) REFERENCES `caracteristiques` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `caracteristiques_race_ibfk_1` FOREIGN KEY (`caracteristique`) REFERENCES `caracteristiques` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `caracteristiques_race_ibfk_2` FOREIGN KEY (`race`) REFERENCES `race` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -214,8 +214,8 @@ CREATE TABLE `classe_sort` (
   `sort` varchar(50) NOT NULL,
   PRIMARY KEY (`classe`,`sort`),
   KEY `sort` (`sort`),
-  CONSTRAINT `classe_sort_ibfk_2` FOREIGN KEY (`sort`) REFERENCES `sorts_classe` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `classe_sort_ibfk_1` FOREIGN KEY (`classe`) REFERENCES `classe` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `classe_sort_ibfk_1` FOREIGN KEY (`classe`) REFERENCES `classe` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `classe_sort_ibfk_2` FOREIGN KEY (`sort`) REFERENCES `sorts_classe` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -242,8 +242,8 @@ CREATE TABLE `inventaire` (
   `quantity` int(11) NOT NULL,
   PRIMARY KEY (`joueur`,`objet`),
   KEY `objet` (`objet`),
-  CONSTRAINT `inventaire_ibfk_2` FOREIGN KEY (`objet`) REFERENCES `item` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `inventaire_ibfk_1` FOREIGN KEY (`joueur`) REFERENCES `personnage` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `inventaire_ibfk_1` FOREIGN KEY (`joueur`) REFERENCES `personnage` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `inventaire_ibfk_2` FOREIGN KEY (`objet`) REFERENCES `item` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -406,9 +406,9 @@ CREATE TABLE `personnage` (
   KEY `compte` (`compte`),
   KEY `classe` (`classe`),
   KEY `race` (`race`),
-  CONSTRAINT `personnage_ibfk_3` FOREIGN KEY (`classe`) REFERENCES `classe` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `personnage_ibfk_1` FOREIGN KEY (`compte`) REFERENCES `account` (`nom_de_compte`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `personnage_ibfk_2` FOREIGN KEY (`race`) REFERENCES `race` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `personnage_ibfk_2` FOREIGN KEY (`race`) REFERENCES `race` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `personnage_ibfk_3` FOREIGN KEY (`classe`) REFERENCES `classe` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -418,7 +418,7 @@ CREATE TABLE `personnage` (
 
 LOCK TABLES `personnage` WRITE;
 /*!40000 ALTER TABLE `personnage` DISABLE KEYS */;
-INSERT INTO `personnage` VALUES ('chelendil','Groz','barbare','Choco',20,'b',20),('fazega','Groz','barbare','FaZeGa',22,'h',30),('fazega','Groz','barbare','Memor',20,'b',20);
+INSERT INTO `personnage` VALUES ('chelendil','Groz','barbare','Choco',38,'b',37),('fazega','Groz','barbare','FaZeGa',36,'h',37),('fazega','Groz','barbare','Memor',20,'b',20);
 /*!40000 ALTER TABLE `personnage` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -462,8 +462,8 @@ CREATE TABLE `pnj_discours` (
   PRIMARY KEY (`id`),
   KEY `after_answer` (`after_answer`),
   KEY `nom_pnj` (`nom_pnj`),
-  CONSTRAINT `pnj_discours_ibfk_3` FOREIGN KEY (`nom_pnj`) REFERENCES `pnj` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `pnj_discours_ibfk_2` FOREIGN KEY (`after_answer`) REFERENCES `pnj_discours` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `pnj_discours_ibfk_2` FOREIGN KEY (`after_answer`) REFERENCES `pnj_discours` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `pnj_discours_ibfk_3` FOREIGN KEY (`nom_pnj`) REFERENCES `pnj` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=11 DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -512,8 +512,8 @@ CREATE TABLE `race_sort` (
   `sort` varchar(50) NOT NULL,
   PRIMARY KEY (`race`,`sort`),
   KEY `sort` (`sort`),
-  CONSTRAINT `race_sort_ibfk_2` FOREIGN KEY (`sort`) REFERENCES `sorts_race` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `race_sort_ibfk_1` FOREIGN KEY (`race`) REFERENCES `race` (`name`) ON DELETE CASCADE ON UPDATE CASCADE
+  CONSTRAINT `race_sort_ibfk_1` FOREIGN KEY (`race`) REFERENCES `race` (`name`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `race_sort_ibfk_2` FOREIGN KEY (`sort`) REFERENCES `sorts_race` (`nom`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -644,4 +644,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-11-25 16:01:29
+-- Dump completed on 2012-12-26 15:52:32
