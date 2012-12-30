@@ -57,7 +57,6 @@ public class Calculator implements Runnable
 			}
 			catch(RuntimeException e){
 				source.sendToClient("REQUEST_FAIL");
-				e.printStackTrace();
 				System.out.println("W : " + e.getMessage() + " request failed");
 				ServerSingleton.getInstance().deconnexion(source);
 			}

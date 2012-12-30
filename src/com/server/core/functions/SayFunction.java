@@ -1,5 +1,6 @@
 package com.server.core.functions;
 
+import java.util.ArrayList;
 import com.server.core.Client;
 import com.server.core.ClientsManager;
 import com.server.core.ServerSingleton;
@@ -36,11 +37,8 @@ public class SayFunction implements Functionable
     	  //On parle a proximité
     	  if(args[1].equals("p"))
     	  {
-    		  /*List<Client> listCli = ServerSingleton.getInstance().getClientnear(client.getCompte().getCurrent_joueur().getTile().getPos().x,client.getCompte().getCurrent_joueur().getTile().getPos().y);
-    			  for(Client c : listCli)
-    			  {
-    				  c.sendToClient("sa"+args[0]+";"+args[1]+";"+client.getCompte().getCurrent_joueur().getPerso().getNom()+";"+args[2]);
-    			  }*/
+    		  ArrayList<Client> listCli = ClientsManager.instance.getClientsNear(client);
+    		  ServerSingleton.getInstance().sendToClients(listCli, "sa"+args[0]+";"+args[1]+";"+client.getCompte().getCurrent_joueur().getPerso().getNom()+";"+args[2]);
     	  }
     }
 }

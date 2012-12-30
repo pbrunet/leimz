@@ -132,9 +132,11 @@ public class NetworkManager
 					if(attack_message != null)
 					{
 						String[] temp = attack_message.split(";");
-						String sender = temp[0];
-						String nom_sort = temp[1];
-						int degats = Integer.parseInt(temp[2]);
+						@SuppressWarnings("unused")
+						String sender = temp[1];
+						@SuppressWarnings("unused")
+						String nom_sort = temp[2];
+						int degats = Integer.parseInt(temp[3]);
 						
 						MainJoueur.instance.getPerso().getCaracs().put(Caracteristique.VIE, MainJoueur.instance.getPerso().getCaracs().get(Caracteristique.VIE)-degats);
 					}

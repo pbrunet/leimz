@@ -38,7 +38,6 @@ public class Load implements Runnable
 		loadMap();
 		loadEntities();
 		System.out.println("Loading terminé.");
-		System.out.println("");
 	}
 	
 	private void loadEntities()

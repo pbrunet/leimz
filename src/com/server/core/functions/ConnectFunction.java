@@ -41,21 +41,12 @@ public class ConnectFunction implements Functionable
 			Statement stmt;
 			try {
 				stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
-			} catch (SQLException e) {
-				throw new RuntimeException("Finding account statement's creation failed");
-			}
-			try {
 				rsj = stmt.executeQuery("SELECT currjoueur,connected FROM Account " +
 						"WHERE nom_de_compte='"+ndc+"' " +
 						"AND mot_de_passe='"+mdp+"'");
-			} catch (SQLException e) {
-				throw new RuntimeException("Issue with executing query (syntax ?) for finding account");
-			}
-
-			try {
 				rsj.next();
 			} catch (SQLException e) {
-				throw new RuntimeException(e);
+				throw new RuntimeException("Issue with executing query (syntax ?) for finding account");
 			}
 			
 			String name="";
@@ -92,15 +83,9 @@ public class ConnectFunction implements Functionable
 				rsp = stmt.executeQuery("SELECT race,classe,posx,posy,orientation " +
 						"FROM personnage " +
 						"WHERE name='"+name+"'");
-			} catch (SQLException e) {
-				throw new RuntimeException("Issue with executing query (syntax ?) for finding player");
-			}
-			
-			try {
 				rsp.next();
 			} catch (SQLException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				throw new RuntimeException("Issue with executing query (syntax ?) for finding player");
 			}
 			
 			String race =null, classe=null, ori=null;

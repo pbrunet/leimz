@@ -35,17 +35,36 @@ public class AttackFunction implements Functionable
 					"FROM Sorts_classe, Sorts_race, classe_sort, race_sort, personnage " +
 					"WHERE personnage.name=\""+c.getCompte().getCurrent_joueur().getPerso().getNom()+"\""+
 					" AND (sorts_classe.nom=\""+args[2]+"\" OR sorts_race.nom=\""+args[2]+"\") "+
-					" AND race_sort.id_race=personnage.race"+
-					" AND classe_sort.id_classe=personnage.classe");
+					" AND (classe_sort.sort=\""+args[2]+"\" OR race_sort.sort=\""+args[2]+"\") "+
+					" AND race_sort.race=personnage.race"+
+					" AND classe_sort.classe=personnage.classe");
 			
 			int value_min = 0, value_max = 0;
 			while(rsp.next())
 			{
-				value_min = rsp.getInt("value_min");
-				value_max = rsp.getInt("value_max");
+				if(rsp.getInt(1)!=0)
+				{
+					value_min = rsp.getInt(1);
+				}
+				else
+				{
+					value_min = rsp.getInt(2);
+				}
+				
+				if(rsp.getInt(3)!=0)
+				{
+					value_max = rsp.getInt(3);
+				}
+				else
+				{
+					value_max = rsp.getInt(4);
+				}
+				System.out.println(value_min);
+				System.out.println(value_max);
 			}
 			
 			Random random = new Random();
+			System.out.println(value_min +" : "+value_max);
 			int degats = value_min+random.nextInt(value_max-value_min);
 			System.out.println("Degats : "+degats);
 			

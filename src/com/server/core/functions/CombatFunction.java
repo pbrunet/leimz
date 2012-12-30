@@ -36,7 +36,6 @@ public class CombatFunction implements Functionable
 
 	private void answerAskingFunction(Client c, String[] args) 
 	{
-		System.out.println("answer asking");
 		Client receiver = ClientsManager.instance.getClient(args[3]);
 		
 		if(args[2].equals("y"))
@@ -54,7 +53,6 @@ public class CombatFunction implements Functionable
 
 	private void askingFunction(Client c, String[] args)
 	{
-		System.out.println("asking");
 		Client receiver = ClientsManager.instance.getClient(args[2]);
 		
 		receiver.sendToClient("fi;ask;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
@@ -63,16 +61,7 @@ public class CombatFunction implements Functionable
 	
 	private void cancelAskingFunction(Client c, String[] args)
 	{
-		System.out.println("cancel asking");
-		Client receiver = null;
-		for(int i = 0; i < ClientsManager.instance.getClients().size(); i++)
-		{
-			if(ClientsManager.instance.getClients().get(i).getCompte().getCurrent_joueur().getPerso().getNom().equals(args[2]))
-			{
-				receiver = ClientsManager.instance.getClients().get(i);
-				System.out.println("Client trouvé !");
-			}
-		}
+		Client receiver = ClientsManager.instance.getClient(args[2]);
 		
 		receiver.sendToClient("fi;can;"+c.getCompte().getCurrent_joueur().getPerso().getNom());
 	}

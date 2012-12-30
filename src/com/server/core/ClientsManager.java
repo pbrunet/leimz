@@ -2,6 +2,8 @@ package com.server.core;
 
 import java.util.ArrayList;
 import com.server.core.ClientList;
+import com.server.entities.Joueur;
+import com.server.entities.managers.EntitiesManager;
 
 public class ClientsManager 
 {
@@ -73,6 +75,24 @@ public class ClientsManager
 			}
 		}
 		return cli;	
+	}
+	
+	public ArrayList<Client> getClientsNear(Client client)
+	{
+		refreshClients();
+		ArrayList<Joueur> entities_near = EntitiesManager.instance.getPlayersAround(client.getCompte().getCurrent_joueur());
+		ArrayList<Client> clients_around = new ArrayList<>();
+		for(int i = 0; i < entities_near.size(); i++)
+		{
+			for(int k = 0; k < clients.size(); k++)
+			{
+				if(clients.get(k).getCompte().getCurrent_joueur().equals(entities_near.get(i)))
+				{
+					clients_around.add(clients.get(k));
+				}
+			}
+		}
+		return clients_around;
 	}
 	
 	public ArrayList<Client> getClients() {

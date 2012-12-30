@@ -418,7 +418,7 @@ CREATE TABLE `personnage` (
 
 LOCK TABLES `personnage` WRITE;
 /*!40000 ALTER TABLE `personnage` DISABLE KEYS */;
-INSERT INTO `personnage` VALUES ('chelendil','Groz','barbare','Choco',38,'b',37),('fazega','Groz','barbare','FaZeGa',36,'h',37),('fazega','Groz','barbare','Memor',20,'b',20);
+INSERT INTO `personnage` VALUES ('chelendil','Groz','barbare','Choco',37,'b',34),('fazega','Groz','barbare','FaZeGa',33,'h',32),('fazega','Groz','barbare','Memor',20,'b',20);
 /*!40000 ALTER TABLE `personnage` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -539,7 +539,6 @@ CREATE TABLE `sorts_classe` (
   `value_min` int(11) DEFAULT NULL,
   `description` varchar(250) NOT NULL,
   `value_max` int(11) DEFAULT NULL,
-  `id_classe` int(11) DEFAULT NULL,
   PRIMARY KEY (`nom`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -550,7 +549,7 @@ CREATE TABLE `sorts_classe` (
 
 LOCK TABLES `sorts_classe` WRITE;
 /*!40000 ALTER TABLE `sorts_classe` DISABLE KEYS */;
-INSERT INTO `sorts_classe` VALUES ('Coup de Poing',5,'Donne un coup de poing puissant à l\'adversaire, qui peut aller jusqu\'à l\'assomer.',7,1);
+INSERT INTO `sorts_classe` VALUES ('Coup de Poing',50,'Donne un coup de poing puissant à l\'adversaire, qui peut aller jusqu\'à l\'assomer.',52);
 /*!40000 ALTER TABLE `sorts_classe` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -566,7 +565,6 @@ CREATE TABLE `sorts_race` (
   `value_min` int(11) DEFAULT NULL,
   `description` varchar(250) NOT NULL,
   `value_max` int(11) DEFAULT NULL,
-  `id_race` int(11) DEFAULT NULL,
   PRIMARY KEY (`nom`)
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -577,7 +575,7 @@ CREATE TABLE `sorts_race` (
 
 LOCK TABLES `sorts_race` WRITE;
 /*!40000 ALTER TABLE `sorts_race` DISABLE KEYS */;
-INSERT INTO `sorts_race` VALUES ('Bouclier d\'énergie',NULL,'Fais apparaître un bouclier magique autour du lanceur, qui le protège de toute attaque',NULL,1);
+INSERT INTO `sorts_race` VALUES ('Bouclier d\'énergie',NULL,'Fais apparaître un bouclier magique autour du lanceur, qui le protège de toute attaque',NULL);
 /*!40000 ALTER TABLE `sorts_race` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -644,4 +642,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2012-12-26 15:52:32
+-- Dump completed on 2012-12-30 14:41:42
