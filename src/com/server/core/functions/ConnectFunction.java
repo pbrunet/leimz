@@ -68,11 +68,6 @@ public class ConnectFunction implements Functionable
 			
 			try {
 				rsj.close();
-			} catch (SQLException e) {
-				e.printStackTrace();
-			}
-			
-			try {
 				stmt.executeUpdate("UPDATE Account SET connected=true WHERE nom_de_compte='"+ndc+"'");
 			} catch (SQLException e) {
 				throw new RuntimeException("Finding player statement's creation failed");

@@ -59,12 +59,9 @@ public class AttackFunction implements Functionable
 				{
 					value_max = rsp.getInt(4);
 				}
-				System.out.println(value_min);
-				System.out.println(value_max);
 			}
 			
 			Random random = new Random();
-			System.out.println(value_min +" : "+value_max);
 			int degats = value_min+random.nextInt(value_max-value_min);
 			System.out.println("Degats : "+degats);
 			
