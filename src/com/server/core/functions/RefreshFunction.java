@@ -50,7 +50,7 @@ public class RefreshFunction implements Functionable
 			{
 				c.sendToClient(
 						"s;j;"
-				+((Joueur)loaded_entities.get(i)).getPerso().getNom()+";"
+				+((Joueur)loaded_entities.get(i)).getPerso().getNom()+";pos;"
 				+loaded_entities.get(i).getPos_real().x+";"
 				+loaded_entities.get(i).getPos_real().y+";"
 				+loaded_entities.get(i).stringOrientation()
@@ -60,7 +60,7 @@ public class RefreshFunction implements Functionable
 			{
 				c.sendToClient(
 						"s;pnj;"
-				+((PNJ)loaded_entities.get(i)).getNom()+";"
+				+((PNJ)loaded_entities.get(i)).getNom()+";pos;"
 				+loaded_entities.get(i).getPos_real().x+";"
 				+loaded_entities.get(i).getPos_real().y+";"
 				+loaded_entities.get(i).stringOrientation()

@@ -70,17 +70,13 @@ public class Calculator implements Runnable
 		{
 			try
 			{
-				// Pour chaque client connecte
-				for(int i = 0; i < ServerSingleton.getInstance().getCl().size(); i++)
+				for(int i = 0; i < ClientsManager.instance.getClients().size(); i++)
 				{
-					for(int j = 0; j < ServerSingleton.getInstance().getCl().get(i).getClients().size(); j++)
-					{
-						Client c = ServerSingleton.getInstance().getCl().get(i).getClients().get(j);
-						try {
-							this.submit(c,c.receiveFromClient());
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+					Client c = ClientsManager.instance.getClients().get(i);
+					try {
+						this.submit(c,c.receiveFromClient());
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
 				}
 			}

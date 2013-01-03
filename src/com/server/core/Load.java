@@ -34,9 +34,10 @@ public class Load implements Runnable
 	@Override
 	public void run() 
 	{
+		System.out.println("Loading des données en cours (map, entités) ...");
 		loadMap();
 		loadEntities();
-		System.out.println("load ok");
+		System.out.println("Loading terminé.");
 	}
 	
 	private void loadEntities()

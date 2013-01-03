@@ -52,7 +52,7 @@ public class MainEventListener extends EventListener
 			}
 			else
 			{
-				MainJoueur.instance.getPerso().setCurrent_sort(MainJoueur.instance.getPerso().getSorts().get(0));
+				MainJoueur.instance.getPerso().setCurrent_sort(MainJoueur.instance.getPerso().getSorts().get(1));
 			}
 		}
 		

@@ -39,7 +39,7 @@ public class CombatManager implements NetworkListener
 	public void askCombat(Joueur j)
 	{
 		final String nom = j.getPerso().getNom();
-		NetworkManager.instance.sendToServer("co;ask;"+nom);
+		NetworkManager.instance.sendToServer("fi;ask;"+nom);
 		
 		waitingAskFrame = PrincipalGui.getDialogPane("En attente de réponse pour votre demande de combat à "+j.getPerso().getNom(),  PrincipalGui.CANCEL_PANE);
 		((Button)waitingAskFrame.getChild(0).getChild(1)).addCallback(new Runnable() {
@@ -47,7 +47,7 @@ public class CombatManager implements NetworkListener
 			@Override
 			public void run() {
 				waitingAskFrame.setVisible(false);
-				NetworkManager.instance.sendToServer("co;can;"+nom);
+				NetworkManager.instance.sendToServer("fi;can;"+nom);
 			}
 		});
 		GUI_Manager.instance.getRoot().add(waitingAskFrame);
@@ -118,12 +118,13 @@ public class CombatManager implements NetworkListener
 			{
 				final String nom = temp[1];
 				answerFrame = PrincipalGui.getDialogPane(nom+" vous propose un combat formel. Acceptez-vous ?", PrincipalGui.YES_NO_PANE);
+				
 				((Button)answerFrame.getChild(0).getChild(1)).addCallback(new Runnable() {
 					
 					@Override
 					public void run() 
 					{
-						NetworkManager.instance.sendToServer("co;an;y;"+nom);
+						NetworkManager.instance.sendToServer("fi;an;y;"+nom);
 						answerFrame.setVisible(false);
 						
 						Equipe equipe1 = new Equipe("Equipe 1", MainJoueur.instance);
@@ -167,7 +168,7 @@ public class CombatManager implements NetworkListener
 				{
 					waitingAskFrame.setVisible(false);
 					
-					String nom_j = temp[3];
+					String nom_j = temp[2];
 					Equipe equipe1 = new Equipe("Equipe 1", MainJoueur.instance);
 					Equipe equipe2 = new Equipe("Equipe 2", EntitiesManager.instance.getPlayers_manager().getJoueur(nom_j));
 					ArrayList<Equipe> equipes = new ArrayList<Equipe>();
@@ -175,7 +176,7 @@ public class CombatManager implements NetworkListener
 					equipes.add(equipe2);
 					
 					ArrayList<Tile> zone= new ArrayList<Tile>();
-					ArrayList<ArrayList<Tile>> tiles_autour = MapManager.instance.getTilesAutour(MainJoueur.instance.getTile(), 10);
+					ArrayList<ArrayList<Tile>> tiles_autour = MapManager.instance.getTilesAutour(MainJoueur.instance.getTile(), 5);
 					for(int k = 0; k < tiles_autour.size(); k++)
 					{
 						zone.addAll(tiles_autour.get(k));

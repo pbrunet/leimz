@@ -2,35 +2,78 @@ package com.server.entities.managers;
 
 import java.util.ArrayList;
 
-
+import com.map.Tile;
+import com.map.server.managers.MapManager;
+import com.server.core.GlobalConstant;
 import com.server.entities.Entity;
+import com.server.entities.Joueur;
 
 public class EntitiesManager 
 {
 	private MonstersManager monsters_manager;
-	private ClientsManager clients_manager;
 	private PNJsManager pnjs_manager;
+	private PlayersManager players_manager;
+	
+	
 	private ArrayList<Entity> entities;
 	public static EntitiesManager instance;
 	
 	public EntitiesManager()
 	{
 		instance = this;
-		clients_manager = new ClientsManager();
 		entities = new ArrayList<Entity>();
+		players_manager = new PlayersManager();
 	}
 
 	private void refreshEntities()
 	{
 		this.entities.removeAll(entities);
-		for(int i = 0; i < clients_manager.getClients().size(); i++)
+		for(int i = 0; i < players_manager.getJoueurs().size(); i++)
 		{
-			this.entities.add(clients_manager.getClients().get(i).getCompte().getCurrent_joueur());
+			this.entities.add(players_manager.getJoueurs().get(i));
 		}
 		for(int i = 0; i < pnjs_manager.getPnjs().size(); i++)
 		{
 			this.entities.add(pnjs_manager.getPnjs().get(i));
 		}
+	}
+	
+	public ArrayList<Entity> getEntitiesAround(Entity entity)
+	{
+		refreshEntities();
+		ArrayList<Entity> list_around = new ArrayList<Entity>();
+		
+		ArrayList<ArrayList<Tile> > grille = MapManager.instance.getTilesAutour(entity.getTile(), GlobalConstant.nbCaseNear);
+		for(int i = 0; i < grille.size(); i++)
+		{
+			for(int j = 0; j < grille.get(i).size(); j++)
+			{
+				for(int u = 0; u < entities.size(); u++)
+				{
+					if(entities.get(u).getTile().equals(grille.get(i).get(j)))
+					{
+						list_around.add(entities.get(u));
+					}
+				}
+			}
+		}
+		
+		return list_around;
+	}
+	
+	public ArrayList<Joueur> getPlayersAround(Entity entity)
+	{
+		ArrayList<Joueur> list_around = new ArrayList<Joueur>();
+		ArrayList<Entity> entities_around = getEntitiesAround(entity);
+		for(int i = 0; i < entities_around.size(); i++)
+		{
+			if(entities_around.get(i) instanceof Joueur)
+			{
+				list_around.add((Joueur) entities_around.get(i));
+			}
+		}
+		
+		return list_around;
 	}
 	
 	public MonstersManager getMonsters_manager() {
@@ -41,12 +84,12 @@ public class EntitiesManager
 		monsters_manager = monstersManager;
 	}
 	
-	public ClientsManager getClients_manager() {
-		return clients_manager;
+	public PlayersManager getPlayers_manager() {
+		return players_manager;
 	}
 
-	public void setClients_manager(ClientsManager clientsManager) {
-		clients_manager = clientsManager;
+	public void setPlayers_manager(PlayersManager players_manager) {
+		this.players_manager = players_manager;
 	}
 
 	public PNJsManager getPnjs_manager() {

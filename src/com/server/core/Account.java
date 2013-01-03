@@ -1,7 +1,6 @@
 package com.server.core;
 
 import java.util.ArrayList;
-
 import com.server.entities.Joueur;
 
 public class Account 

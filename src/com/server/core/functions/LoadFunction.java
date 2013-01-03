@@ -11,6 +11,7 @@ import com.server.entities.Entity;
 import com.server.entities.Joueur;
 import com.server.entities.PNJ;
 import com.gameplay.Caracteristique;
+import com.gameplay.Classe;
 import com.gameplay.PNJ_discours;
 import com.gameplay.Race;
 import com.map.Tile;
@@ -118,6 +119,7 @@ public class LoadFunction implements Functionable
 	{
 		ResultSet rs;
 		try {
+			Classe classe = client.getCompte().getCurrent_joueur().getPerso().getClasse();
 			String sql = "SELECT caracteristiques_classe.caracteristique, caracteristiques_classe.value " +
 					"FROM caracteristiques_classe,personnage " +
 					"WHERE caracteristiques_classe.classe=personnage.classe " +
@@ -125,11 +127,14 @@ public class LoadFunction implements Functionable
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
+			HashMap<Caracteristique, Integer> caracs = new HashMap<>();
 			while(rs.next())
 			{
 				rc += rs.getString("caracteristiques_classe.caracteristique") + ";";
 				rc += rs.getInt("caracteristiques_classe.value") + ";";
+				caracs.put(Caracteristique.valueOf(rs.getString("caracteristiques_classe.caracteristique").toUpperCase()), rs.getInt("caracteristiques_classe.value"));
 			}
+			classe.setCaracs(caracs);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -148,11 +153,14 @@ public class LoadFunction implements Functionable
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
+			HashMap<Caracteristique, Integer> caracs = new HashMap<>();
 			while(rs.next())
 			{
 				rc += rs.getString("caracteristique") + ";";
 				rc += rs.getInt("value") + ";";
+				caracs.put(Caracteristique.valueOf(rs.getString("caracteristique").toUpperCase()), rs.getInt("value"));
 			}
+			client.getCompte().getCurrent_joueur().getPerso().setCaracs(caracs);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();
@@ -172,11 +180,14 @@ public class LoadFunction implements Functionable
 			Statement stmt = ServerSingleton.getInstance().getDbConnexion().getConnexion().createStatement();
 			rs = stmt.executeQuery(sql);
 			String rc = tag + ";";
+			HashMap<Caracteristique, Integer> caracs = new HashMap<>();
 			while(rs.next())
 			{
 				rc += rs.getString("caracteristique") + ";";
 				rc += rs.getInt("current_value") + ";";
+				caracs.put(Caracteristique.valueOf(rs.getString("caracteristique").toUpperCase()), rs.getInt("current_value"));
 			}
+			client.getCompte().getCurrent_joueur().getPerso().setCaracs_values(caracs);
 			client.sendToClient(rc);
 			rs.close();
 			stmt.close();

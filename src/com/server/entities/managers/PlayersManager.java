@@ -1,8 +1,6 @@
 package com.server.entities.managers;
 
 import java.util.ArrayList;
-
-
 import com.server.entities.Joueur;
 
 public class PlayersManager 
